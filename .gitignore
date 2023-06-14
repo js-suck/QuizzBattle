@@ -1,0 +1,4 @@
+QuizzBattle/back/node_modules/*
+QuizzBattle/front/node_modules/*
+node_modules/*
+QuizzBattle/back/dist/*

@@ -9,6 +9,21 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
+      - ./SampleCollections:/usr/local/sampleCollections
       - db-data:/data/db
+    working_dir: /usr/local/sampleCollections
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
 volumes:
   db-data: {}
+  pg-data: {}

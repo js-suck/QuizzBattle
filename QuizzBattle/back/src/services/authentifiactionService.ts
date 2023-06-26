@@ -3,10 +3,12 @@
 import { TUser } from '../types/user';
 
 
- const generateToken = (user : TUser) => {
+ const generateToken = (user) => {
     const payload = {
         id: user.id,
-        email: user.email
+        email: user.email,
+        lastname: user.lastname,
+        firstname: user.firstname, 
       };
     
       const token = jwt.sign(payload, 'your-secret-key', { expiresIn: '1h' });
@@ -20,6 +22,11 @@ import { TUser } from '../types/user';
   }
 
   function authenticateToken(req, res, next) {
+    console.log(
+      'req.headers.authorization',
+      req.headers.authorization
+      );
+    
     const token = req.headers.authorization?.split(' ')[1];
     if (token == null) {
       return res.sendStatus(401);
@@ -30,8 +37,10 @@ import { TUser } from '../types/user';
         return res.sendStatus(403);
       }
       req.user = user;
+      console.log("ok")
       next();
     });
   }
-  
-  
+
+
+  export { generateToken, comparePasswords, authenticateToken }

@@ -38,7 +38,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: var(--vt-c-black);
+    --color-background: #7152FF;
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
 
@@ -60,7 +60,6 @@
 
 body {
   min-height: 100vh;
-  color: var(--color-text);
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
@@ -70,4 +69,17 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: black;
 }
+
+h1 {
+  font-size: 2rem !important;
+  font-weight: bold !important;
+}
+
+label {
+  font-size: 1rem !important;
+  font-weight: bold !important;
+  color: black !important;
+}
+

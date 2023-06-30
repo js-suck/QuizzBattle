@@ -1,9 +1,12 @@
 import express from 'express';
+import GenericController from "../controllers/genericController";
+import QuizzService from "./../services/questionService";
 
-//import * as QuizzController from '../controllers/quizzsController';
+const quizzServiceInstance = new QuizzService();
+const quizzController = GenericController(quizzServiceInstance);
 
 const quizzRouter = express.Router();
 
-//quizzRouter.get('/quizz', QuizzController.getAll);
+quizzRouter.get('/', quizzController.getAll);
 
-export { quizzRouter };
+export default quizzRouter;

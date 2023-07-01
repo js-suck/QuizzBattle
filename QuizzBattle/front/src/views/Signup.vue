@@ -1,18 +1,41 @@
 <script setup>
-import { inject, reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import jwtDecode from 'jwt-decode';
-import { userManagerKey } from '../contexts/userManagerKeys';
-const {loginUser, user} = inject(userManagerKey)
+
+const token = localStorage.getItem('token');
+const user = ref(token ? jwtDecode(token) : null);
 
 const defaultValue = {
+  firstname: '',
+  lastname: '',
   email: '',
-  password: ''
+  password: '',
 };
 const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
+async function signupUser(_user) {
+  const response = await fetch(`http://localhost:3000/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(_user)
+  });
+  if (response.status === 422) {
+    return Promise.reject(await response.json());
+  } else if (response.ok) {
+    const data = await response.json();
+    const token = data.token;
+    user.value = jwtDecode(token)
+    localStorage.setItem('token', token);
+    return Promise.resolve(data);
+  }
+  throw new Error('Fetch failed');
+}
+
 function handleSubmit() {
-  loginUser(formData)
+  signupUser(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
       errors.value = {};
@@ -20,34 +43,29 @@ function handleSubmit() {
     .catch((_errors) => (console.log(_errors)));
 }
 
-onMounted(() => {
-  if (user.value !== null) {
-    window.location.href = 'http://localhost:5173';
-  }
-});
 </script>
 
 <template>
   <form @submit.prevent="handleSubmit">
     <h1 class="text-black-200 mb-10 font-bold">Hello there 👋</h1>
+    <label for="firstname">Firstname</label>
+    <input v-model.trim="formData.firstname" type="text" id="firstname" />
+    <p v-if="errors.firstname">{{ errors.firstname.join('\n') }}</p>
+    <label for="lastname">Lastname</label>
+    <input v-model.trim="formData.lastname" type="text" id="lastname" />
+    <p v-if="errors.lastname">{{ errors.lastname.join('\n') }}</p>
     <label for="email">Email</label>
     <input v-model.trim="formData.email" type="email" id="email" />
     <p v-if="errors.email">{{ errors.email.join('\n') }}</p>
     <label for="password">Password</label>
     <input v-model="formData.password" type="password" id="password" />
     <p v-if="errors.password">{{ errors.password.join('\n') }}</p>
-    <a href="#">
+    <a href="/login">
        <h2 class="text-violet-500 font-bold">
-        Forgot Password?
+        Login
        </h2> 
     </a>
-    <a href="/signup">
-       <h2 class="text-violet-500 font-bold">
-        Sign Up
-       </h2>
-    </a>
     <button type="submit">Submit</button>
-
   </form>
 
 </template>

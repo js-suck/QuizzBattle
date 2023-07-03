@@ -1,4 +1,6 @@
 class ValidationError extends Error {
+  errors: Record<string, string[]>;
+
   constructor(errors) {
     super("Validation error");
     this.errors = errors;

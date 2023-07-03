@@ -1,12 +1,12 @@
-const Sequelize = require("sequelize");
+const SequelizeInstance = require("sequelize");
 
-const connection = new Sequelize("postgres://root:password@localhost:5432/app", {
+const SequelizeConnection = new SequelizeInstance("postgres://root:password@localhost:5432/app", {
   dialect: "postgres", // Specify the dialect as 'postgres'
 });
 
-connection
+SequelizeConnection
   .authenticate()
   .then(() => console.log("Connected to database"))
   .catch((err) => console.log(err));
 
-module.exports = connection;
+module.exports = SequelizeConnection;

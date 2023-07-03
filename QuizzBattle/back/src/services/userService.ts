@@ -1,4 +1,4 @@
-const ValidationError = require("../errors/ValidationError");
+const ValidationErrorInstance = require("../errors/ValidationErrorInstance");
 const Sequelize = require("sequelize");
 const User = require("../db").User;
 console.log("***", User, typeof User, "***");
@@ -18,8 +18,8 @@ module.exports = function () {
         const user = await User.create(data);
         return user;
       } catch (error) {
-        if (error instanceof Sequelize.ValidationError) {
-          throw ValidationError.createFromSequelizeValidationError(error);
+        if (error instanceof Sequelize.ValidationErrorInstance) {
+          throw ValidationErrorInstance.createFromSequelizeValidationError(error);
         }
         throw error;
       }
@@ -34,8 +34,8 @@ module.exports = function () {
 
         return [user, !deleted];
       } catch (error) {
-        if (error instanceof Sequelize.ValidationError) {
-          throw ValidationError.createFromSequelizeValidationError(error);
+        if (error instanceof Sequelize.ValidationErrorInstance) {
+          throw ValidationErrorInstance.createFromSequelizeValidationError(error);
         }
         throw error;
       }
@@ -51,8 +51,8 @@ module.exports = function () {
         }
         return newValues[0];
       } catch (error) {
-        if (error instanceof Sequelize.ValidationError) {
-          throw ValidationError.createFromSequelizeValidationError(error);
+        if (error instanceof Sequelize.ValidationErrorInstance) {
+          throw ValidationErrorInstance.createFromSequelizeValidationError(error);
         }
         throw error;
       }

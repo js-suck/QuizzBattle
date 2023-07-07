@@ -1,4 +1,6 @@
 import QuizzesService from "../services/questionService";
+const translateService = require("../services/deeplApiService");
+const triviaApiService = require("../services/triviaApiService");
 
 function GenericController(service, options = {}) {
   console.log("im construct", service);
@@ -34,6 +36,42 @@ function GenericController(service, options = {}) {
       res.sendStatus(404);
     } else {
       res.json(user);
+    }
+  }
+
+  async function getAllTrivia(req, res) {
+    const questions = await triviaApiService.getAll(req.body.limit, req.body.categories, req.body.difficulties, req.body.region, req.body.types, req.body.tags);
+    if (!questions) {
+      res.sendStatus(404);
+    } else {
+      res.json(questions);
+    }
+  }
+
+  async function getOneTrivia(req, res) {
+    const question = await triviaApiService.getOne(req.params.id);
+    if (!question) {
+      res.sendStatus(404);
+    } else {
+      res.json(question);
+    }
+  }
+
+  async function getAllCategoriesTrivia(req, res) {
+    const categories = await triviaApiService.getAllCategories();
+    if (!categories) {
+      res.sendStatus(404);
+    } else {
+      res.json(categories);
+    }
+  }
+
+  async function getAllTagsTrivia(req, res) {
+    const tags = await triviaApiService.getAllTags();
+    if (!tags) {
+      res.sendStatus(404);
+    } else {
+      res.json(tags);
     }
   }
 
@@ -73,13 +111,24 @@ function GenericController(service, options = {}) {
     } else res.sendStatus(204);
   }
 
+  async function translate(req, res) {
+    const text = req.params.text;
+    const translatedText = await translateService.translate(text);
+    res.json(translatedText);
+  }
+
   return {
     getAll,
     create,
     getOne,
     replace,
     update,
-    deleteOne
+    deleteOne,
+    translate,
+    getOneTrivia,
+    getAllTrivia,
+    getAllCategoriesTrivia,
+    getAllTagsTrivia,
   };
 }
 

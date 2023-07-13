@@ -1,7 +1,6 @@
 import QuizzesService from "../services/questionService";
 
 function GenericController(service, options = {}) {
-  console.log("im construct", service);
 
   async function getAll(req, res) {
     const {

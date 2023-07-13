@@ -34,7 +34,14 @@ const quizList = ref(null);
 
 const socket = io(API_URL);
 
+import jwtDecode from 'jwt-decode';
+
+const token = localStorage.getItem('token');
+const user = ref(token ? jwtDecode(token) : null);
+
+
 const startGame = () => {
+  socket.emit('userJoin', user);
   socket.emit('startGame');
   gameStarted.value = true;
 };
@@ -42,6 +49,16 @@ const startGame = () => {
 const submitAnswer = (answer) => {
   socket.emit('answer', answer);
 };
+
+socket.on("join room", (room) => {
+
+  console.log("join roomm")
+  // redirect to url generated with the room name
+  const url = `http://localhost:5173/game/${room}`
+  console.log(url)
+
+  window.location.href = url;
+})
 
 onMounted(() => {
   socket.on('connect', () => {
@@ -64,5 +81,12 @@ onMounted(() => {
     .catch((error) => {
       console.error('Erreur lors de la récupération des quiz', error);
     });
+
+    if(!user.value.roomID)
+    {
+      console.log("test", user.value.roomID);
+      socket.emit('userJoin', user);
+    }
+
 });
 </script>

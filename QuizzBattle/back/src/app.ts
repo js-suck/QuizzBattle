@@ -4,7 +4,8 @@ const { Server } = require("socket.io");
 import mongoose = require('mongoose');
 import { mongoURI } from './config/db'
 import { apiRouter } from './routers/api';
-import { authenticateToken, comparePasswords, generateToken } from "./services/authentifiactionService";
+import { authenticateToken, comparePasswords, createRoom, generateToken } from "./services/authentifiactionService";
+import { TUser } from "./types/user";
 const db = require('./db');
 const app = express();
 const server = http.createServer(app);
@@ -30,7 +31,52 @@ io.on('connection', (socket: any) => {
   socket.on('disconnect', () => {
     console.log('Déconnexion socket');
   });
+
+
+ let rooms = [];
+  socket.on('userJoin', (user) => {
+    let room = null;
+
+    if(user.room === undefined){
+
+      
+      room = createRoom(user);
+      console.log(`[create room ] - ${room.id} - ${user}`);
+
+      socket.join(room.id);
+
+    } else {
+      room = rooms.find(r => r.id === user.roomId);
+
+      if (room === undefined) {
+          return;
+      }
+
+      user.roomId = room.id;
+      room.users.push(user);
+
+
+    }
+
+    socket.join(user.room);
+
+    console.log("join room")
+    socket.emit('join room', 2)
+    io.to(socket.id).emit('join room', room.id);
+
+    if (room.users.length === 2) {
+        io.to(room.id).emit('start game', room.players);
+    }
+  })
+
+
+  socket.on("joinRoom", (room: any) => {
+
+
 });
+
+});
+
 app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });

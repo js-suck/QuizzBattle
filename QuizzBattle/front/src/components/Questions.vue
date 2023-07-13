@@ -37,11 +37,11 @@ const handleNextQuestion = () => {
 }
 
 const getQuestions = (id = 1) => {
-  console.log("im")
   axios.get(`${API_URL}/api/questions/${id}`)
     .then(response => {
       quizzAnswerList.value = response.data;
       questionLabel.value = response.data.question.label;
+      console.log(response.data)
     })
     .catch(error => {
       console.error('Erreur lors de la récupération des quiz', error);

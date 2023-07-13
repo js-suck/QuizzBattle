@@ -41,4 +41,8 @@ export default {
         justify-content: space-between;
        
     }
+
+    h2 {
+      color: white;
+    }
 </style>

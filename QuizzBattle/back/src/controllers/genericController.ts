@@ -40,7 +40,7 @@ function GenericController(service, options = {}) {
   }
 
   async function getAllTrivia(req, res) {
-    const questions = await triviaApiService.getAll(req.body.limit, req.body.categories, req.body.difficulties, req.body.region, req.body.types, req.body.tags);
+    const questions = await triviaApiService.getAll(req.body.limit, req.body.categories, req.body.difficulties, req.body.region, req.body.types, req.body.tags, req.body.lang ? req.body.lang : "fr");
     if (!questions) {
       res.sendStatus(404);
     } else {

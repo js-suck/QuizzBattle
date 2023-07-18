@@ -8,6 +8,7 @@ export const getAll = async (
   region: string,
   types: string,
   tags: string,
+  lang: string
 ) => {
   try {
     const questions = await axios.get(
@@ -19,7 +20,42 @@ export const getAll = async (
         (types ? "&types=" + types : "") +
         (tags ? "&tags=" + tags : "") 
     );
+    if (lang == "fr") {
+      const translations = await Promise.all([
+        ...questions.data.map((question) =>
+          Promise.all([
+            translateService.translate(question.category),
+            translateService.translate(question.correctAnswer),
+            ...question.incorrectAnswers.map((answer) =>
+              translateService.translate(answer)
+            ),
+            translateService.translate(question.question.text),
+            translateService.translate(question.difficulty),
+            ...question.tags.map((tag) => translateService.translate(tag)),
+          ])
+        ),
+      ]);
+      return translations.map((translation, index) => {
+        questions.data[index].category = translation[0];
+        questions.data[index].correctAnswer = translation[1];
+        questions.data[index].incorrectAnswers = translation.slice(
+          2,
+          2 + questions.data[index].incorrectAnswers.length
+        );
+        questions.data[index].question.text = translation[
+          2 + questions.data[index].incorrectAnswers.length
+        ];
+        questions.data[index].difficulty = translation[
+          3 + questions.data[index].incorrectAnswers.length
+        ];
+        questions.data[index].tags = translation.slice(
+          4 + questions.data[index].incorrectAnswers.length
+        );
+        return questions.data[index];
+      });
+    } else {
     return questions.data;
+    }
   } catch (err) {
     console.log(err);
   }

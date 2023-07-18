@@ -8,7 +8,6 @@
 import { ref } from 'vue';
 import RoundedSquare from './RoundedSquare.vue';
 
-
 const props = defineProps({
   answer: {
     required: true,
@@ -21,15 +20,21 @@ const props = defineProps({
   isReveal : {
     required: false,
     type: Boolean,
-  }
+  },
+  correctAnswer: {
+    required: true,
+    type: String,
+  },
 });
 
 // get my props 
 console.log(props);
 
+const colorBg = props.answer == props.correctAnswer ? "green" : "red";
 
-const colorBg = props.isCorrect ? "green" : "red";
-
+const submitAnswer = () => {
+  console.log("submitAnswer");
+};
 
 </script>
 
@@ -44,5 +49,9 @@ h3 {
   width: 100%;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.correct-answer {
+  color: green;
 }
 </style>

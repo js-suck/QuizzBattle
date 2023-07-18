@@ -1,9 +1,9 @@
 <template>
-<RoundedSquare>
-<ProfileBadge color="red"/>
-<h2>{{gameName}}</h2>
-<ProfileBadge color="green"/>
-</RoundedSquare>
+  <RoundedSquare>
+    <ProfileBadge color="red"/>
+    <h2>{{gameName}}</h2>
+    <ProfileBadge color="green"/>
+  </RoundedSquare>
 </template>
 
 <script>

@@ -3920,11 +3920,16 @@ json-bigint@^1.0.0:
     bignumber.js "^9.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 json5@^2.2.2:
 >>>>>>> 1670ff6 (user verif mail + role)
 =======
 json5@^2.2.2, json5@^2.2.3:
 >>>>>>> 27daf74 (Sign up avant la vérif par mail)
+=======
+json5@^2.2.2:
+>>>>>>> 1670ff6 (user verif mail + role)
+>>>>>>> 1574f02 (user verif mail + role)
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==

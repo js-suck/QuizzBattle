@@ -1,9 +1,8 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { inject, reactive, ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
-
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
+import { userManagerKey } from '../contexts/userManagerKeys';
+const {loginUser, user} = inject(userManagerKey)
 
 const defaultValue = {
   email: '',
@@ -11,27 +10,6 @@ const defaultValue = {
 };
 const formData = reactive({ ...defaultValue });
 const errors = ref({});
-
-
-async function loginUser(_user) {
-  const response = await fetch(`http://localhost:3000/login`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(_user)
-  });
-  if (response.status === 422) {
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-  }
-  throw new Error('Fetch failed');
-}
 
 function handleSubmit() {
   loginUser(formData)
@@ -41,6 +19,12 @@ function handleSubmit() {
     })
     .catch((_errors) => (console.log(_errors)));
 }
+
+onMounted(() => {
+  if (user.value !== null) {
+    window.location.href = 'http://localhost:5173';
+  }
+});
 </script>
 
 <template>

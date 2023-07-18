@@ -1,4 +1,9 @@
 <template>
+    <div>
+  <template v-if="true">
+    IS LOADING...
+  </template>
+  <template v-else >
   <div
     v-if="isFinished == false"
     class="timer"
@@ -52,19 +57,26 @@
       Retour aux catégories
     </button>
   </div>
+  </template>
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch, computed } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { API_URL } from '../constants'
 import GameHeader from './GameHeader/GameHeader.vue'
 import QuestionBlock from './QuestionBlock.vue'
 import qs from 'qs'
-const quizzAnswerList = reactive([])
+import { useRoute } from 'vue-router';
+const {getQuestions,  quizzAnswerList, questionLabel} = inject(questionManager)
+const {players, setPlayers} = inject(playerManager)
 const quizzQuestionList = reactive([])
+const isLoading = ref(true)
+
+const route = useRoute();  
+const roomId = route.params.id;
+
 const answerList = ref([])
-const questionLabel = ref('')
 const isElementsRevealed = ref(false)
 const questionNumber = ref(0)
 const score = ref(0)
@@ -113,17 +125,6 @@ const handleResult = () => {
   isFinished.value = true
 }
 
-const getQuestions = (id = 1) => {
-  axios
-    .get(`${API_URL}/api/questions/${id}`)
-    .then((response) => {
-      quizzAnswerList.value = response.data
-      questionLabel.value = response.data.question.label
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la récupération des quiz', error)
-    })
-}
 
 const getQuestionsTrivia = (category) => {
   let data = qs.stringify({
@@ -142,6 +143,7 @@ const getQuestionsTrivia = (category) => {
     },
     data: data
   }
+
   axios
     .request(config)
     .then((response) => {
@@ -184,6 +186,13 @@ const startTimer = () => {
 };
 
 onMounted(() => {
+    // emit an event to tel socket user is connected to the roomID
+    socket.emit("fetch room", roomId)
+
+socket.on("startGame", (room) => {
+  setPlayers(room.users)
+  isLoading.value = false
+})
   getQuestions()
   getQuestionsTrivia(props.category)
 })
@@ -240,3 +249,11 @@ watch(
   background-color: red;
 }
 </style>
+
+
+
+
+
+
+
+

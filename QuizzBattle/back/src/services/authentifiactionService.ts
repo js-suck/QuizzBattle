@@ -43,4 +43,21 @@ import { TUser } from '../types/user';
   }
 
 
-  export { generateToken, comparePasswords, authenticateToken }
+
+  function roomId() {
+
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  function createRoom(user) {
+
+    const room = { id: roomId(), users: [] };
+
+    room.users.push(user);
+    user.roomId = room.id;
+    
+    return room;
+  }
+
+
+  export { createRoom, generateToken, comparePasswords, authenticateToken }

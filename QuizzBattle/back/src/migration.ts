@@ -19,7 +19,11 @@ db.connection
         quizzId: 1,
       });
 
-      Promise.all([question1, question2])
+      const category = db.Category.create({
+        name: "Géographie",
+      });
+
+      Promise.all([question1, question2, category])
         .then(([createdQuestion1, createdQuestion2]) => {
           // Création des réponses associées aux questions
           return Promise.all([

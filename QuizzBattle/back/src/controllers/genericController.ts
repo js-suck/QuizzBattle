@@ -3,7 +3,6 @@ const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
 
 function GenericController(service, options = {}) {
-  console.log("im construct", service);
 
   async function getAll(req, res) {
     const {

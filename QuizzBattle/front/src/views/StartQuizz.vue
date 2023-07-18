@@ -58,9 +58,17 @@ const category = ref(null)
 
 const socket = io(API_URL)
 
+import jwtDecode from 'jwt-decode';
+
+const token = localStorage.getItem('token');
+const user = ref(token ? jwtDecode(token) : null);
+
+
 const startGame = () => {
   socket.emit('startGame')
   gameStarted.value = true
+  window.location.href = "http://localhost:5173/waiting";
+
 }
 
 const startGameWithCategory = (cat) => {
@@ -69,9 +77,15 @@ const startGameWithCategory = (cat) => {
   category.value = cat
 }
 
+
 const submitAnswer = (answer) => {
   socket.emit('answer', answer)
 }
+
+socket.on("disconnect", () =>{
+  console.log("disconnected")
+})
+
 
 onMounted(() => {
   socket.on('connect', () => {

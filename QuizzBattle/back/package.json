@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon --transpile-only src/app.ts",
-        "d:s:u": "node dist/migration.js"
+        "d:s:u": "tsc && node dist/migration.js",
+        "build": "tsc"
     },
     "keywords": [],
     "author": "",

@@ -57,8 +57,7 @@ onMounted(() => {
     showResults.value = true;
   });
 
-  axios
-    .get(`${API_URL}/api/quizzes`)
+  axios.get(`${API_URL}/api/quizzes`)
     .then((response) => {
       quizList.value = response.data;
     })

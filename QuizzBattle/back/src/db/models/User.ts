@@ -22,6 +22,10 @@ module.exports = (connection) => {
           //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
+      profilePicturePath: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      }
     },
     { sequelize: connection, tableName: "users" }
   );

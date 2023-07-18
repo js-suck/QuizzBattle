@@ -1,36 +1,40 @@
 import express from "express";
 import http from 'http';
-const { Server } = require("socket.io");
 import mongoose = require('mongoose');
 import { mongoURI } from './config/db'
-import { apiRouter } from './routers/api';
-import { authenticateToken, comparePasswords, generateToken } from "./services/authentifiactionService";
+import { apiRouter } from './routers/apiRouter';
+import { authenticateToken, createRoom, generateToken } from "./services/authentifiactionService";
+import { TUser } from "./types/user";
+import { initializeSocket } from "./config/socket";
 const db = require('./db');
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
 const cors = require('cors');
-
 app.use(cors());
-app.use(express.json())
-io.on('connection', (socket: any) => {
-  console.log('Nouvelle connexion socket établie');
+const server = http.createServer(app);
 
-  socket.on('message', (data: any) => {
-    console.log('Message reçu :', data);
-    io.emit('message', data); // Diffuser le message à tous les clients connectés
-  });
 
-  socket.on("startGame", () => {
-    console.log("startGame");
-    io.emit("startGame");
-    });
-  
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); 
 
-  socket.on('disconnect', () => {
-    console.log('Déconnexion socket');
-  });
+
+app.use(express.urlencoded({ extended: false }));
+
+
+app.post('/upload', upload.single('profileImage'), (req, res) => {
+
+  if (!req['file']) {
+    res.send('Aucun fichier sélectionné.');
+  } else {
+
+    res.send('Fichier uploadé avec succès.');
+  }
 });
+
+
+initializeSocket(server)
+
+app.use(express.json())
+
 app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });

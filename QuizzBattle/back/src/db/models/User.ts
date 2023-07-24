@@ -1,3 +1,5 @@
+import { request } from "express";
+
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
   const bcrypt = require("bcrypt");
@@ -5,12 +7,13 @@ module.exports = (connection) => {
 
   const mailjetClient = new Mailjet({
     apiKey: "dfaaa1f406a6a163ed3cfd1c77387ae4",
-    apiSecret: "7797beb3977eca8bba9c9fc327e45ab3",
+    apiSecret: "4995cd8aca9ea391cf484eb41210994e",
   });
 
   class User extends Model {
     async checkPassword(password) {
-      return await bcrypt.compare(password, this.password);
+      await bcrypt.compare(password, this.password);
+      console.log("SENEX", await bcrypt.compare(password, this.password));
     }
 
     async sendVerificationEmail() {
@@ -19,8 +22,8 @@ module.exports = (connection) => {
         Messages: [
           {
             From: {
-              Email: "votre-email@example.com",
-              Name: "Votre Nom",
+              Email: "laila.charaoui@outlook.fr",
+              Name: "The best",
             },
             To: [
               {
@@ -32,12 +35,21 @@ module.exports = (connection) => {
             HTMLPart: `<p>Bonjour ${
               this.firstname
             },</p><p>Veuillez cliquer sur le lien suivant pour vérifier votre compte : <a href="${generateVerificationLink(
-              this.id
+              this.id, this.tokenemail
             )}">Vérifier mon compte</a></p>`,
           },
         ],
       });
+      request
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err.statusCode);
+        });
     }
+
+
   }
 
   User.init(
@@ -57,7 +69,7 @@ module.exports = (connection) => {
         allowNull: false,
         validate: {
           len: [8, 32],
-          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+          // is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
       profilePicturePath: {
@@ -75,6 +87,20 @@ module.exports = (connection) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      tokenemail: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+      },
     },
     { sequelize: connection, tableName: "users" }
   );
@@ -87,9 +113,9 @@ module.exports = (connection) => {
     }
   }
 
-  function generateVerificationLink(userId) {
+  function generateVerificationLink(userId, tokenemail) {
     // Générer le lien de vérification avec l'ID de l'utilisateur
-    return `http://localhost:5173/verify/${userId}`;
+    return `http://localhost:5173/verify/${userId}?token=${tokenemail}`;
   }
 
   User.addHook("beforeCreate", uptadePassword);

@@ -33,6 +33,16 @@ const router = createRouter({
       name: 'waintingRoom',
       component: () => import('../views/WaintingGameView.vue')
     },
+    {
+      path: '/scoreboard',
+      name: 'scoreboard',
+      component: () => import('../views/ScoreboardView.vue')
+    },
+    {
+      path: '/scoreboard/:categoryId',
+      name: 'scoreboardCategory',
+      component: () => import('../views/ScoreboardView.vue')
+    }
   ]
 })
 

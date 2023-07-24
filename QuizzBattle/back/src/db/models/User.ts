@@ -25,6 +25,14 @@ module.exports = (connection) => {
       profilePicturePath: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      score: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      gamesPlayed: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       }
     },
     { sequelize: connection, tableName: "users" }

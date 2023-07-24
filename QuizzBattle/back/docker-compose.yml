@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - db-dataa:/data/db
+      - db-data:/data/db
 
   db:
     image: postgres
@@ -23,5 +23,5 @@ services:
       - pg-data:/var/lib/postgresql/data
 
 volumes:
-  db-dataa: {}
+  db-data: {}
   pg-data: {}

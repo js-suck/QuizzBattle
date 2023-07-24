@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+import { formatQuestionsToMimickTrivia } from "../helpers/quizzHelper";
 const ValidationError = require("../errors/ValidationError");
 const SequelizeDb = require("sequelize");
 const Question = require("../db").Question;
@@ -7,12 +8,15 @@ const Answer = require("../db").Answer
 
 class QuizzesService {
   async findAll(criteria, { page = null, itemsPerPage = null, order = {} }) {
-    return await Question.findAll({
+    const questions = await Question.findAll({
       where: criteria,
       limit: itemsPerPage,
       offset: (page - 1) * itemsPerPage,
       order: Object.entries(order),
+      include: { model: Answer, as: 'answers' } 
     });
+    
+    return formatQuestionsToMimickTrivia(questions);
   }
 
   async create(data) {

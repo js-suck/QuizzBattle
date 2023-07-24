@@ -30,6 +30,12 @@ class CategoryService {
     return await Category.findByPk(id);
   }
 
+  async findByName(name: string) {
+    return await Category.findOne({
+      where: { name: name }
+    });
+  }
+
   async replaceOne(id, newData) {
     try {
       const deleted = await this.deleteOne(id);

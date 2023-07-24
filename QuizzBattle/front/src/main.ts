@@ -14,6 +14,22 @@ const vuetify = createVuetify({
     directives,
   })
   
+
+// Définir une fonction pour changer la classe du body
+function changeBodyClass(to) {
+  if (to.name !== 'StartQuizz') {
+    document.body.classList.add('black-background');
+  } else {
+    document.body.classList.remove('black-background');
+  }
+}
+
+// Surveiller les changements de route pour appliquer la classe appropriée
+router.afterEach((to) => {
+  changeBodyClass(to);
+});
+
+
 const app = createApp(App)
 
 app.use(createPinia())

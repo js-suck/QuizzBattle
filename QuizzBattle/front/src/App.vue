@@ -1,15 +1,19 @@
 <template>
+  <ThemeProviderManager>
   <UserManager>
     <QuizzProvider>
     <router-view/>
     </QuizzProvider>
   </UserManager>
+</ThemeProviderManager>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import UserManager from './contexts/UserManager.vue';
 import QuizzProvider from './contexts/QuizzProvider.vue'
+import ThemeProviderManager from './contexts/ThemeProvider.vue'
+
 import jwtDecode from 'jwt-decode';
 
 const token = localStorage.getItem('token');

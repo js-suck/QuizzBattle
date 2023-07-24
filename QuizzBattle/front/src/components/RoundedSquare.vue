@@ -1,35 +1,31 @@
 <template>
-   <div class="w-full player-band" :style="{
+  <div class="w-full player-band" :style="{
     backgroundColor: color
-   }">
-   <slot></slot>
-   </div>
+  }">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
 export default {
-      props: {
+  props: {
     color: {
-        type: String,
-        required: false,
-        default: "black"
+      type: String,
+      required: false,
+      default: "black"
     },
-      }
+  }
 
 }
 </script>
 
-
-
 <style>
+.rounded-square {
+  background-color: violet;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
 
-  .rounded-square{
-        background-color: violet;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-       
-    }
-
+}
 </style>

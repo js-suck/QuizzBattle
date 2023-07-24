@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div v-if="gameStarted" class="w-full">
-      <Questions :question="currentQuestion" @answer="submitAnswer" />
+      <QuizzGame :question="currentQuestion" @answer="submitAnswer" />
       <div v-if="showResults">
         <h2>Résultats</h2>
         <ul>
@@ -28,9 +28,9 @@
       <h2 class="text-2xl font-bold">Ou choisissez une catégorie</h2>
       <div class="flex flex-wrap justify-center">
         <div v-for="(category, key) in categories" :key="key" class="w-1/4 p-2">
-          <div @click="startGameWithCategory(key)" class="bg-white rounded-lg shadow-lg">
+          <div @click="startGameWithCategory(category.name)" class="bg-white rounded-lg shadow-lg">
             <div class="p-4">
-              <h2 class="text-xl font-bold">{{ category }}</h2>
+              <h2 class="text-xl font-bold text-black">{{ category.name }}</h2>
             </div>
           </div>
         </div>
@@ -38,14 +38,13 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import io from 'socket.io-client'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-
-import Questions from '../components/Questions.vue'
+import QuizzGame from '../components/QuizzGame.vue'
 import { API_URL } from '../constants'
+import jwtDecode from 'jwt-decode';
 
 const gameStarted = ref(false)
 const gameStartedWithCategory = ref(false)
@@ -55,10 +54,7 @@ const showResults = ref(false)
 const quizList = ref(null)
 const categories = ref(null)
 const category = ref(null)
-
 const socket = io(API_URL)
-
-import jwtDecode from 'jwt-decode';
 
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
@@ -73,10 +69,11 @@ const startGame = () => {
 
 const startGameWithCategory = (cat) => {
   socket.emit('startGameWithCategory', cat)
-  gameStartedWithCategory.value = true
-  category.value = cat
-}
+  // gameStartedWithCategory.value = true
+  // category.value = cat
 
+  window.location.href = `http://localhost:5173/waiting/${cat}`;
+}
 
 const submitAnswer = (answer) => {
   socket.emit('answer', answer)
@@ -111,7 +108,7 @@ onMounted(() => {
     })
 
   axios
-    .get(`${API_URL}/api/questions/trivia/categories`)
+    .get(`${API_URL}/api/category`)
     .then((response) => {
       categories.value = response.data
     })

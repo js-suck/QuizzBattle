@@ -33,7 +33,7 @@ const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 const categoryName = ref("")
 const socket = io(API_URL);
-const categoryId = route.params.category;
+const categoryId = route.params.categoryId;
 
 const handleGoBackToDashboard = () => {
   window.location.href = "http://localhost:5173"
@@ -42,7 +42,9 @@ const handleGoBackToDashboard = () => {
 onMounted(() => {
     if(!user.value.roomID)
     {
-      socket.emit('search a room', user.value);
+      socket.emit('search a room', {user:user.value,
+      category: categoryId
+      });
     }
 
     socket.on("roomFound", (room) => {
@@ -51,7 +53,7 @@ onMounted(() => {
     window.location.href = url;
     })
 
-    axios.get(`${API_URL}/api/category/${1}`)
+    axios.get(`${API_URL}/api/category/${categoryId}`)
     .then((response) => {
       console.log(response.data)
       categoryName.value = response.data.name;

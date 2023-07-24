@@ -1,12 +1,26 @@
 <template>
-  <RoundedSquare @click="submitAnswer" :color='isReveal ? colorBg : "white"'>
+  <RoundedSquare @click="submitAnswer" :color="questionBlockBackgroundColors" :style="{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1rem',
+    justifyContent: 'center'
+  }">
     <h3>{{ answer }}</h3>
+    <div v-if="isReveal && isCorrect" class=" ">
+      <span class="text-white material-icons material-icons-outlined">
+        check_circle
+      </span>
+    </div>
   </RoundedSquare>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import RoundedSquare from './RoundedSquare.vue';
+import { reactive, ref, onMounted, watch, inject, computed } from 'vue'
+
+const theme = inject("theme")
+const colorVars = [theme.colors.blue, theme.colors.green, theme.colors.orange, theme.colors.red]
 
 const props = defineProps({
   answer: {
@@ -17,7 +31,7 @@ const props = defineProps({
     required: true,
     type: Boolean,
   },
-  isReveal : {
+  isReveal: {
     required: false,
     type: Boolean,
   },
@@ -25,13 +39,25 @@ const props = defineProps({
     required: true,
     type: String,
   },
-});
+  backgroundColor: {
+    required: false,
+    type: String,
+  },
+  index: {
+    required: false,
+    type: Number,
+  },
+  }
+);
 
-// get my props 
-console.log(props);
-
-const colorBg = props.answer == props.correctAnswer ? "green" : "red";
-
+const questionBlockBackgroundColors = computed(() => {
+    if (props.isReveal) {
+      return props.isCorrect ? theme.colors.green : theme.colors.red;
+    } else {
+      const indexColor = colorVars[props.index] || 'white';
+      return indexColor;
+    }
+  });
 const submitAnswer = () => {
   console.log("submitAnswer");
 };
@@ -40,7 +66,7 @@ const submitAnswer = () => {
 
 <style>
 h3 {
-  color: black;
+  color: white;
   font-size: 1.5rem;
   font-weight: 500;
   margin: 0;

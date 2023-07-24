@@ -32,3 +32,5 @@ module.exports = (connection) => {
 
   return User;
 };
+
+

@@ -38,6 +38,15 @@ function GenericController(service, options = {}) {
     }
   }
 
+  async function getByName(req, res) {
+    const entity = await service?.findByName(req.params.name);
+    if (!entity) {
+      res.sendStatus(404);
+    } else {
+      res.json(entity);
+    }
+  }
+
   async function getAllTrivia(req, res) {
     const questions = await triviaApiService.getAll(req.body.limit, req.body.categories, req.body.difficulties, req.body.region, req.body.types, req.body.tags, req.body.lang ? req.body.lang : "fr");
     if (!questions) {
@@ -117,17 +126,18 @@ function GenericController(service, options = {}) {
   }
 
   return {
-    getAll,
     create,
-    getOne,
-    replace,
-    update,
     deleteOne,
-    translate,
-    getOneTrivia,
-    getAllTrivia,
+    getAll,
     getAllCategoriesTrivia,
     getAllTagsTrivia,
+    getAllTrivia,
+    getByName,
+    getOne,
+    getOneTrivia,
+    replace,
+    translate,
+    update,
   };
 }
 

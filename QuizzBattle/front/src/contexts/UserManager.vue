@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted, provide } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { userManagerKey, userManagerUsersKey, userManagerIsLoadingKey } from './userManagerKeys.js';
-const users = reactive([]);
+const users = reactive({});
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 const isLoading = ref(false);

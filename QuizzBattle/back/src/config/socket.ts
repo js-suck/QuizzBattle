@@ -41,7 +41,7 @@ io.on('connection', (socket: any) => {
   
   
     socket.on('search a room', (user) => {
-        console.log("SEARCH")
+        console.log("socket: search a room")
       let room = null;
       for (let i=0 ;i<rooms.length; i++) {
         if (rooms[i].users.length === 1) 
@@ -56,7 +56,7 @@ io.on('connection', (socket: any) => {
         socket.join(room.id);
       } else {
 
-        room.users.array.forEach(user => {
+        room.users.forEach(user => {
           if (user.id === user.id) {
             return;
           }})
@@ -78,12 +78,30 @@ io.on('connection', (socket: any) => {
 
 
     socket.on("fetch room", (roomID: number) => {
+          console.log(roomID, "fetch user")
         const room = rooms.find((r) => r.id === roomID);
         if (room) {
             socket.join(room.id)
             io.to(room.id).emit('startGame', room);
         }
     } )
+
+    socket.on("update score", ({user, room, score}) => {
+
+      console.log("update score", room)
+
+      const roomToUpdate = rooms.find((r) => r.id === room);
+      if (roomToUpdate) {
+        roomToUpdate.users.forEach((u) => {
+          if (u.id === user.id) {
+            u.score = score;
+            return
+          }
+        });
+      }
+      io.to(room).emit('update score', roomToUpdate);
+
+    })
 });
 
 

@@ -8,6 +8,6 @@ const CategoryController = GenericController(new CategoryService())
 const categoryRouter = express.Router();
 
 categoryRouter.get('/', CategoryController.getAll);
-categoryRouter.get("/:id", CategoryController.getOne);
+categoryRouter.get("/:name", CategoryController.getByName);
 
 export default categoryRouter;

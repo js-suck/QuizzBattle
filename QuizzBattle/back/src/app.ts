@@ -82,7 +82,8 @@ db.User.sync().then(() => {
         firstName: 'John',
         lastName: 'Doe',
         email: 'test@gmail.com',
-        password: '1234'
+        password: '1234',
+        profilePicturePath: "defaultUser.png"
       });
 
       newUser.save().then((user) => {

@@ -1,50 +1,62 @@
 <template>
-    <div>
-  <template v-if="true">
-    IS LOADING...
-  </template>
-  <template v-else >
-  <div
-    v-if="isFinished == false"
-    class="timer"
-    :class="{ 'timer-ended': isTimeUp }"
-    :style="{ width: barWidth, background: barColor}"
-  >
-    {{ Math.round(timeLeft / 1000) }}
-  </div>
-  <div v-if="quizzQuestionList.value && isFinished == false" class="flex flex-col h-screen">
-    <GameHeader
-      :gameName="quizzQuestionList.value[questionNumber].question.text"
-      class="game-"
-      :style="'margin-bottom: 2em'"
-    />
-    <div v-for="answer in answerList" :key="answer.id">
+  <div class="quizz-game">
+    <div v-show="isElementsRevealed && !isGameFinished" class="quizz-game-reveal-status" :style="{
+      backgroundColor: isWinnerQuestion ? theme.colors.green : theme.colors.red
+    }">
+      <h2 class="mb-4">{{  isWinnerQuestion ? "Correct!" : "Incorrect!"}}</h2>
+      <p v-if="isWinnerQuestion" class="rounded-2xl bg-white p-3 text-green font-extrabold" >+{{ userQuestionPoints }}</p>
+      <p v-else class="rounded-2xl bg-white p-3 text-red font-extrabold" >Tu y était presque !</p>
+    </div>
+    <div v-if="isLoading" class="spinner">
+      <img src="@/assets/images/LogoQuizzBattleWithoutBG.png">
+      <v-progress-circular 
+      :size="250"
+      :width="7"
+      indeterminate
+      color="white"></v-progress-circular>
+    </div>
+    <div v-if="quizzQuestionList.value && isGameFinished == false">
+  <v-progress-linear
+      v-model="timeLeftInPercent"
+      :active="!isElementsRevealed"
+      :color="barColor"
+      height="15"
+      striped
+      :style="{
+        marginBottom: '1em'
+      }"
+    ></v-progress-linear>
+  <div class="flex flex-col h-screen">
+    <GameHeader :users='players' :gameName="questionLabel" class="game-" :style="'margin-bottom: 2em'"/>
+    <div v-for="(answer, index) in answerList" :key="answer">
       <QuestionBlock
         :answer="answer"
         :correctAnswer="quizzQuestionList.value[questionNumber].correctAnswer"
-        :isCorrect="quizzQuestionList.value[questionNumber].correctAnswer === answer"
+        :isCorrect="isCorrectAnswer(answer)"
         @click="handleRevealCorrectAnswer(answer)"
         :isReveal="isElementsRevealed"
+        :index="index"
         :style="'margin-bottom: 2em'"
+        :backgroundColor="isElementsRevealed && isCorrectAnswer(answer) ? 'green' : isElementsRevealed && !isCorrectAnswer(answer) ? 'red' : colorVars[index] || 'white'"
       />
     </div>
 
     <button
-      v-if="quizzQuestionList.value[questionNumber + 1]"
-      class="bg-transparent hover:bg-white text-white-500 font-semibold hover:text-black-200 py-2 px-4 border border-white-500 hover:border-transparent rounded"
+      v-if="quizzQuestionList.value[questionNumber + 1] && isElementsRevealed"
+      class="hover:text-white-500 text-white bg-violet-500  hover:bg-violet-700 font-semibold hover:text-black-200 py-2 px-4 border border-white-500 hover:border-transparent bg-red-500 rounded-3xl  h-20"
       @click="handleNextQuestion"
     >
       Question suivante
     </button>
     <button
-      v-else
-      class="bg-transparent hover:bg-white text-white-500 font-semibold hover:text-black-200 py-2 px-4 border border-white-500 hover:border-transparent rounded"
+      v-else-if="!quizzQuestionList.value[questionNumber + 1]"
+      class="bg-white hover:bg-white text-black-500 font-semibold hover:text-black-200 py-2 px-4 border border-white-500 hover:border-transparent  rounded-3xl h-20"
       @click="handleResult"
     >
       Afficher les résulats
     </button>
   </div>
-  <div v-else-if="isFinished == true" class="flex flex-col h-screen">
+  <div v-if="isGameFinished == true" class="flex flex-col h-screen">
     <GameHeader
       :gameName="`Votre score est de ${score} / ${quizzQuestionList.value.length}`"
       class="game-"
@@ -57,73 +69,118 @@
       Retour aux catégories
     </button>
   </div>
-  </template>
+   </div>
+   <ShowResult v-if="isGameFinished"/>
+  </div>
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue'
+import { reactive, ref, onMounted, watch, inject, computed } from 'vue'
 import axios from 'axios'
 import { API_URL } from '../constants'
 import GameHeader from './GameHeader/GameHeader.vue'
 import QuestionBlock from './QuestionBlock.vue'
+import ShowResult from "./ShowResults.vue"
 import qs from 'qs'
 import { useRoute } from 'vue-router';
-const {getQuestions,  quizzAnswerList, questionLabel} = inject(questionManager)
-const {players, setPlayers} = inject(playerManager)
-const quizzQuestionList = reactive([])
-const isLoading = ref(true)
-
+import { playerManager, questionManager } from '../contexts/quizzKeys'
+import { io } from 'socket.io-client'
+import { increaseScore } from '../helpers/quizz';
+import { userManagerKey } from '../contexts/userManagerKeys'
+const {user} = inject(userManagerKey)
+const theme = inject("theme")
+const {getQuestions,  quizzQuestionList, questionLabel, answerList, questionNumber, isLoading} = inject(questionManager)
+const {players, setPlayers, scores} = inject(playerManager)
+const socket = io(API_URL)
 const route = useRoute();  
 const roomId = route.params.id;
-
-const answerList = ref([])
+const colorVars = [theme.colors.blue, theme.colors.green, theme.colors.orange, theme.colors.red]
 const isElementsRevealed = ref(false)
-const questionNumber = ref(0)
+const isWinnerQuestion = ref(false)
 const score = ref(0)
-const isFinished = ref(false)
-const isTimeUp = ref(false)
+const isGameFinished = ref(false)
 const timeLeft = ref(10000)
 const timer = ref(null)
 const transitionEnabled = ref(false)
-const barWidth = ref('100%')
-const barColor = ref('green');
-
+const barColor = ref(theme.colors.blue);
+const timeLeftInPercent = ref(0)
 const props = defineProps({
   category: {
     required: false,
     type: String
   }
 })
+const userQuestionPoints = ref(0)
+
+
+const isCorrectAnswer = answer => {
+  return quizzQuestionList.value[questionNumber.value].correctAnswer === answer
+}
+watch(timeLeft, (value) => {
+  timeLeftInPercent.value = Math.round(value / 1000) * 10
+})
+
+const startTimer = () => {
+  const startTime = Date.now();
+  const totalTime = 10000; 
+
+  const updateTimer = () => {
+    const currentTime = Date.now();
+    const elapsedTime = currentTime - startTime;
+
+    if (elapsedTime < totalTime) {
+      timeLeft.value = totalTime - elapsedTime;
+    } else {
+      timeLeft.value = 0;
+      handleRevealCorrectAnswer();
+    }
+  };
+
+  timer.value = setInterval(updateTimer); 
+};
 
 const handleRevealCorrectAnswer = (answer) => {
+  clearInterval(timer.value)
   isElementsRevealed.value = true
   if (quizzQuestionList.value[questionNumber.value].correctAnswer === answer) {
-    score.value++
+    score.value = increaseScore(timeLeft.value);
+    scores.player1 = increaseScore(timeLeft.value)
+    userQuestionPoints.value = timeLeft.value
+    isWinnerQuestion.value = true
+  } else {
+    isWinnerQuestion.value = false
   }
-  clearInterval(timer.value)
-  timeLeft.value = 10000
-  isTimeUp.value = false
+  timeLeft.value = 10000;
+  transitionEnabled.value = false; 
+
+
+  socket.emit("update score", {
+    room: roomId,
+    user: user.value,
+    score: scores.player1,
+  })
+
 }
 
 const handleNextQuestion = () => {
+  console.log("handleNextQuestion")
   isElementsRevealed.value = false
   questionNumber.value++
   answerList.value = [
     quizzQuestionList.value[questionNumber.value].correctAnswer,
     ...quizzQuestionList.value[questionNumber.value].incorrectAnswers
   ]
+  questionLabel.value = quizzQuestionList.value[questionNumber.value].question.text;
   clearInterval(timer.value); // Arrêter l'intervalle précédent
   timeLeft.value = 10000;
-  isTimeUp.value = false;
-  transitionEnabled.value = false; // Réinitialiser la transition
-  barColor.value = 'green'; // Réinitialiser la couleur de la barre
-
   startTimer()
 }
 
 const handleResult = () => {
-  isFinished.value = true
+  isGameFinished.value = true
+  isElementsRevealed.value = false;
 }
+
 
 
 const getQuestionsTrivia = (category) => {
@@ -137,12 +194,13 @@ const getQuestionsTrivia = (category) => {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: `${API_URL}/api/questions/trivia`,
+    url: `${API_URL}/api/questions?${queryString}`,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data: data
   }
+
 
   axios
     .request(config)
@@ -153,6 +211,8 @@ const getQuestionsTrivia = (category) => {
         ...response.data[questionNumber.value].incorrectAnswers
       ]
       answerList.value = answerList.value.sort(() => Math.random() - 0.5)
+      questionLabel.value = response.data[questionNumber.value].question.text;
+      isLoading.value = false
       startTimer();
     })
     .catch((error) => {
@@ -160,65 +220,51 @@ const getQuestionsTrivia = (category) => {
     })
 }
 
-const startTimer = () => {
-  const startTime = Date.now();
-  const totalTime = 10000; // Durée totale du timer en millisecondes (10 secondes)
-  
-  const updateTimer = () => {
-    const currentTime = Date.now();
-    const elapsedTime = currentTime - startTime;
-    
-    if (elapsedTime < totalTime) {
-      timeLeft.value = totalTime - elapsedTime;
-      barWidth.value = (timeLeft.value / totalTime) * 100 + '%';
-      barColor.value = `rgb(${255 - (timeLeft.value / totalTime) * 255}, ${(timeLeft.value / totalTime) * 255}, 0)`;
-      requestAnimationFrame(updateTimer);
-    } else {
-      timeLeft.value = 0;
-      barWidth.value = '0%';
-      barColor.value = 'red';
-      isTimeUp.value = true;
-      handleRevealCorrectAnswer();
-    }
-  };
 
-  updateTimer();
-};
 
-onMounted(() => {
-    // emit an event to tel socket user is connected to the roomID
-    socket.emit("fetch room", roomId)
+onMounted(async () => {
 
-socket.on("startGame", (room) => {
-  setPlayers(room.users)
-  isLoading.value = false
-})
-  getQuestions()
-  getQuestionsTrivia(props.category)
-})
+  // Emit an event to tell the socket that the user is connected to the roomID
+  socket.emit('fetch room', roomId);
 
-// Exécute si quizzAnswerList est mis à jour
-watch(
-  () => quizzAnswerList,
-  (newValue, oldValue) => {
-    console.log('quizzAnswerList updated', newValue, oldValue)
-  }
-)
-watch(
-  () => quizzQuestionList,
-  (newValue, oldValue) => {
-    console.log('quizzQuestionList updated', newValue, oldValue)
-  }
-)
-watch(
-  () => answerList,
-  (newValue, oldValue) => {
-    console.log('answerList updated', newValue, oldValue)
-  }
-)
+  socket.on('startGame', (room) => {
+    setPlayers(room.users );
+   
+    isLoading.value = false;
+
+  });
+
+  socket.on('update score', (room) => {
+    console.log("score updated", room)
+  }); 
+
+  await getQuestions();
+  startTimer()
+
+ // getQuestionsTrivia(props.category);
+});
+
+
+
 </script>
 
 <style scoped>
+
+
+.quizz-game-reveal-status{
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2em;
+  color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 .question {
   background-color: #fff;
   padding: 1rem;
@@ -248,6 +294,18 @@ watch(
 .timer-ended {
   background-color: red;
 }
+
+.spinner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 </style>
 
 

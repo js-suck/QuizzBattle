@@ -38,7 +38,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: #7152FF;
+    --color-background: #ffffff;
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
 
@@ -83,3 +83,34 @@ label {
   color: black !important;
 }
 
+span {
+  font-size: 1rem !important;
+}
+
+h2 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+}
+
+.card {
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  background: var(--white-white, #FFF);
+
+  /* Shadow 2/Drop Shadow Small */
+  box-shadow: 0px 0px 1px 0px rgba(9, 30, 66, 0.31), 0px 3px 8px 0px rgba(9, 30, 66, 0.16);
+}
+.title-stat {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+}
+
+.user-rank {
+  text-decoration: none;
+  border-bottom: 1px solid black;
+}

@@ -46,7 +46,7 @@ app.post('/login', (req, res) => {
   .then((user) => {
     if (user) {
       // Check if password is correct (TODO: replace with comparePassword when encrypted registration is available)
-      if (password.toString() === user.password) {
+      if (comparePasswords(password, user.password.toString())) {
         const token = generateToken(user);
         console.log(token, "uii");
         res.status(200).send({ token }); 
@@ -65,6 +65,66 @@ app.post('/login', (req, res) => {
 
 });
 
+app.post('/signup', (req, res) => {
+  const { email, password, firstname, lastname } = req.body;
+
+  db.User.findOne({ where: { email } })
+  .then((user) => {
+    if (user) {
+      res.status(409).send({ error: 'User already exists' });
+    } else {
+      const newUser = db.User.build({
+        firstname,
+        lastname,
+        email,
+        password,
+        role: 'user',
+        isVerified: false,
+        tokenemail: '123456789',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      console.log(newUser, "newUser");
+
+      newUser.save().then((user) => {
+        const token = generateToken(user);
+        res.status(201).send({ token });
+      }).catch((error) => {
+        console.error('Error while saving the user', error);
+        res.status(500).send({ error: 'Error while saving the user' });
+      });
+    }
+  })
+  .catch((error) => {
+    console.error('Error while checking if the user already exists', error);
+    res.status(500).send({ error: 'Error while checking if the user already exists' });
+  });
+});
+
+app.get('/verify/:userId', (req, res) => {
+  const { userId } = req.params;
+
+  db.User.findOne({ where: { id: userId } })
+  .then((user) => {
+    if (user) {
+      user.update({ isVerified: true }).then(() => {
+        res.status(200).send({ message: 'User verified' });
+      }).catch((error) => {
+        console.error('Error while updating user', error);
+        res.status(500).send({ error: 'Error while updating user' });
+      });
+    } else {
+      res.status(404).send({ error: 'User not found' });
+    }
+  })
+  .catch((error) => {
+    console.error('Error while checking if the user exists', error);
+    res.status(500).send({ error: 'Error while checking if the user exists' });
+  });
+});
+
+
+
 app.get('/me', (req, res) => {
   authenticateToken(req, res, () => {
     res.status(200).send({ message: 'Authenticated' }); 
@@ -78,12 +138,16 @@ db.User.sync().then(() => {
       console.log('Le modèle User existe déjà. Aucun nouvel utilisateur ne sera créé.');
     } else {
       const newUser = db.User.build({
-        username: 'John Doe',
-        firstName: 'John',
-        lastName: 'Doe',
+        firstname: 'John',
+        lastname: 'Doe',
         email: 'test@gmail.com',
-        password: '1234',
-        profilePicturePath: "defaultUser.png"
+        profilePicturePath: "defaultUser.png",
+        password: 'Test1234*',
+        role: 'admin',
+        isVerified: true,
+        tokenemail: '123456789',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       newUser.save().then((user) => {

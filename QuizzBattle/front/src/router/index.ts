@@ -17,6 +17,11 @@ const router = createRouter({
       component: Singup
     },
     {
+      path: '/verify/:userId',
+      name: 'verify',
+      component: () => import('../views/Verify.vue')
+    },
+    {
       path: '/',
       name: 'StartQuizz',
       component: () => import('../views/StartQuizz.vue')

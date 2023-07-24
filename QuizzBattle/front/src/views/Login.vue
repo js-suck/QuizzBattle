@@ -12,12 +12,14 @@ const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
 function handleSubmit() {
+  console.log(formData);
   loginUser(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
       errors.value = {};
     })
     .catch((_errors) => (console.log(_errors)));
+    
 }
 
 onMounted(() => {

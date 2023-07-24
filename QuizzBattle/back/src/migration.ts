@@ -6,6 +6,17 @@ db.connection
   .sync({ [mode]: true })
   .then(() => {
     console.log("Database synchronized");
+
+
+    // // create a user
+    // const user = db.User.create({
+    //   firstname: 'John',
+    //   lastname: 'Doe',
+    //   email: 'test2@gmail.com',
+    //   password: '1234'
+    // })
+    
+      
     
     // Création d'un quiz test
     try {
@@ -19,7 +30,28 @@ db.connection
         quizzId: 1,
       });
 
-      Promise.all([question1, question2])
+  
+      const initialCategories = [
+        'music',
+        'sport_and_leisure',
+        'film_and_tv',
+        'arts_and_literature',
+        'history',
+        'society_and_culture',
+        'science',
+        'geography',
+        'food_and_drink',
+        'general_knowledge'
+      ]
+
+      const categories = initialCategories.map((category) => {
+        return db.Category.create({
+          name: category,
+        })
+      }) 
+
+
+      Promise.all([question1, question2, categories])
         .then(([createdQuestion1, createdQuestion2]) => {
           // Création des réponses associées aux questions
           return Promise.all([
@@ -34,12 +66,32 @@ db.connection
               questionId: createdQuestion1.id,
             }),
             db.Answer.create({
+              label: "Marseille",
+              isCorrect: false,
+              questionId: createdQuestion1.id,
+            }),
+            db.Answer.create({
+              label: "Grenoble",
+              isCorrect: false,
+              questionId: createdQuestion1.id,
+            }),
+            db.Answer.create({
               label: "Bleu",
               isCorrect: true,
               questionId: createdQuestion2.id,
             }),
             db.Answer.create({
               label: "Rouge",
+              isCorrect: false,
+              questionId: createdQuestion2.id,
+            }),
+            db.Answer.create({
+              label: "Vert",
+              isCorrect: false,
+              questionId: createdQuestion2.id,
+            }),
+            db.Answer.create({
+              label: "Jaune",
               isCorrect: false,
               questionId: createdQuestion2.id,
             }),

@@ -3,7 +3,6 @@ const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
 
 function GenericController(service, options = {}) {
-  console.log("im construct", service);
 
   async function getAll(req, res) {
     const {
@@ -36,6 +35,15 @@ function GenericController(service, options = {}) {
       res.sendStatus(404);
     } else {
       res.json(user);
+    }
+  }
+
+  async function getByName(req, res) {
+    const entity = await service?.findByName(req.params.name);
+    if (!entity) {
+      res.sendStatus(404);
+    } else {
+      res.json(entity);
     }
   }
 
@@ -118,17 +126,18 @@ function GenericController(service, options = {}) {
   }
 
   return {
-    getAll,
     create,
-    getOne,
-    replace,
-    update,
     deleteOne,
-    translate,
-    getOneTrivia,
-    getAllTrivia,
+    getAll,
     getAllCategoriesTrivia,
     getAllTagsTrivia,
+    getAllTrivia,
+    getByName,
+    getOne,
+    getOneTrivia,
+    replace,
+    translate,
+    update,
   };
 }
 

@@ -1,16 +1,35 @@
 <template>
-  <RoundedSquare>
-    <ProfileBadge color="red"/>
-    <h2>{{gameName}}</h2>
-    <ProfileBadge color="green"/>
-  </RoundedSquare>
+<RoundedSquare>
+<ProfileBadge color="red" :name="users[0].lastname" :score="scores.player1"/>
+<h2>{{gameName}}</h2>
+<ProfileBadge color="green" :name="users[1].lastname"/>
+</RoundedSquare>
 </template>
 
-<script>
+<script setup>
 import ProfileBadge from './../ProfileBadge.vue';
 import RoundedSquare from './../RoundedSquare.vue';
-export default {
-  props: {
+import { defineProps, inject, watch } from 'vue';
+import { playerManager } from '../../contexts/quizzKeys';
+
+
+const {scores} = inject(playerManager)
+
+watch(scores,
+    (newValue, oldValue) => {
+        console.log("SCORES CHANGED", newValue, oldValue)
+    }
+)
+
+
+
+// watch score 
+// if score change, then update the score in the player list
+// if score change, then update the score in the player list
+
+
+
+const props = defineProps({
     color: {
         type: String,
         required: false,
@@ -21,17 +40,15 @@ export default {
         required: false,
         default: "QuizzBattle"
     },
-  },
-  components: {
-    ProfileBadge,
-    RoundedSquare,
-  }
-
-
-}
+    users : {
+        type: Array,
+        required: false,
+        default: []
+    }
+    })
 </script>
 
-<style>
+<style scoped>
 
     .player-band{
         background-color: violet;
@@ -40,5 +57,9 @@ export default {
         display: flex;
         justify-content: space-between;
        
+    }
+
+    h2 {
+      color: white;
     }
 </style>

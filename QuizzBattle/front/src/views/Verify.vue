@@ -6,12 +6,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const tokenemail = router.currentRoute.value.params.tokenemail;
-console.log(tokenemail);
-
-
-
-
-
+// console.log(tokenemail);
 
 // Effectuer la vérification de l'e-mail lors du montage de la page
 onMounted(() => {
@@ -49,7 +44,6 @@ async function updateUserVerificationStatus(tokenemail) {
 
 <template>
   <div class="verification-page">
-
     <div class="verification-status" v-if="status = 'success'">
       <p class="text-black-200 mb-4 text-center">Votre e-mail a été vérifié avec succès !</p>
     </div>

@@ -3,26 +3,26 @@
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Lastname
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Firstname
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Email
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Created At
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Updated At
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                       Action
-                    </th>
-                </tr>
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Lastname
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Firstname
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Email
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Created At
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Updated At
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                           Action
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
                 <tr v-for="user in paginatedUsers" :key="user.id" class="bg-white border-b hover:bg-gray-50">
@@ -103,48 +103,11 @@ onMounted(() => {
     axios.get(`${API_URL}/api/users`)
         .then((response) => {
             usersList.value = response.data;
-            console.log('userlist :',usersList,usersList.value)
         })
         .catch((error) => {
             console.error('Erreur lors de la récupération des quiz', error);
         });
 });
-
-/*const users = [
-    { id: 1, name: "RULHMAN VIVIAN", email: "vivian@gmail.com", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 2, name: "RAMIS Lucas", email: "lucas@gmail.com", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 3, name: "Laïla Anthoine1", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 4, name: "Laïla Anthoine2", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 5, name: "Laïla Anthoine3", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 6, name: "Laïla Anthoine4", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 7, name: "Laïla Anthoine5", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 8, name: "Laïla Anthoine6", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 9, name: "Laïla Anthoine7", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 10, name: "Laïla Anthoine8", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 11, name: "Laïla Anthoine9", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 12, name: "Laïla Anthoine10", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 13, name: "Laïla Anthoine11", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },    { id: 3, name: "Laïla Anthoine1", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 14, name: "Laïla Anthoine2", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 5, name: "Laïla Anthoine3", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 6, name: "Laïla Anthoine4", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 7, name: "Laïla Anthoine5", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 8, name: "Laïla Anthoine6", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 9, name: "Laïla Anthoine7", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 10, name: "Laïla Anthoine8", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 11, name: "Laïla Anthoine9", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 12, name: "Laïla Anthoine10", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 13, name: "Laïla Anthoine11", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },    { id: 3, name: "Laïla Anthoine1", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 4, name: "Laïla Anthoine2", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 5, name: "Laïla Anthoine3", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 6, name: "Laïla Anthoine4", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 7, name: "Laïla Anthoine5", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 8, name: "Laïla Anthoine6", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 9, name: "Laïla Anthoine7", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 10, name: "Laïla Anthoine8", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 11, name: "Laïla Anthoine9", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 12, name: "Laïla Anthoine10", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-    { id: 13, name: "Laïla Anthoine11", email: "Black", created_at: "10/07/2023 13:43", last_connection: "10/07/2023 13:43" },
-];*/
 
 const currentPage = ref(1);
 

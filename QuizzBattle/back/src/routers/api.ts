@@ -12,7 +12,6 @@ apiRouter.use(bodyParser.urlencoded({ extended: true }));
 
 apiRouter.use("/quizzes", quizzRouter);
 apiRouter.use("/questions", questionRouter);
-apiRouter.use("/users", userRouter);
 
 
 export {

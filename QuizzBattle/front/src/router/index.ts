@@ -55,8 +55,7 @@ const router = createRouter({
       path: '/scoreboard/:categoryId',
       name: 'scoreboardCategory',
       component: () => import('../views/ScoreboardView.vue')
-    }
-
+    },
     //BackOffice / Admin
     {
       path: '/admin/dashboard',

@@ -1,6 +1,6 @@
 import express from 'express';
 import GenericController from "../controllers/genericController";
-import UserService from "./../services/userService";
+const UserService = require("../services/userService");
 
 const userServiceInstance = new UserService();
 const userController = GenericController(userServiceInstance);

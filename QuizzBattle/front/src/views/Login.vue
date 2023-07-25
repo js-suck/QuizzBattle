@@ -38,7 +38,7 @@ onMounted(() => {
     <label for="password">Password</label>
     <input v-model="formData.password" type="password" id="password" />
     <p v-if="errors.password">{{ errors.password.join('\n') }}</p>
-    <a class="link" href="#">
+    <a class="link" href="/forgot-password">
        <h2 class="text-violet-500 font-bold">
         Forgot Password?
        </h2> 

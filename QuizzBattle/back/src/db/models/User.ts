@@ -69,7 +69,7 @@ module.exports = (connection) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [8, 32],
+          len: [8],
           // is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },

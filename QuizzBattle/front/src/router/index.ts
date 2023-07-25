@@ -17,7 +17,7 @@ const router = createRouter({
       component: Singup
     },
     {
-      path: '/verify/:userId',
+      path: '/verify/:tokenemail',
       name: 'verify',
       component: () => import('../views/Verify.vue')
     },

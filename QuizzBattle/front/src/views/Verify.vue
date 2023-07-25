@@ -1,44 +1,43 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
+import { useRouter } from 'vue-router';
 
-const userId = $route.params.userId;
+const router = useRouter();
+
+const tokenemail = router.currentRoute.value.params.tokenemail;
+console.log(tokenemail);
+
+
+
+
+
 
 // Effectuer la vérification de l'e-mail lors du montage de la page
 onMounted(() => {
-  verifyEmail(userId)
+  updateUserVerificationStatus(tokenemail)
     .then(() => {
-      status.value = 'success';
+      if (status.value === 'success'){
+      status = 'success';
+      }
     })
     .catch(() => {
       status.value = 'error';
     });
+
 });
 
-// Vous pouvez remplacer cette fonction par votre propre fonction pour vérifier l'e-mail sur le serveur
-async function verifyEmail(userId) {
-  // Effectuez une requête HTTP vers votre API pour vérifier l'e-mail
-  // Vous pouvez utiliser fetch, axios ou toute autre bibliothèque de requête HTTP
-  // Par exemple :
-  const response = await fetch(`http://localhost:3000/verify/${userId}`);
-  if (response.status !== 200) {
-    throw new Error('Échec de la vérification de l\'e-mail');
-  }
 
-  // update user on database isverified value to true
-
-}
-
-async function updateUserVerificationStatus(userId) {
+async function updateUserVerificationStatus(tokenemail) {
   // Effectuez une requête HTTP vers votre API pour mettre à jour le statut de vérification de l'utilisateur
   // Vous pouvez utiliser fetch, axios ou toute autre bibliothèque de requête HTTP
   // Par exemple :
-  const response = await fetch(`http://localhost:3000/verify/${userId}`, {
-    method: 'PATCH',
+  const response = await fetch(`http://localhost:3000/verify`, {
+    method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
-    body: JSON.stringify({ isVerified: true })
+    body: JSON.stringify({ tokenemail })
   });
   if (response.status !== 200) {
     throw new Error('Échec de la mise à jour du statut de vérification de l\'utilisateur');
@@ -51,7 +50,7 @@ async function updateUserVerificationStatus(userId) {
 <template>
   <div class="verification-page">
 
-    <div class="verification-status" v-if="status === 'success'">
+    <div class="verification-status" v-if="status = 'success'">
       <p class="text-black-200 mb-4 text-center">Votre e-mail a été vérifié avec succès !</p>
     </div>
 

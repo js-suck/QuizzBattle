@@ -5,6 +5,7 @@ module.exports = (connection) => {
   const bcrypt = require("bcrypt");
   const Mailjet = require("node-mailjet");
 
+
   const mailjetClient = new Mailjet({
     apiKey: "dfaaa1f406a6a163ed3cfd1c77387ae4",
     apiSecret: "4995cd8aca9ea391cf484eb41210994e",
@@ -35,7 +36,7 @@ module.exports = (connection) => {
             HTMLPart: `<p>Bonjour ${
               this.firstname
             },</p><p>Veuillez cliquer sur le lien suivant pour vérifier votre compte : <a href="${generateVerificationLink(
-              this.id, this.tokenemail
+              this.tokenemail
             )}">Vérifier mon compte</a></p>`,
           },
         ],
@@ -88,7 +89,7 @@ module.exports = (connection) => {
         defaultValue: false,
       },
       tokenemail: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT(10000),
         allowNull: true,
       },
       createdAt: {
@@ -113,9 +114,9 @@ module.exports = (connection) => {
     }
   }
 
-  function generateVerificationLink(userId, tokenemail) {
+  function generateVerificationLink(tokenemail) {
     // Générer le lien de vérification avec l'ID de l'utilisateur
-    return `http://localhost:5173/verify/${userId}?token=${tokenemail}`;
+    return `http://localhost:5173/verify/${tokenemail}`;
   }
 
   User.addHook("beforeCreate", uptadePassword);

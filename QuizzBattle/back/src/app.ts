@@ -66,7 +66,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/signup', (req, res) => {
-  const { email, password, firstname, lastname } = req.body;
+  const { email, password, firstname, lastname, tokenemail } = req.body;
 
   db.User.findOne({ where: { email } })
   .then((user) => {
@@ -80,7 +80,7 @@ app.post('/signup', (req, res) => {
         password,
         role: 'user',
         isVerified: false,
-        tokenemail: '123456789',
+        tokenemail,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -101,14 +101,14 @@ app.post('/signup', (req, res) => {
   });
 });
 
-app.get('/verify/:userId', (req, res) => {
-  const { userId } = req.params;
-
-  db.User.findOne({ where: { id: userId } })
+app.post('/verify', (req, res) => {
+  const { tokenemail } = req.body;
+ console.log(tokenemail, "tokenemail")
+  db.User.findOne({ where: { tokenemail } })
   .then((user) => {
     if (user) {
       user.update({ isVerified: true }).then(() => {
-        res.status(200).send({ message: 'User verified' });
+        res.status(200).send({ message: 'User verified', status: 'success' });
       }).catch((error) => {
         console.error('Error while updating user', error);
         res.status(500).send({ error: 'Error while updating user' });

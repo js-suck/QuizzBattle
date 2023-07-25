@@ -82,7 +82,7 @@ input {
     }
 
 /**
- * on desktop style */
+ * on desktop styles */
 
 @media (min-width: 768px) {
     form {

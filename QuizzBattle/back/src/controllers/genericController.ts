@@ -1,4 +1,3 @@
-import QuizzesService from "../services/questionService";
 const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
 

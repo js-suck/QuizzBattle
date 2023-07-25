@@ -8,6 +8,7 @@ const user = ref(token ? jwtDecode(token) : null);
 
 const tokenreset = token.replaceAll('.','');
 
+const verif = ref(false);
 
 const defaultValue = {
   email: '',
@@ -34,17 +35,18 @@ async function forgotpassword(email, token) {
     user.value = jwtDecode(token)
     localStorage.setItem('token', token);
     return Promise.resolve(data);
+
   }
   throw new Error('Fetch failed');
 }
 
-function handleSubmit() {
-  forgotpassword(formData)
+async function handleSubmit() {
+  await forgotpassword(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
       errors.value = {};
-      router.push('./login')
-      verif= 'sucess';
+      router.push('./login');
+      verif.value = true;
     })
     .catch((_errors) => (console.log(_errors)));
 }
@@ -54,18 +56,19 @@ function handleSubmit() {
 <template>
   <form @submit.prevent="handleSubmit">
     <h1 class="text-black-200 mb-10 font-bold">Forgot Password 👋</h1>
-        <h3 class="text-black-200 mb-10 ">Enter your email address to get the link for reset your password</h3>
+    <h3 class="text-black-200 mb-10 ">Enter your email address to get the link for reset your password</h3>
     <label for="email">Enter your email:</label>
     <input v-model.trim="formData.email" type="email" id="email" required />
-     <div class="verification-page">
-    <div class="verification-status" v-if="verif = 'success'">
+    <div class="verification-page">
+    <div class="verification-status" v-show="verif">
       <p class="text-black-200 mb-4 text-center">Votre e-mail a été vérifié avec succès !</p>
     </div>
-    <div v-else>
-      <p class="text-red-500 mb-4 text-center">Échec de la vérification de l'e-mail. Le lien est peut-être expiré ou invalide.</p>
-      <p class="text-black-200 mb-4 text-center">Veuillez réessayer ou contactez l'assistance.</p>
     </div>
-    </div>
+    <a class="link" href="/login">
+       <h2 class="text-violet-500 font-bold">
+        Login
+       </h2> 
+    </a>
     <button type="submit">Send Reset Email</button>
 
   </form>

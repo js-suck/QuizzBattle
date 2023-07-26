@@ -1,4 +1,6 @@
 <template>
+    <Navigation>
+
   <div class="w-full">
     <div v-if="gameStarted" class="w-full">
       <QuizzGame :question="currentQuestion" @answer="submitAnswer" />
@@ -23,28 +25,84 @@
       </div>
     </div>
     <div v-else>
-      <h1 class="text-3xl font-bold underline">Quizz Battle</h1>
-      <button @click="startGame">Commencer le jeu avec n'importe quelle catégorie</button>
-      <h2 class="text-2xl font-bold">Ou choisissez une catégorie</h2>
-      <div class="flex flex-wrap justify-center">
-        <div v-for="(category, key) in categories" :key="key" class="w-1/4 p-2">
-          <div @click="startGameWithCategory(category.name)" class="bg-white rounded-lg shadow-lg">
-            <div class="p-4">
-              <h2 class="text-xl font-bold text-black">{{ category.name }}</h2>
-            </div>
-          </div>
+      <img src="@/assets/images/LogoQuizzBattleWithoutBG.png" class="h-1/6  lg:w-36 w-2/6 rounded-md mx-auto">
+
+      <RoundedSquare class="bg-violet-500 p-8 rounded-xl text-white font-weight-bold mb-5">
+        <div class="flex items-between justify-between">
+          <div class="flex flex-col justify-between items-start">
+            <h2> Play Together with your friends now !</h2>
+         
+          <button  @click="startGameWithCategory(getRandomCategory())" class="bg-white rounded-lg  hover:text-white hover:bg-purple-600 text-cyan-400  py-2 px-4 mt-3 rounded">
+          Start with a random category
+        </button>
         </div>
+        <img src="@/assets/images/PlayGame.jpg" class="h-1/6  lg:w-48 w-2/6 rounded-md">
+
+        </div>
+       
+      </RoundedSquare>
+   
+      <!-- <h1 class="text-3xl font-bold underline">Quizz Battle</h1>
+      <button @click="startGame">Commencer le jeu avec n'importe quelle catégorie</button>-->
+      <div class="flex flex-wrap justify-center">
+        <v-sheet
+    class="mx-auto"
+    max-width="100%"
+    s
+  >
+    <v-slide-group
+    >
+      <v-slide-group-item 
+      v-for="(category, key) in categories"
+        :key="category"
+      >              <QuizzCard @click="startGameWithCategory(category.name)" class="ma-2" :title="category.name" :text="category.description" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`"/>
+      </v-slide-group-item>
+    </v-slide-group>
+  </v-sheet>
+
+      </div>
+
+      <h2 class="ml-10 mt-6 mb-6 text-black-400">Top 10 users</h2>
+      <div class="flex flex-wrap justify-center">
+        <v-sheet
+    class="mx-auto"
+    max-width="100%"
+    s
+  >
+    <v-slide-group
+    >
+      <v-slide-group-item 
+      v-for="(category, key) in categories"
+        :key="category"
+      >              <ProfileBadge :width="'6rem'" :height="'6rem'"  :textColor="'black'" :image="'https://i.pravatar.cc/250?'" :style="{
+        margin: '1em'} "
+      />
+      </v-slide-group-item>
+    </v-slide-group>
+  </v-sheet>
+
       </div>
     </div>
   </div>
+  </Navigation>
 </template>
 <script setup>
-import io from 'socket.io-client'
+import {
+  onMounted,
+  ref
+} from 'vue'
+
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import jwtDecode from 'jwt-decode'
+import io from 'socket.io-client'
+
+import Navigation from '../components/Navigation.vue'
+import ProfileBadge from '../components/ProfileBadge.vue'
+import QuizzCard from '../components/QuizzCard.vue'
 import QuizzGame from '../components/QuizzGame.vue'
+import RoundedSquare from '../components/RoundedSquare.vue'
 import { API_URL } from '../constants'
-import jwtDecode from 'jwt-decode';
+import { FILE_PATHS } from '../constants/files'
 
 const gameStarted = ref(false)
 const gameStartedWithCategory = ref(false)
@@ -83,6 +141,9 @@ socket.on("disconnect", () =>{
   console.log("disconnected")
 })
 
+const getRandomCategory = () => {
+  return categories.value[1].name
+}
 
 onMounted(() => {
   socket.on('connect', () => {

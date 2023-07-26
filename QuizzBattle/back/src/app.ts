@@ -1,11 +1,54 @@
-import express from "express";
+import express from 'express';
 import http from 'http';
-import mongoose = require('mongoose');
-import { mongoURI } from './config/db'
+
+import { initializeSocket } from './config/socket';
+import { initMongo } from './db/mongo/db';
+import {
+  getUserDataFromPostgres,
+  updateMongoDBGame,
+} from './helpers/syncMongo';
 import { apiRouter } from './routers/apiRouter';
-import { authenticateToken, createRoom, generateToken, comparePasswords } from "./services/authentifiactionService";
-import { TUser } from "./types/user";
-import { initializeSocket } from "./config/socket";
+import {
+  authenticateToken,
+  comparePasswords,
+  generateToken,
+} from './services/authentifiactionService';
+
+const { Client } = require('pg');
+
+const pgClient = new Client({
+  connectionString: 'postgres://root:password@localhost:5432/app'
+});
+
+pgClient.connect()
+  .then(() => {
+    console.log('Connecté à PostgreSQL avec succès');
+    // Vos opérations PostgreSQL ici
+  })
+  .catch((error) => {
+    console.error('Erreur lors de la connexion à PostgreSQL :', error);
+  });
+
+
+pgClient.on('notification', async (msg) => {
+  console.log("notification")
+  if (msg.channel === 'user_update') {
+    // Récupérer les nouvelles données de PostgreSQL
+    try {
+      console.log(msg)
+      const [id, firstname] = msg.payload.split(",");
+      const newData = await getUserDataFromPostgres(id); 
+      console.log("notification user update", id, newData)
+     await updateMongoDBGame(id, newData);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'entité Game dans MongoDB :', error);
+    }
+  }
+});
+
+pgClient.query('LISTEN user_update'); 
+  
+
 const db = require('./db');
 const app = express();
 const cors = require('cors');
@@ -40,7 +83,7 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
 
 
 initializeSocket(server)
-
+initMongo()
 app.use(express.json())
 
 app.get('/', (req, res) => {
@@ -188,11 +231,8 @@ async function sendResetEmail(email, tokenemail) {
     });
 }
 
-// Route pour la réinitialisation du mot de passe
 app.post('/reset-password',  (req, res) => {
   const { tokenemail, password } = req.body;
-  // Vérifier si le token est valide et correspond à un utilisateur dans votre base de données
-  // Mettez à jour le mot de passe de l'utilisateur avec le nouveau mot de passe
 
    db.User.findOne({ where: { tokenemail } })
   .then((user) => {
@@ -251,20 +291,10 @@ db.User.sync().then(() => {
     }
   });
 });
-
-mongoose.connect(mongoURI)
-  .then(() => {
-    console.log('Connexion à MongoDB réussie');
-  
     server.listen(3000, () => {
         console.log('Serveur Socket.IO en cours d\'exécution sur le port 3000');
     });
   
-  
-  })
-  .catch((error) => {
-    console.error('Erreur de connexion à MongoDB', error);
-  });
 
 
   app.use('/api', apiRouter);

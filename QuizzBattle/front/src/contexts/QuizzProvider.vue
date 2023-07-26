@@ -52,7 +52,7 @@ const getQuestions = () => {
       ]
       answerList.value = answerList.value.sort(() => Math.random() - 0.5)
       questionLabel.value = response.data[questionNumber.value].question.text;
-      isLoading.value = false
+     // isLoading.value = false
 }).catch((err)=>console.warn(`Error while fetching questions ${err}`))
     .catch((error) => {
       console.error('Erreur lors de la récupération des quiz', error)

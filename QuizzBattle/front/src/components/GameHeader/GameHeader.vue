@@ -1,8 +1,8 @@
 <template>
 <RoundedSquare>
-<ProfileBadge color="red" :name="users[0].lastname" :score="scores.player1"/>
+<ProfileBadge color="red" :name="users[0].firstname" :score="players[0].score"/>
 <h2>{{gameName}}</h2>
-<ProfileBadge color="green" :name="users[1].lastname"/>
+<ProfileBadge color="green" :name="users[1].firstname" :score="players[1].score"/>
 </RoundedSquare>
 </template>
 
@@ -13,9 +13,10 @@ import { defineProps, inject, watch } from 'vue';
 import { playerManager } from '../../contexts/quizzKeys';
 
 
-const {scores} = inject(playerManager)
+const {players} = inject(playerManager)
 
-watch(scores,
+ 
+watch(players,
     (newValue, oldValue) => {
         console.log("SCORES CHANGED", newValue, oldValue)
     }

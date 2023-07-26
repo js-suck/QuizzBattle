@@ -1,4 +1,4 @@
-import { createRoom } from "../services/authentifiactionService";
+import { createRoom } from '../services/authentifiactionService';
 
 function initializeSocket(server)
 {
@@ -14,8 +14,12 @@ const io =  require("socket.io")(server, {
     return connectedSockets;
   }
 
+
+  const findRoomByCategory = (category, id) => {
+    return rooms[category]?.find((r) => r.id === id);
+  }
+
 io.on('connection', (socket: any) => {
-    console.log('Nouvelle connexion socket établie');
     connectedSockets.push(socket.id);
   
     socket.on('disconnect', () => {
@@ -40,26 +44,41 @@ io.on('connection', (socket: any) => {
     });
   
   
-    socket.on('search a room', (user) => {
-        console.log("socket: search a room")
+    socket.on('search a room', ({user, category }) => {
       let room = null;
-      for (let i=0 ;i<rooms.length; i++) {
-        if (rooms[i].users.length === 1) 
+ 
+      if(rooms?.[category] !== undefined)
+      {
+      // search if a room with same category exist 
+      rooms?.[category]?.forEach(r => {
+        console.log(r.category, r.users)
+        if (r.users.length === 1 && !r.users.find(u => u.id === user.id))
         {
-          room = rooms[i];
-          break;
+          room = r;
         }
-      }
+      })
+
+    }
+
       if (!room){
         room = createRoom(user);
-        rooms.push(room);
+        console.log("create a room", room)
+
+        // check if category exist or create 
+        if (!rooms[category]) {
+          rooms[category] = [];
+        }
+
+        rooms[category].push(room);
         socket.join(room.id);
       } else {
 
+        console.log("room with user", room)
         room.users.forEach(user => {
           if (user.id === user.id) {
             return;
           }})
+          console.log("ici..")
 
         room.users.push(user);
         socket.join(room.id);
@@ -77,37 +96,76 @@ io.on('connection', (socket: any) => {
     });
 
 
-    socket.on("fetch room", (roomID: number) => {
-          console.log(roomID, "fetch user")
-        const room = rooms.find((r) => r.id === roomID);
-        if (room) {
+    socket.on("fetch room", ({room: roomId, category}) => {
+     
+        const room = rooms?.[category]?.find((r) => r.id === roomId);
+        console.log("finded room:", room)
+        if (room !== undefined) {
             socket.join(room.id)
             io.to(room.id).emit('startGame', room);
+        } else {
+              console.log("room not found")
         }
     } )
 
-    socket.on("update score", ({user, room, score}) => {
-
-      console.log("update score", room)
-
-      const roomToUpdate = rooms.find((r) => r.id === room);
+    socket.on("update score", ({ user, room, score, category }) => {
+      console.log("update score", rooms[category]);
+    
+      // Recherche de la salle spécifique par son identifiant
+      const roomToUpdate = rooms[category]?.find((r) => r?.id === room);
+      // console.log(roomToUpdate, "room to update", user.id, roomToUpdate.users[0]);
+    console.log("room to update", roomToUpdate)
       if (roomToUpdate) {
-        roomToUpdate.users.forEach((u) => {
-          if (u.id === user.id) {
-            u.score = score;
-            return
-          }
-        });
-      }
-      io.to(room).emit('update score', roomToUpdate);
 
-    })
+        const userToUpdate = roomToUpdate?.users?.find((u) => {
+          return u.id === user.id
+        });
+
+        if (userToUpdate) { 
+          console.log(userToUpdate)
+          userToUpdate.score = score;
+        }
+        else{
+          console.log("user not found")
+        }
+
+      }
+
+      io.to(room).emit('update score', roomToUpdate);
+    });
+    
+    socket.on("user finished", ({ user, room, category }) => {    
+      const roomToUpdate = findRoomByCategory(category, room);
+      if (roomToUpdate) {
+        const userToUpdate = roomToUpdate.users?.find((u) => u.id === user.id);
+        if (userToUpdate) {
+          userToUpdate.finished = true;
+        } else {
+          console.log("user not found");
+        }
+      }
+    
+      const allFinished = roomToUpdate?.users?.every((u) => u.finished);
+      if (allFinished) {
+        io.to(roomToUpdate.id).emit('game finished', roomToUpdate);
+    
+        const indexToRemove = rooms[category].indexOf(roomToUpdate);
+        if (indexToRemove !== -1) {
+          rooms[category].splice(indexToRemove, 1);
+          console.log("Salle supprimée :", roomToUpdate);
+        } else {
+          console.log("La salle n'a pas été trouvée dans le tableau");
+        }
+      }
+    });
+    
+
+
 });
+
 
 
 return io;
 }
 
-export {
-    initializeSocket
-}
+export { initializeSocket };

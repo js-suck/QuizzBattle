@@ -13,7 +13,7 @@ import { ref } from 'vue';
 import UserManager from './contexts/UserManager.vue';
 import QuizzProvider from './contexts/QuizzProvider.vue'
 import ThemeProviderManager from './contexts/ThemeProvider.vue'
-
+import Navigation from "./components/Navigation.vue"
 import jwtDecode from 'jwt-decode';
 
 const token = localStorage.getItem('token');

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
   });
     
   const token = jwt.sign({
-        data: 'Token Data'  .
+        data: 'Token Data'
     }, 'your-secret-key', { expiresIn: '10m' }  
 );  
 

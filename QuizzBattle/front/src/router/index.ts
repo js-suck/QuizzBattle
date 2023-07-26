@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
+import Singup from '../views/Signup.vue'
 /*
 const isAdmin = true; // Remplacez cette variable par la logique de vérification du rôle d'administrateur
 
-import Singup from '../views/Signup.vue'
 
 // Middleware pour vérifier le rôle de l'utilisateur
 const roleCheckMiddleware = (to: any, from: any, next: any) => {

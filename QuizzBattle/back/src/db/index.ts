@@ -13,16 +13,27 @@ files.forEach((file) => {
   const model = require(path.join(__dirname, "models", file))(connection);
   database[model.name] = model;
 });
-
+console.log(database, 'ococoo')
 database["Answer"].belongsTo(database["Question"], {
        foreignKey: "questionId",
        as: "question",
     });
 
- // reverse 
- database["Question"].hasMany(database["Answer"], {
-        foreignKey: "questionId",
-        as: "answers",
-   })
+// reverse
+database["Question"].hasMany(database["Answer"], {
+    foreignKey: "questionId",
+    as: "answers",
+});
+
+database["Question"].belongsTo(database["Category"], {
+    foreignKey: "questionId",
+    as: "category",
+});
+
+database["Category"].hasMany(database["Question"], {
+    foreignKey: "questionId",
+    as: "question",
+});
+
 
 module.exports = database;

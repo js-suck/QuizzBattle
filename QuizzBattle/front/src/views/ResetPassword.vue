@@ -4,6 +4,7 @@
     <h3 class="text-black-200 mb-10 ">Save the new password in a safe place, if you forget it then you have to do a forgot password again.</h3>
     <label for="password">Enter new password:</label>
     <input v-model.trim="formData.password" type="password" id="password" required />
+    <p class="error" v-if="errors.password">{{ errors.password }}</p>
     <button type="submit">Reset Password</button>
   </form>
 </template>
@@ -30,6 +31,11 @@ h2 {
     cursor: pointer;
 }
 
+.error {
+    color: red;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
 
 button {
     margin-top: auto;
@@ -86,6 +92,17 @@ const errors = ref({});
 const tokenemail = router.currentRoute.value.params.tokenemail;
 // console.log(tokenemail);
 
+const password = ref('');
+
+function validateForm() {
+  if (formData.password.length < 8) {
+    errors.value.password = 'Password must be at least 8 characters';
+  } else {
+    errors.value.password = '';
+  }
+
+}
+
 const defaultValue = {
   password: '',
   tokenemail: tokenemail
@@ -104,19 +121,25 @@ async function resetpassword({tokenemail, password}) {
     });
     if (response.status === 200) {
       return response.json();
-      router.push('localhost:5173/login');
+      router.push('../login');
     }
   throw new Error('Fetch failed');
 
 }
 
 function handleReset() {
+  validateForm();
+    if (
+    errors.value.password
+  ) {
+    return; // If there are errors, do not submit the form
+  }
   resetpassword(formData)
     .then(() => {
       console.log("ok");
       Object.assign(formData, defaultValue);
       errors.value = {};
-      router.push('localhost:5173/login');
+      router.push('../login');
     })
     .catch((_errors) => (console.log(_errors)));
 }

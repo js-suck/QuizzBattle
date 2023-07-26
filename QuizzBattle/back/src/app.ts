@@ -3,7 +3,7 @@ import http from 'http';
 import mongoose = require('mongoose');
 import { mongoURI } from './config/db'
 import { apiRouter } from './routers/apiRouter';
-import { authenticateToken, createRoom, generateToken } from "./services/authentifiactionService";
+import { authenticateToken, createRoom, generateToken, comparePasswords } from "./services/authentifiactionService";
 import { TUser } from "./types/user";
 import { initializeSocket } from "./config/socket";
 const db = require('./db');
@@ -50,25 +50,27 @@ app.get('/', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  db.User.findOne({ where: { email } })
-  .then((user) => {
+   db.User.findOne({ where: { email } })
+  .then( async (user) => {
     if (user) {
+
+      const check = await comparePasswords(password, user.password);
       // Check if password is correct (TODO: replace with comparePassword when encrypted registration is available)
-      if (comparePasswords(password, user.password.toString())) {
+      if (check) {
         const token = generateToken(user);
         console.log(token, "uii");
-        res.status(200).send({ token }); 
+        res.status(200).send({ token });
       } else {
-        res.status(401).send({ error: 'Invalid password' }); 
+        res.status(401).send({ errors: "Invalid password" });
       }
     } else {
-      res.status(404).send({ error: 'User not found' }); 
+      res.status(404).send({ errors: 'User not found' }); 
     }
   })
   .catch((error) => {
     // Error while querying the database
     console.log(error);
-    res.status(500).send({ error: 'Internal server error' }); 
+    res.status(500).send({ errors: 'Internal server error' }); 
   });
 
 });
@@ -86,6 +88,7 @@ app.post('/signup', (req, res) => {
         lastname,
         email,
         password,
+        profilePicturePath: "defaultUser.png",
         role: 'user',
         isVerified: false,
         tokenemail,

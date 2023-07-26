@@ -45,7 +45,7 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/game/:id',
+      path: '/game/:categoryId/:id',
       name: 'game',
       component: () => import('../components/QuizzGame.vue')
     },

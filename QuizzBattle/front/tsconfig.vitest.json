@@ -4,6 +4,17 @@
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom"]
+    "types": ["node", "jsdom"],
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "allowImplicitAny": true ,
+    "allowJs": true
   }
 }

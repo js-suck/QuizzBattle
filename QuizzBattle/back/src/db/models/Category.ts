@@ -15,7 +15,15 @@ Category.init(
           msg: "Le nom de la catégorie est obligatoire",
           },
     },
-  }
+  },
+    description:{
+      type: DataTypes.STRING,
+      allowNull: true
+      },
+      image_url:{
+        type: DataTypes.STRING,
+        allowNull: true
+        },
   },
   { sequelize: connection, tableName: "categories" }
 );

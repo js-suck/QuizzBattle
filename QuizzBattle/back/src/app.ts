@@ -90,7 +90,7 @@ app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
    db.User.findOne({ where: { email } })
@@ -271,8 +271,10 @@ db.User.sync().then(() => {
       console.log('Le modèle User existe déjà. Aucun nouvel utilisateur ne sera créé.');
     } else {
       const newUser = db.User.build({
-        firstname: 'John',
-        lastname: 'Doe',
+        username: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
+        nickname: 'JohnDoe',
         email: 'test@gmail.com',
         profilePicturePath: "defaultUser.png",
         password: 'Test1234*',

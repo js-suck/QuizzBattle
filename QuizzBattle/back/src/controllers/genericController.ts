@@ -1,4 +1,3 @@
-import QuizzesService from "../services/questionService";
 const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
 
@@ -18,6 +17,15 @@ function GenericController(service, options = {}) {
       order: _sort,
     });
     res.json(users);
+  }
+
+  async function getAllBy(req, res) {
+    const users = await service.findAllBy(req.params.categoryId);
+    if (!users) {
+      res.sendStatus(404);
+    } else {
+      res.json(users);
+    }
   }
 
   async function create(req, res, next) {
@@ -129,6 +137,7 @@ function GenericController(service, options = {}) {
     create,
     deleteOne,
     getAll,
+    getAllBy,
     getAllCategoriesTrivia,
     getAllTagsTrivia,
     getAllTrivia,

@@ -13,6 +13,26 @@ files.forEach((file) => {
   database[model.name] = model;
 });
 
+database["User"].hasMany(database["UserCategory"], {
+   foreignKey: "UserId",
+   as: "a"
+});
+
+database["UserCategory"].belongsTo(database["User"], {
+   foreignKey: "UserId",
+   as: "user"
+});
+
+database["Category"].hasMany(database["UserCategory"], {
+   foreignKey: "CategoryId",
+   as: "c"
+});
+
+database["UserCategory"].belongsTo(database["Category"], {
+   foreignKey: "CategoryId",
+   as: "category"
+});
+
 database["Answer"].belongsTo(database["Question"], {
        foreignKey: "questionId",
        as: "question",

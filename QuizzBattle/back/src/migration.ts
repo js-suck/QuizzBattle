@@ -51,16 +51,26 @@ db.connection
   .then(() => {
     console.log("Database synchronized");
 
+    // Génération des données des utilisateurs à l'aide d'une boucle for
+    const usersData = [];
+    const numberOfUsers = 50; // Nombre d'utilisateurs à générer
 
-    // // create a user
-    // const user = db.User.create({
-    //   firstname: 'John',
-    //   lastname: 'Doe',
-    //   email: 'test2@gmail.com',
-    //   password: '1234'
-    // })
-    
+    for (let i = 1; i <= numberOfUsers; i++) {
+      const userData = {
+        lastname: `Doe ${i}`,
+        firstname: `John ${i}`,
+        nickname: `John Doe-${i}`,
+        email: `john.doe${i}@example.com`,
+        password: `password${i}`,
+        profilePicturePath: "defaultUser.png",
+        score: Math.random() * 100000,
+        gamesPlayed: Math.random() * 10,
+      };
+      usersData.push(userData);
+    }
 
+    // Create multiple users
+    const users = db.User.bulkCreate(usersData);
     
     // Création d'un quiz test
     try {
@@ -100,8 +110,8 @@ db.connection
   
    
 
-      Promise.all([question1, question2, categories])
-        .then(([createdQuestion1, createdQuestion2]) => {
+      Promise.all([question1, question2, categories, users])
+        .then(([createdQuestion1, createdQuestion2, categoryCreated, userCreated]) => {
           // Création des réponses associées aux questions
           return Promise.all([
             db.Answer.create({
@@ -144,6 +154,44 @@ db.connection
               isCorrect: false,
               questionId: createdQuestion2.id,
             }),
+            db.UserCategory.bulkCreate([{
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[0].dataValues.id,
+              CategoryId: 2,
+            },
+            {
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[1].dataValues.id,
+              CategoryId: 1,
+            },
+            {
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[2].dataValues.id,
+              CategoryId: 1,
+            },
+            {
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[3].dataValues.id,
+              CategoryId: 3,
+            },
+            {
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[4].dataValues.id,
+              CategoryId: 4,
+            },
+            {
+              score: Math.random() * 100000,
+              gamesPlayed: Math.random() * 10,
+              UserId:userCreated[5].dataValues.id,
+              CategoryId: 5,
+            },
+          ]
+            ),
           ]);
         })
         .then(() => {

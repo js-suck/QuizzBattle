@@ -7,10 +7,11 @@
   </button>-->
 
   <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-    <div class="h-full p-8 overflow-y-auto bg-gray-50">
+    <div class="h-full px-8 overflow-y-auto bg-gray-50">
         <ul class="space-y-6 font-medium">
             <li>
-                <img class="w-6/12" src="public/logo.png" alt="Logo quiz">
+                <img src="@/assets/images/LogoQuizzBattleWithoutBG.png">
+
             </li>
             <li>
                 <router-link :to="{ name: 'admin_dashboard' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">

@@ -1,5 +1,6 @@
 import express from "express";
 import http from 'http';
+import path from 'path';
 import mongoose = require('mongoose');
 import { mongoURI } from './config/db'
 import { apiRouter } from './routers/apiRouter';
@@ -14,14 +15,14 @@ const server = http.createServer(app);
 
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); 
+const upload = multer({ dest: __dirname + '/uploads/' });
 
 
 app.use(express.urlencoded({ extended: false }));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
-
   if (!req['file']) {
     res.send('Aucun fichier sélectionné.');
   } else {

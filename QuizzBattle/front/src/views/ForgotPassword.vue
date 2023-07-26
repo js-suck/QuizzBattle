@@ -11,43 +11,33 @@ const tokenreset = token.replaceAll('.','');
 const verif = ref(false);
 const errors = ref({});
 
+const res = ref({});
+
 const defaultValue = {
   email: '',
   token: tokenreset
 };
 const formData = reactive({ ...defaultValue });
 
-async function forgotpassword(email, token) {
-  const response = await fetch(`http://localhost:3000/forgot-password`, {
+function forgotpassword(email, token) {
+  return fetch(`http://localhost:3000/forgot-password`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(email, token)
+  }).then((response) => {
+    return response.json();
   });
-  if (response.status === 422) {
-    const data = await response.json();
-    errors.email = data.email;
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    console.log(token);
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-
-  }
-  throw new Error('Fetch failed');
 }
 
 async function handleSubmit() {
   await forgotpassword(formData)
-    .then(() => {
+    .then((response) => {
+      console.log("response", response );
       Object.assign(formData, defaultValue);
-      errors.value = {};
+      res.value.all = response.message;
       router.push('./login');
-      verif.value = true;
     })
     .catch((_errors) => (console.log(_errors)));
 }
@@ -60,17 +50,14 @@ async function handleSubmit() {
     <h3 class="text-black-200 mb-10 ">Enter your email address to get the link for reset your password</h3>
     <label for="email">Enter your email:</label>
     <input v-model.trim="formData.email" type="email" id="email" required />
-    <div class="verification-page">
-    <div class="verification-status" v-show="verif">
-      <p class="text-black-200 mb-4 text-center">Votre e-mail a été vérifié avec succès !</p>
-    </div>
-    </div>
     <a class="link" href="/login">
        <h2 class="text-violet-500 font-bold">
         Login
        </h2> 
     </a>
     <button type="submit">Send Reset Email</button>
+    <br>
+    <p class="sent text-center" v-if="res.all">{{ res.all }}</p>
 
   </form>
 </template>
@@ -95,6 +82,13 @@ form {
 
 h2 {
     cursor: pointer;
+    font-size: 1rem!important;
+}
+
+.sent {
+    color: green;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 

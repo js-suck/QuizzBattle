@@ -4,6 +4,23 @@ import jwtDecode from 'jwt-decode';
 import { userManagerKey } from '../contexts/userManagerKeys';
 const {loginUser, user} = inject(userManagerKey)
 
+const email = ref('');
+const password = ref('');
+
+function validateForm() {
+  if (formData.password.length < 8) {
+    errors.value.password = 'Password must be at least 8 characters';
+  } else {
+    errors.value.password = '';
+  }
+
+  if (!formData.email.includes('@')) {
+    errors.value.email = 'Email must be a valid email';
+  } else {
+    errors.value.email = '';
+  }
+}
+
 const defaultValue = {
   email: '',
   password: ''
@@ -12,21 +29,31 @@ const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
 function handleSubmit() {
-  console.log(formData);
+  validateForm();
+  if(
+    errors.value.email ||
+    errors.value.password 
+  ) {
+    return;
+  }
+
   loginUser(formData)
-    .then(() => {
+    .then((response) => {
+      console.log("response", response );
+      errors.value.all = response.errors;
+      console.log("errors", errors.value.all);
       Object.assign(formData, defaultValue);
-      errors.value = {};
     })
     .catch((_errors) => (console.log(_errors)));
+
     
 }
 
-onMounted(() => {
-  if (user.value !== null) {
-    window.location.href = 'http://localhost:5173';
-  }
-});
+// onMounted(() => {
+//   if (user.value !== null) {
+//     window.location.href = 'http://localhost:5173';
+//   }
+// });
 </script>
 
 <template>
@@ -34,10 +61,10 @@ onMounted(() => {
     <h1 class="text-black-200 mb-10 font-bold">Hello there 👋</h1>
     <label for="email">Email</label>
     <input v-model.trim="formData.email" type="email" id="email" />
-    <p v-if="errors.email">{{ errors.email.join('\n') }}</p>
+    <p class="error" v-if="errors.email">{{ errors.email }}</p>
     <label for="password">Password</label>
     <input v-model="formData.password" type="password" id="password" />
-    <p v-if="errors.password">{{ errors.password.join('\n') }}</p>
+    <p class="error" v-if="errors.password">{{ errors.password}}</p>
     <a class="link" href="/forgot-password">
        <h2 class="text-violet-500 font-bold">
         Forgot Password?
@@ -49,7 +76,8 @@ onMounted(() => {
        </h2>
     </a>
     <button type="submit">Submit</button>
-
+    <br>
+    <p class="error text-center" v-if="errors.all">{{ errors.all }}</p>
   </form>
 
 </template>
@@ -74,8 +102,14 @@ form {
 
 h2 {
     cursor: pointer;
+    font-size: 1rem!important;
 }
 
+.error {
+    color: red;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
 
 button {
     margin-top: auto;

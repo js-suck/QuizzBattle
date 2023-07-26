@@ -7,24 +7,17 @@ const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 const isLoading = ref(false);
 
-async function loginUser(_user) {
-  const response = await fetch(`http://localhost:3000/login`, {
+function loginUser(_user) {
+ return fetch(`http://localhost:3000/login`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(_user)
+  }).then((response) => {
+    return response.json();
   });
-  if (response.status === 422) {
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-  }
-  throw new Error('Fetch failed');
+
 }
 
 

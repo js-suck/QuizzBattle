@@ -3,6 +3,8 @@ import { reactive, ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 
@@ -19,22 +21,31 @@ const lastname = ref('');
 const email = ref('');
 const password = ref('');
 
-const isValidFirstname = computed(() => {
-  return firstname.value.length >= 0;  
-});
+function validateForm() {
+  if (!formData.firstname.trim()) {
+    errors.value.firstname = 'Firstname is required';
+  } else {
+    errors.value.firstname = '';
+  }
 
-const isValidLastname = computed(() => {
-  return lastname.value.length >= 0;  
-});
+  if (!formData.lastname.trim()) {
+    errors.value.lastname = 'Lastname is required';
+  } else {
+    errors.value.lastname = '';
+  }
 
-const isValidEmail = computed(() => {
-     return startValidation.value ? /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.value) : null;
-});
+  if (formData.password.length < 8) {
+    errors.value.password = 'Password must be at least 8 characters';
+  } else {
+    errors.value.password = '';
+  }
 
-const isValidPassword = computed(() => {
-  return password.value.length >= 8;  
-});
-
+  if (!formData.email.includes('@')) {
+    errors.value.email = 'Email must be a valid email';
+  } else {
+    errors.value.email = '';
+  }
+}
 
 const defaultValue = {
   firstname: '',
@@ -53,24 +64,33 @@ async function signupUser(_user) {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(_user)
+  }).then((response) => {
+    if (response.status === 409) {
+      return response.json();
+    }
+    if (response.status === 422) {
+      return response.json();
+    }
+    if (response.ok) {
+      return response.json();
+    }
   });
-  if (response.status === 422) {
-    const data = await response.json();
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    console.log(token);
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-  }
+
+  console.log(response)
+
+  errors.value.all = response.errors;
   throw new Error('Fetch failed');
 }
 
 function handleSubmit() {
-  if (startValidation.value = true) {
-    return;
+   validateForm();
+    if (
+    errors.value.firstname ||
+    errors.value.lastname ||
+    errors.value.email ||
+    errors.value.password
+  ) {
+    return; // If there are errors, do not submit the form
   }
   signupUser(formData)
     .then(() => {
@@ -79,7 +99,7 @@ function handleSubmit() {
       router.push('./login');
     })
      .catch((_errors) => {
-      errors.value = _errors; // Stocker les erreurs renvoyées par l'API
+      //errors.value = _errors; // Stocker les erreurs renvoyées par l'API
       console.log(_errors);
     });
 }
@@ -103,13 +123,15 @@ function handleSubmit() {
     <p class="error" v-if="errors.email">{{ errors.email }}</p>
     <label for="password">Password</label>
     <input v-model="formData.password" type="password" id="password" />
-    <p class="error" v-if="errors.password">{{ errors.password }}</p>
+    <p class="error" v-if="errors.password ">{{ errors.password }}</p>
     <a class="link" href="/login">
        <h2 class="text-violet-500 font-bold">
         Login
        </h2> 
     </a>
     <button type="submit">Submit</button>
+    <br>
+    <p class="error" v-if="errors.all">{{ errors.all }}</p>
   </form>
 
   <!-- {{ formData }}
@@ -123,7 +145,7 @@ function handleSubmit() {
 <style scoped>
 
 body {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5!important;
 }
 
 .link:hover{
@@ -140,6 +162,7 @@ form {
 
 h2 {
     cursor: pointer;
+    font-size: 1rem!important;
 }
 
 .error {

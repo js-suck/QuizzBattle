@@ -1,6 +1,10 @@
+//import { initMongo } from './db/mongo/db';
 
 const db = require("./db");
 const mode = process.argv[2] ?? "alter";
+
+
+//initMongo()
 
 db.connection
   .sync({ [mode]: true })
@@ -16,7 +20,7 @@ db.connection
     //   password: '1234'
     // })
     
-      
+
     
     // Création d'un quiz test
     try {
@@ -43,13 +47,18 @@ db.connection
         'food_and_drink',
         'general_knowledge'
       ]
-
-      const categories = initialCategories.map((category) => {
-        return db.Category.create({
-          name: category,
+      
+      const categories =  Promise.all(
+        initialCategories.map(async (category) => {
+          return await db.Category.create({
+            name: category,
+            description: 'Description for ' + category,
+            image_url: `${category}.jpeg`,
+          });
         })
-      }) 
-
+      );
+  
+   
 
       Promise.all([question1, question2, categories])
         .then(([createdQuestion1, createdQuestion2]) => {

@@ -7,10 +7,11 @@
         >
             <template v-slot:activator="{ props }">
                 <v-btn
-                    color="primary"
+                    @click="initQuestion"
+                    color="blue"
                     v-bind="props"
                 >
-                    Open Dialog
+                    Add Category
                 </v-btn>
             </template>
             <v-card>
@@ -42,66 +43,26 @@
                                 ></v-text-field>
                             </v-col>
                         </v-row>
-                        <section id="addSectionQuestion">
-                            <span class="text-h6">Question 1</span>
-                            <v-row>
-                                <v-col cols="12"
-                                       sm="12"
-                                       md="12">
-                                    <v-text-field
-                                            label=""
-                                            type="text"
-                                            required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                            <span class="text-h6">Good answer</span>
-                            <v-row>
-                                <v-col cols="12"
-                                       sm="12"
-                                       md="12"
-                                >
-                                    <v-text-field
-                                            label=""
-                                            type="text"
-                                            required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                            <span class="text-h6">Bad answers</span>
-                            <v-row>
-                                <v-col
-                                        cols="12"
-                                        sm="4"
-                                        md="4"
-                                >
-                                    <v-text-field
-                                            label=""
-                                            required
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                        cols="12"
-                                        sm="4"
-                                        md="4"
-                                >
-                                    <v-text-field
-                                            label=""
-                                            required
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col
-                                        cols="12"
-                                        sm="4"
-                                        md="4"
-                                >
-                                    <v-text-field
-                                            label=""
-                                            required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </section>
+                            <section v-for="(question, index) in newSection.questions" :key="index" id="addSectionQuestion">
+                                <span class="text-h6">Question {{ index + 1 }}</span>
+                                <v-row>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="question.questionText" label="" type="text" required></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <span class="text-h6">Good answer</span>
+                                <v-row>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="question.goodAnswer" label="" type="text" required></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <span class="text-h6">Bad answers</span>
+                                <v-row>
+                                    <v-col cols="12" sm="4" md="4" v-for="(badAnswer, badIndex) in question.badAnswers" :key="badIndex">
+                                        <v-text-field v-model="question.badAnswers[badIndex]" label="" required></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </section>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
@@ -123,7 +84,7 @@
                     <v-btn
                         color="blue-darken-1"
                         variant="text"
-                        @click="dialog = false"
+                        @click="saveCategory"
                     >
                         Save
                     </v-btn>
@@ -133,13 +94,44 @@
     </v-row>
 </template>
 <script>
+import {onMounted} from "vue";
+import axios from "axios";
+import {API_URL} from "@/constants";
+
+
 export default {
-    data: () => ({
-        dialog: false,
-    }),
-    function goToPage(pageNumber) {
-        currentPage.value = pageNumber;
-    }
+    data() {
+        return {
+            dialog: false,
+            categories: [],
+            newSection: {
+                name: '',
+                description: '',
+                questions: [],
+            },
+        };
+    },
+    methods: {
+        addSectionQuestion() {
+            this.newSection.questions.push({
+                questionText: '',
+                goodAnswer: '',
+                badAnswers: ['', '', ''],
+            });
+        },
+        initQuestion() {
+            this.addSectionQuestion();
+        },
+        saveCategory() {
+            this.categories.push(this.newSection);
+            this.newSection = {
+                name: '',
+                description: '',
+                questions: [],
+            };
+            this.dialog = false;
+        },
+    },
 }
-const
+
 </script>

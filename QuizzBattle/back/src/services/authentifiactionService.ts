@@ -9,6 +9,9 @@ import { TUser } from '../types/user';
         email: user.email,
         lastname: user.lastname,
         firstname: user.firstname, 
+        role: user.role,
+        isVerified: user.isVerified,
+        tokenemail: user.tokenemail,
       };
     
       const token = jwt.sign(payload, 'your-secret-key', { expiresIn: '1h' });

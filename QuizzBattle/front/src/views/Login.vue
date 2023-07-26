@@ -12,12 +12,14 @@ const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
 function handleSubmit() {
+  console.log(formData);
   loginUser(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
       errors.value = {};
     })
     .catch((_errors) => (console.log(_errors)));
+    
 }
 
 onMounted(() => {
@@ -36,10 +38,15 @@ onMounted(() => {
     <label for="password">Password</label>
     <input v-model="formData.password" type="password" id="password" />
     <p v-if="errors.password">{{ errors.password.join('\n') }}</p>
-    <a href="#">
+    <a class="link" href="/forgot-password">
        <h2 class="text-violet-500 font-bold">
         Forgot Password?
        </h2> 
+    </a>
+    <a class="link" href="/signup">
+       <h2 class="text-violet-500 font-bold">
+        Sign Up
+       </h2>
     </a>
     <button type="submit">Submit</button>
 
@@ -51,6 +58,11 @@ onMounted(() => {
 
 body {
     background-color: #f5f5f5;
+}
+
+.link:hover{
+    background-color: white;
+    cursor: pointer;
 }
 
 
@@ -75,11 +87,10 @@ button {
 }
 
 input {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #6949FF;
-        margin-bottom: 1rem;
-    }
+    padding: 1rem;
+    border-bottom: 1px solid #6949FF;
+    margin-bottom: 1rem;
+}
 
 /**
  * on desktop style */

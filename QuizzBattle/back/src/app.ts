@@ -79,7 +79,7 @@ app.post('/signup', (req, res) => {
   db.User.findOne({ where: { email } })
   .then((user) => {
     if (user) {
-      res.status(409).send({ error: 'User already exists' });
+      res.status(409).send({ errors: 'User already exists' });
     } else {
       const newUser = db.User.build({
         firstname,

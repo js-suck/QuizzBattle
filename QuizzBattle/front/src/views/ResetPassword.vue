@@ -81,6 +81,7 @@ import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const errors = ref({});
 
 const tokenemail = router.currentRoute.value.params.tokenemail;
 // console.log(tokenemail);

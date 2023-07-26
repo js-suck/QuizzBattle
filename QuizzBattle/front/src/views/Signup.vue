@@ -69,7 +69,9 @@ async function signupUser(_user) {
 }
 
 function handleSubmit() {
-  
+  if (startValidation.value = true) {
+    return;
+  }
   signupUser(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
@@ -87,7 +89,7 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form id="app" @submit.prevent="handleSubmit">
+  <form @submit.prevent="handleSubmit">
     <h1 class="text-black-200 mb-10 font-bold text-center">Create an account ✏️</h1>
     <h3 class="text-black-200 mb-10 text-center">Please complete your profile with your informations</h3>
     <label for="firstname">Firstname</label>

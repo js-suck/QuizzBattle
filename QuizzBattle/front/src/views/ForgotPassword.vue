@@ -9,6 +9,7 @@ const user = ref(token ? jwtDecode(token) : null);
 const tokenreset = token.replaceAll('.','');
 
 const verif = ref(false);
+const errors = ref({});
 
 const defaultValue = {
   email: '',

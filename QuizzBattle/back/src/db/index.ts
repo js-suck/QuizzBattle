@@ -9,7 +9,6 @@ console.log("files", files)
 files.forEach((file) => {
 
   if (file.endsWith(".map")) return;
-
   const model = require(path.join(__dirname, "models", file))(connection);
   database[model.name] = model;
 });

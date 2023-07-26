@@ -15,17 +15,10 @@ async function loginUser(_user) {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(_user)
+  }).then((response) => {
+    return response.json();
   });
-  if (response.status === 422) {
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-  }
-  throw new Error('Fetch failed');
+
 }
 
 

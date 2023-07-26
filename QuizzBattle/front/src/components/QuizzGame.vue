@@ -1,19 +1,19 @@
 <template>
-  <div class="quizz-game">
-    <div v-show="isElementsRevealed && !isGameFinished" class="quizz-game-reveal-status" :style="{
-      backgroundColor: isWinnerQuestion ? theme.colors.green : theme.colors.red
-    }">
-      <h2 class="mb-4">{{  isWinnerQuestion ? "Correct!" : "Incorrect!"}}</h2>
-      <p v-if="isWinnerQuestion" class="rounded-2xl bg-white p-3 text-green font-extrabold" >+{{ userQuestionPoints }}</p>
-      <p v-else class="rounded-2xl bg-white p-3 text-red font-extrabold" >Tu y était presque !</p>
-    </div>
-    <div v-if="isLoading" class="spinner">
+      <div v-if="isLoading" class="spinner">
       <img src="@/assets/images/LogoQuizzBattleWithoutBG.png">
       <v-progress-circular 
       :size="250"
       :width="7"
       indeterminate
       color="white"></v-progress-circular>
+    </div>
+  <div v-else class="quizz-game">
+    <div v-show="isElementsRevealed && !isGameFinished" class="quizz-game-reveal-status" :style="{
+      backgroundColor: isWinnerQuestion ? theme.colors.green : theme.colors.red
+    }">
+      <h2 class="mb-4">{{  isWinnerQuestion ? "Correct!" : "Incorrect!"}}</h2>
+      <p v-if="isWinnerQuestion" class="rounded-2xl bg-white p-3 text-green font-extrabold" >+{{ userQuestionPoints }}</p>
+      <p v-else class="rounded-2xl bg-white p-3 text-red font-extrabold" >Tu y était presque !</p>
     </div>
     <div v-if="quizzQuestionList.value && isGameFinished == false">
   <v-progress-linear
@@ -94,6 +94,7 @@ const {players, setPlayers, scores} = inject(playerManager)
 const socket = io(API_URL)
 const route = useRoute();  
 const roomId = route.params.id;
+const categoryId = route.params.categoryId;
 const colorVars = [theme.colors.blue, theme.colors.green, theme.colors.orange, theme.colors.red]
 const isElementsRevealed = ref(false)
 const isWinnerQuestion = ref(false)
@@ -145,7 +146,7 @@ const handleRevealCorrectAnswer = (answer) => {
   if (quizzQuestionList.value[questionNumber.value].correctAnswer === answer) {
     score.value = increaseScore(timeLeft.value);
     scores.player1 = increaseScore(timeLeft.value)
-    userQuestionPoints.value = timeLeft.value
+    userQuestionPoints.value = increaseScore(timeLeft.value)
     isWinnerQuestion.value = true
   } else {
     isWinnerQuestion.value = false
@@ -154,10 +155,12 @@ const handleRevealCorrectAnswer = (answer) => {
   transitionEnabled.value = false; 
 
 
+  console.log(scores.player1)
   socket.emit("update score", {
     room: roomId,
     user: user.value,
-    score: scores.player1,
+    category: categoryId,
+    score: scores.player1
   })
 
 }
@@ -177,11 +180,16 @@ const handleNextQuestion = () => {
 }
 
 const handleResult = () => {
-  isGameFinished.value = true
   isElementsRevealed.value = false;
+  isLoading.value = true;
+
+  socket.emit("user finished", {
+    user: user.value,
+    room: roomId,
+    category: categoryId
+  })
+
 }
-
-
 
 const getQuestionsTrivia = (category) => {
   let data = qs.stringify({
@@ -212,7 +220,7 @@ const getQuestionsTrivia = (category) => {
       ]
       answerList.value = answerList.value.sort(() => Math.random() - 0.5)
       questionLabel.value = response.data[questionNumber.value].question.text;
-      isLoading.value = false
+      //isLoading.value = false
       startTimer();
     })
     .catch((error) => {
@@ -225,9 +233,13 @@ const getQuestionsTrivia = (category) => {
 onMounted(async () => {
 
   // Emit an event to tell the socket that the user is connected to the roomID
-  socket.emit('fetch room', roomId);
+  socket.emit('fetch room', {
+    room: roomId,
+    category: categoryId
+  });
 
   socket.on('startGame', (room) => {
+    console.log("setPlayer", room)
     setPlayers(room.users );
    
     isLoading.value = false;
@@ -235,8 +247,51 @@ onMounted(async () => {
   });
 
   socket.on('update score', (room) => {
-    console.log("score updated", room)
+    console.log("SCORE UPDATED", room)
+    
+    setPlayers(room.users);
+    
   }); 
+
+  socket.on("game finished", (data) => {
+
+    console.log("GAME FINISHED", data)
+    isGameFinished.value = true;
+    clearInterval(timer.value)
+    isLoading.value = false;
+
+    let gameData = qs.stringify({
+    username: user.value.firstname,
+    quizzName: categoryId,
+    userId:    user.value.id,
+    quizzId:   0,
+    score:     score.value,
+    isWinner:  true,
+    userVsID: 12,
+})
+
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: `${API_URL}/api/game`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: gameData
+  }
+
+
+  axios
+    .request(config)
+    .then((response) => {
+      console.log(response, "requesssst")
+
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des quiz', error)
+    })
+
+  })
 
   await getQuestions();
   startTimer()

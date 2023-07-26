@@ -1,6 +1,50 @@
+import { initMongo } from './db/mongo/db';
 
 const db = require("./db");
 const mode = process.argv[2] ?? "alter";
+const SequelizeInstance = require("sequelize");
+
+const SequelizeConnection = new SequelizeInstance("postgres://root:password@localhost:5432/app", {
+  dialect: "postgres", // Specify the dialect as 'postgres'
+});
+
+
+
+initMongo()
+
+const createRoutineSQL = `
+CREATE OR REPLACE FUNCTION notify_user_update()
+RETURNS TRIGGER AS $$
+DECLARE
+  new_data TEXT;
+BEGIN
+  new_data := NEW.id || ',' || NEW.firstname;
+  PERFORM pg_notify('user_update', new_data);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+`;
+  const createTriggerSQL = `
+  CREATE TRIGGER user_update_trigger
+  AFTER UPDATE ON users
+  FOR EACH ROW
+  EXECUTE FUNCTION notify_user_update();
+`;
+
+async function createRoutineWithTrigger() {
+  try {
+    // Créer la fonction stockée (routine)
+    await SequelizeConnection.query(createRoutineSQL);
+    console.log('Routine (fonction stockée) créée avec succès dans PostgreSQL.');
+
+    // Créer le déclencheur (trigger) associé à la fonction stockée
+    await SequelizeConnection.query(createTriggerSQL);
+    console.log('Déclencheur (trigger) créé avec succès dans PostgreSQL.');
+  } catch (error) {
+    console.error('Erreur lors de la création de la routine (fonction stockée) avec le déclencheur (trigger) :', error);
+  }
+}
+
 
 db.connection
   .sync({ [mode]: true })
@@ -53,13 +97,18 @@ db.connection
         'food_and_drink',
         'general_knowledge'
       ]
-
-      const categories = initialCategories.map((category) => {
-        return db.Category.create({
-          name: category,
+      
+      const categories =  Promise.all(
+        initialCategories.map(async (category) => {
+          return await db.Category.create({
+            name: category,
+            description: 'Description for ' + category,
+            image_url: `${category}.jpeg`,
+          });
         })
-      }) 
-
+      );
+  
+   
 
       Promise.all([question1, question2, categories, users])
         .then(([createdQuestion1, createdQuestion2, categoryCreated, userCreated]) => {
@@ -147,6 +196,8 @@ db.connection
         })
         .then(() => {
           console.log("Questions et réponses par défaut créées avec succès.");
+          createRoutineWithTrigger()
+
           db.connection.close();
         })
         .catch((error) => {

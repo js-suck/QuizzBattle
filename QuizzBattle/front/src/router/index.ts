@@ -4,6 +4,8 @@ import Login from '../views/Login.vue'
 /*
 const isAdmin = true; // Remplacez cette variable par la logique de vérification du rôle d'administrateur
 
+import Singup from '../views/Signup.vue'
+
 // Middleware pour vérifier le rôle de l'utilisateur
 const roleCheckMiddleware = (to: any, from: any, next: any) => {
   if (isAdmin) {
@@ -24,6 +26,26 @@ const router = createRouter({
       component: Login
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: Singup
+    },
+    {
+      path: '/verify/:tokenemail',
+      name: 'verify',
+      component: () => import('../views/Verify.vue')
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/ForgotPassword.vue')
+    },
+    {
+      path: '/reset-password/:tokenemail',
+      name: 'reset-password',
+      component: () => import('../views/ResetPassword.vue')
+    },
+    {
       path: '/',
       name: 'StartQuizz',
       component: () => import('../views/StartQuizz.vue')
@@ -37,7 +59,7 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/game/:id',
+      path: '/game/:categoryId/:id',
       name: 'game',
       component: () => import('../components/QuizzGame.vue')
     },

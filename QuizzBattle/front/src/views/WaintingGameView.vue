@@ -9,7 +9,7 @@ arrow_back
   </div>
   <div class="flex flex-col mt-10">
 
-  <Card :name="categoryName" :image="'https://media.istockphoto.com/id/1316871808/fr/vectoriel/conception-de-fond-vectoriel-de-retour-%C3%A0-l%C3%A9cole-bienvenue-au-texte-de-retour-%C3%A0-l%C3%A9cole.jpg?s=612x612&w=0&k=20&c=CDKZm5C0bwH2IKXL8TzpRtmaWuF529wiU7PZiziQW1M='"/>
+  <Card v-if="category" :name="category.name" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`"/>
   <v-progress-circular class="spinner"
       :size="70"
       :width="7"
@@ -20,18 +20,26 @@ arrow_back
 </div>
 </template> 
 <script setup>
-import io from 'socket.io-client';
-import axios from 'axios';
-import { API_URL } from '../constants/index';
-import { inject, onMounted, ref } from 'vue';
-import jwtDecode from 'jwt-decode';
-import { playerManager } from '../contexts/quizzKeys';
-import { useRoute } from 'vue-router';
-import Card from "./../components/Card.vue"
+import {
+  inject,
+  onMounted,
+  ref
+} from 'vue'
+
+import axios from 'axios'
+import jwtDecode from 'jwt-decode'
+import io from 'socket.io-client'
+import { useRoute } from 'vue-router'
+
+import Card from '../components/Card.vue'
+import { API_URL } from '../constants/index'
+import { playerManager } from '../contexts/quizzKeys'
+import { FILE_PATHS } from '../constants/files'
+
 const route = useRoute();
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
-const categoryName = ref("")
+const category = ref("")
 const socket = io(API_URL);
 const categoryId = route.params.categoryId;
 
@@ -49,14 +57,16 @@ onMounted(() => {
 
     socket.on("roomFound", (room) => {
     // redirect to url generated with the room name
-    const url = `http://localhost:5173/game/${room.id}`
+    const url = `http://localhost:5173/game/${categoryId}/${room.id}`
     window.location.href = url;
     })
 
     axios.get(`${API_URL}/api/category/${categoryId}`)
     .then((response) => {
       console.log(response.data)
-      categoryName.value = response.data.name;
+      category.value = response.data;
+    }).catch(e =>{
+      console.error(e)
     })
 })
 </script>

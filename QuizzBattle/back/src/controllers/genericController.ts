@@ -19,6 +19,15 @@ function GenericController(service, options = {}) {
     res.json(users);
   }
 
+  async function getAllBy(req, res) {
+    const users = await service.findAllBy(req.params.categoryId);
+    if (!users) {
+      res.sendStatus(404);
+    } else {
+      res.json(users);
+    }
+  }
+
   async function create(req, res, next) {
     try {
       const user = await service.create(req.body);
@@ -128,6 +137,7 @@ function GenericController(service, options = {}) {
     create,
     deleteOne,
     getAll,
+    getAllBy,
     getAllCategoriesTrivia,
     getAllTagsTrivia,
     getAllTrivia,

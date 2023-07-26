@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
   db.User.findOne({ where: { email } })
@@ -81,6 +81,7 @@ db.User.sync().then(() => {
         username: 'John Doe',
         firstName: 'John',
         lastName: 'Doe',
+        nickname: 'JohnDoe',
         email: 'test@gmail.com',
         password: '1234',
         profilePicturePath: "defaultUser.png"

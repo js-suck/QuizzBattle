@@ -6,6 +6,7 @@ module.exports = (connection) => {
     {
       lastname: DataTypes.STRING,
       firstname: DataTypes.STRING,
+      nickname: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
         allowNull: false,

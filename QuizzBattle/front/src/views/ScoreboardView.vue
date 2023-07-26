@@ -1,9 +1,31 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.css" rel="stylesheet" />
 
 <template>
+    <h1>Scoreboard</h1>
     <div class="p-4 sm:ml-64 flex">
-        <h1>Classement</h1>
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+            <div class="flex items-center justify-center">
+
+                <v-select
+                v_if="categories"
+                v-model="selectedCategory"
+                label="Select"
+                :items="categories"
+                item-title="name"
+                item-value="id"
+                variant="outlined"
+                ></v-select>
+                <v-btn
+                    class="ma-2"
+                    @click="resetSelectedCategory"
+                >
+                    <v-icon
+                    start
+                    icon="mdi-minus-circle"
+                    ></v-icon>
+                    Réinitialiser
+                </v-btn>
+            </div>
         <table class="w-full text-sm text-left text-gray-500">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
@@ -11,23 +33,23 @@
                         Position
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Nom
+                        Nickname
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Score
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Parties Jouées
+                        Games Played
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Score Moyen
+                        Average score
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(player, index) in paginatedPlayers" :key="player.id" class="bg-white border-b hover:bg-gray-50">
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ index + 1 }}</td>
-                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.name }}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.nickname }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.score }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.gamesPlayed }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ calculateAverageScore(player) }}</td>
@@ -62,40 +84,59 @@
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import {API_URL} from '../constants';
+import axios from 'axios'
+const players = ref([]);
+const categories = ref([]);
+const selectedCategory = ref(null);
 
-export default {
-    setup() {
-        const players = ref([
-            { id: 1, name: 'Joueur 1', score: 100, gamesPlayed: 5 },
-            { id: 2, name: 'Joueur 2', score: 90, gamesPlayed: 6 },
-            { id: 3, name: 'Joueur 3', score: 80, gamesPlayed: 4 },
-            { id: 4, name: 'Joueur 4', score: 70, gamesPlayed: 7 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-            { id: 5, name: 'Joueur 5', score: 60, gamesPlayed: 3 },
-        ]);
-        const rankedPlayers = computed(() => {
+onMounted(() => {
+        axios
+        .get(`${API_URL}/api/scoreboard`)
+        .then((response) => {
+        players.value = response.data
+        })
+        .catch((error) => {
+        console.error('Erreur lors de la récupération des quiz', error)
+        });
+
+        axios.get(`${API_URL}/api/category`).then((response) => {
+        categories.value = response.data;
+        });
+
+        
+    });
+    
+    watch(selectedCategory, async (newValue) => {
+        if (newValue === null) {
+            axios.get(`${API_URL}/api/scoreboard`).then((response) => {
+                players.value = response.data;
+            });
+        } else {
+            axios.get(`${API_URL}/api/scoreboard/${newValue}`).then((response) => {
+                players.value = response.data;
+            });
+        }
+    });
+
+    const resetSelectedCategory = () => {
+        selectedCategory.value = null;
+    };
+
+    const rankedPlayers = computed(() => {
         return players.value.slice().sort((a, b) => b.score - a.score);
         });
+
         const calculateAverageScore = (player) => {
         if (player.gamesPlayed === 0) {
             return 0;
         } else {
             return (player.score / player.gamesPlayed).toFixed(2);
         }
-    };
+        };
 
     const currentPage = ref(1);
 
@@ -127,20 +168,6 @@ export default {
     function goToPage(pageNumber) {
         currentPage.value = pageNumber;
     }
-
-    return {
-        players,
-        rankedPlayers,
-        paginatedPlayers,
-        startIndex,
-        endIndex,
-        visiblePages,
-        pageCount,
-        goToPage,
-        calculateAverageScore,
-        };
-    },
-};
 
 </script>
 

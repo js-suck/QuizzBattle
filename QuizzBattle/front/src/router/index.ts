@@ -30,6 +30,11 @@ const router = createRouter({
       component: Singup
     },
     {
+      path: '/history',
+      name: 'history',
+      component: () => import('../views/HistoryView.vue')
+    },
+    {
       path: '/verify/:tokenemail',
       name: 'verify',
       component: () => import('../views/Verify.vue')

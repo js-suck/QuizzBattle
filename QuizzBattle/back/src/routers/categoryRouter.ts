@@ -1,10 +1,8 @@
 import express from 'express';
-
 import GenericController from "../controllers/genericController";
 import CategoryService from "./../services/categoryService";
 const multer = require('multer');
 import path from 'path';
-
 const storage = multer.diskStorage({
     destination: 'src/uploads/',
     filename: function (req, file, cb) {
@@ -14,10 +12,8 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
-
 const CategoryController = GenericController(new CategoryService())
 const categoryRouter = express.Router();
-
 categoryRouter.get('/', CategoryController.getAll);
 categoryRouter.get("/:name", CategoryController.getByName);
 categoryRouter.get('/show/:id', CategoryController.getOne);
@@ -26,7 +22,7 @@ categoryRouter.post(
     upload.single('profileImage'),
     function (req, res, next) {
         //console.log(req.file, req.body);
-        req.body.profilePicturePath = req.file.filename
+        req.body.image_url = req.file.filename
         next()
     },
     CategoryController.create

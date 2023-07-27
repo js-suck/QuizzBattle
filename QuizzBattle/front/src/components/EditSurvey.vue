@@ -73,6 +73,7 @@ import { API_URL } from "@/constants";
 
 
 const responseUser = ref({});
+const categoryData = ref({});
 const fileInputRef = ref(null);
 const profilePicture = ref(null);
 const beforeChange = ref(false);
@@ -86,10 +87,11 @@ const props = defineProps({
 });
 
 onMounted(() => {
+    console.log(props.survey)
     // Fetch the user data
-    axios.get(`${API_URL}/trivia/categories${props.survey}`)
+    axios.get(`${API_URL}/trivia/categories`, props.survey)
         .then((response) => {
-            responseUser.value = response.data;
+            categoryData.value = response.data;
         })
         .catch((error) => {
             console.error('Error while fetching user data:', error);

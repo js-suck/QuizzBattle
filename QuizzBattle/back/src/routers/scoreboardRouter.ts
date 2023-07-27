@@ -3,11 +3,11 @@ import GenericController from "../controllers/genericController";
 import ScoreboardService from "./../services/scoreboardService";
 
 const scoreboardServiceInstance = new ScoreboardService();
-const quizzController = GenericController(scoreboardServiceInstance);
+const scoreboardController = GenericController(scoreboardServiceInstance);
 
-const quizzRouter = express.Router();
+const scoreboardRouter = express.Router();
 
-quizzRouter.get('/', quizzController.getAll);
-quizzRouter.get('/:categoryId', quizzController.getAllBy);
+scoreboardRouter.get('/', scoreboardController.getAll);
+scoreboardRouter.get('/:categoryId', scoreboardController.getAllBy);
 
-export default quizzRouter;
+export default scoreboardRouter;

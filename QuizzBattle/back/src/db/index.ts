@@ -45,12 +45,12 @@ database["Question"].hasMany(database["Answer"], {
 });
 
 database["Question"].belongsTo(database["Category"], {
-    foreignKey: "questionId",
+    foreignKey: "categoryId",
     as: "category",
 });
 
 database["Category"].hasMany(database["Question"], {
-    foreignKey: "questionId",
+    foreignKey: "categoryId",
     as: "question",
 });
 

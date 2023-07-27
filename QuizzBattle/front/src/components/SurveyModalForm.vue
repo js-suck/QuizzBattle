@@ -114,8 +114,9 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {API_URL} from "@/constants";
-
 const fileInputRef = ref(null);
+const categoryData = ref(null); // Add this line to define categoryData
+
 
 export default {
     data() {
@@ -154,11 +155,37 @@ export default {
         },
         submitForm() {
             // Log all the questions to the console
-            console.log(this.categories, fileInputRef.value.files[0]);
-            /*axios.post(`${API_URL}/api/category/add`)
+            console.log(this.categories, this.$refs.fileInputRef.files[0]);
+            const formData = new FormData();
+            formData.append('name', this.categories.name);
+            formData.append('description', this.categories.description);
+            formData.append('profileImage', this.$refs.fileInputRef.files[0]);
+            formData.append('image_url', this.$refs.fileInputRef.files[0].name);
+
+            axios.post(`${API_URL}/api/category/add`, formData)
                 .then((response) => {
-                    responseUser.value = response.data;
-                    window.location.reload();
+                    const categoryId = response.data.id;
+                    const questionFormData = new FormData();
+                    questionFormData.append("categoryId", categoryId);
+                    questionFormData.append("label", question.questionText);
+                    console.log(question.questionText)
+                    axios.post(`${API_URL}/api/question/add`, questionFormData)
+                        .then((questionResponse) => {
+                            questionResponse.value = questionResponse.data;
+
+                            console.log("Question added:", questionResponse.value);
+                        })
+                        .catch((error) => {
+                            console.error('Error while fetching user data:', error);
+                        });
+                    /*axios.post(`${API_URL}/api/question/add`, formData)
+                        .then((response) => {
+
+                        })
+                        .catch((error) => {
+                            console.error('Error while fetching user data:', error);
+                        });
+                    window.location.reload();*/
 
                 })
                 .catch((error) => {
@@ -168,7 +195,7 @@ export default {
                 console.log(`Question ${index + 1}: ${question.questionText}`);
                 console.log(`  Good Answer: ${question.goodAnswer}`);
                 console.log(`  Bad Answers: ${question.badAnswers.join(', ')}`);
-            });*/
+            });
         }
 
     },

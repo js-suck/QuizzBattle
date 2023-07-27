@@ -20,7 +20,6 @@
                     <div class="mb-6">
                         <label class="block mb-2 font-medium text-gray-700">Profile Picture:</label>
                         <div class="flex items-center">
-                            <!-- Show the current profile picture -->
                             <div class="w-16 h-16 rounded-full overflow-hidden">
                                 <img
                                     v-if="!beforeChange"

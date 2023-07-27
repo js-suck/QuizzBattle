@@ -48,7 +48,7 @@
             </thead>
             <tbody>
                 <tr v-for="(player, index) in paginatedPlayers" :key="player.id" class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ index + 1 }}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.position }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.nickname }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.score }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.gamesPlayed }}</td>

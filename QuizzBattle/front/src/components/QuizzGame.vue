@@ -291,6 +291,19 @@ onMounted(async () => {
       console.error('Erreur lors de la récupération des quiz', error)
     })
 
+  axios.put(`${API_URL}/api/users/updateStats/${user.value.id}`, {
+    score: score.value,
+    gamesPlayed: 1,
+    isIncrement: true
+  })
+
+  axios.put(`${API_URL}/api/scoreboard/updateStats`, {
+    score: score.value,
+    gamesPlayed: 1,
+    userId: user.value.id,
+    categoryId: 1 ,// TODO: change this to the category.id
+  });
+
   })
 
   await getQuestions();

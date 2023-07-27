@@ -135,12 +135,15 @@ app.post('/signup', (req, res) => {
       const newUser = db.User.build({
         firstname,
         lastname,
+        nickname: firstname + ' ' + lastname,
         email,
         password,
         profilePicturePath: "defaultUser.png",
         role: 'user',
         isVerified: false,
         tokenemail: tokenemail2,
+        score: 0,
+        gamesPlayed: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });

@@ -27,9 +27,10 @@
 
         <v-divider></v-divider>
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-home-city" title="Historique de parties" value="home"></v-list-item>
-          <v-list-item prepend-icon="mdi-account" title="Mon profil" value="account"></v-list-item>
+          <v-list-item prepend-icon="mdi-history" title="Game history" value="history"></v-list-item>
+          <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
+          <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main >

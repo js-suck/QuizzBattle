@@ -31,5 +31,6 @@ usersRouter.put(
     },
     userController.update
 );
+usersRouter.put('/updateStats/:id', userController.update);
 
 export default usersRouter ;

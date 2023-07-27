@@ -1,16 +1,12 @@
 import { initMongo } from './db/mongo/db';
-
 const db = require("./db");
 const mode = process.argv[2] ?? "alter";
 const SequelizeInstance = require("sequelize");
-
 const SequelizeConnection = new SequelizeInstance("postgres://root:password@localhost:5432/app", {
-  dialect: "postgres", // Specify the dialect as 'postgres'
+  dialect: "postgres",
 });
 
-
-
-initMongo()
+initMongo();
 
 const createRoutineSQL = `
 CREATE OR REPLACE FUNCTION notify_user_update()
@@ -24,36 +20,62 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 `;
-  const createTriggerSQL = `
-  CREATE TRIGGER user_update_trigger
-  AFTER UPDATE ON users
-  FOR EACH ROW
-  EXECUTE FUNCTION notify_user_update();
+
+const createTriggerSQL = `
+CREATE TRIGGER user_update_trigger
+AFTER UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION notify_user_update();
 `;
 
 async function createRoutineWithTrigger() {
   try {
-    // Créer la fonction stockée (routine)
     await SequelizeConnection.query(createRoutineSQL);
-    console.log('Routine (fonction stockée) créée avec succès dans PostgreSQL.');
-
-    // Créer le déclencheur (trigger) associé à la fonction stockée
+    console.log('Routine (stored function) created successfully in PostgreSQL.');
     await SequelizeConnection.query(createTriggerSQL);
-    console.log('Déclencheur (trigger) créé avec succès dans PostgreSQL.');
+    console.log('Trigger created successfully in PostgreSQL.');
   } catch (error) {
-    console.error('Erreur lors de la création de la routine (fonction stockée) avec le déclencheur (trigger) :', error);
+    console.error('Error creating the routine (stored function) with the trigger:', error);
   }
 }
 
+async function createDefaultCategories() {
+  const initialCategories = [
+    'music',
+    'sport_and_leisure',
+    'film_and_tv',
+    'arts_and_literature',
+    'history',
+    'society_and_culture',
+    'science',
+    'geography',
+    'food_and_drink',
+    'general_knowledge'
+  ];
 
-db.connection
-  .sync({ [mode]: true })
-  .then(() => {
+  try {
+    return await Promise.all(
+        initialCategories.map(async (category) => {
+          return await db.Category.create({
+            name: category,
+            description: 'Description for ' + category,
+            image_url: `${category}.jpeg`,
+          });
+        })
+    );
+  } catch (error) {
+    console.error('An error occurred while creating default categories:', error);
+    throw error;
+  }
+}
+
+async function createDefaultUsersAndQuestions() {
+  try {
     console.log("Database synchronized");
 
-    // Génération des données des utilisateurs à l'aide d'une boucle for
+    // Generate user data using a for loop
     const usersData = [];
-    const numberOfUsers = 50; // Nombre d'utilisateurs à générer
+    const numberOfUsers = 50;
 
     for (let i = 1; i <= numberOfUsers; i++) {
       const userData = {
@@ -69,147 +91,84 @@ db.connection
       usersData.push(userData);
     }
 
-    // Create multiple users
-    const users = db.User.bulkCreate(usersData);
-    
-    // Création d'un quiz test
-    try {
-      const question1 = db.Question.create({
-        label: "Quelle est la capitale de la France ?",
-        categoryId: 1,
+    const users = await db.User.bulkCreate(usersData);
+
+    // Create default categories and users
+    const [categoryCreated, userCreated] = await Promise.all([
+      createDefaultCategories(),
+      users,
+    ]);
+
+    // Store the created questions in variables
+    const question1 = await db.Question.create({
+      label: "What is the color of the sky?",
+      categoryId: categoryCreated[0].id,
+    });
+
+    const question2 = await db.Question.create({
+      label: "What is the capital of France?",
+      categoryId: categoryCreated[0].id,
+    });
+
+    // Create answers using the IDs of the created questions
+    await Promise.all([
+      db.Answer.create({
+        label: "Paris",
+        isCorrect: true,
+        questionId: question2.id,
+      }),
+      db.Answer.create({
+        label: "Lyon",
+        isCorrect: false,
+        questionId: question2.id,
+      }),
+      db.Answer.create({
+        label: "Marseille",
+        isCorrect: false,
+        questionId: question1.id,
+      }),
+      db.Answer.create({
+        label: "Grenoble",
+        isCorrect: false,
+        questionId: question1.id,
+      }),
+      // Add more answers here
+    ]);
+
+    // Bulk create UserCategory records
+    const userCategoryData = [];
+    for (let i = 0; i < userCreated.length; i++) {
+      userCategoryData.push({
+        score: Math.random() * 100000,
+        gamesPlayed: Math.random() * 10,
+        UserId: userCreated[i].dataValues.id,
+        CategoryId: categoryCreated[i % categoryCreated.length].dataValues.id,
       });
-
-      const question2 = db.Question.create({
-        label: "Quelle est la couleur du ciel ?",
-        categoryId: 1,
-      });
-
-  
-      const initialCategories = [
-        'music',
-        'sport_and_leisure',
-        'film_and_tv',
-        'arts_and_literature',
-        'history',
-        'society_and_culture',
-        'science',
-        'geography',
-        'food_and_drink',
-        'general_knowledge'
-      ]
-      
-      const categories =  Promise.all(
-        initialCategories.map(async (category) => {
-          return await db.Category.create({
-            name: category,
-            description: 'Description for ' + category,
-            image_url: `${category}.jpeg`,
-          });
-        })
-      );
-  
-   
-
-      Promise.all([question1, question2, categories, users])
-        .then(([createdQuestion1, createdQuestion2, categoryCreated, userCreated]) => {
-          // Création des réponses associées aux questions
-          return Promise.all([
-            db.Answer.create({
-              label: "Paris",
-              isCorrect: true,
-              questionId: createdQuestion1.id,
-            }),
-            db.Answer.create({
-              label: "Lyon",
-              isCorrect: false,
-              questionId: createdQuestion1.id,
-            }),
-            db.Answer.create({
-              label: "Marseille",
-              isCorrect: false,
-              questionId: createdQuestion1.id,
-            }),
-            db.Answer.create({
-              label: "Grenoble",
-              isCorrect: false,
-              questionId: createdQuestion1.id,
-            }),
-            db.Answer.create({
-              label: "Bleu",
-              isCorrect: true,
-              questionId: createdQuestion2.id,
-            }),
-            db.Answer.create({
-              label: "Rouge",
-              isCorrect: false,
-              questionId: createdQuestion2.id,
-            }),
-            db.Answer.create({
-              label: "Vert",
-              isCorrect: false,
-              questionId: createdQuestion2.id,
-            }),
-            db.Answer.create({
-              label: "Jaune",
-              isCorrect: false,
-              questionId: createdQuestion2.id,
-            }),
-            db.UserCategory.bulkCreate([{
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[0].dataValues.id,
-              CategoryId: 2,
-            },
-            {
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[1].dataValues.id,
-              CategoryId: 1,
-            },
-            {
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[2].dataValues.id,
-              CategoryId: 1,
-            },
-            {
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[3].dataValues.id,
-              CategoryId: 3,
-            },
-            {
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[4].dataValues.id,
-              CategoryId: 4,
-            },
-            {
-              score: Math.random() * 100000,
-              gamesPlayed: Math.random() * 10,
-              UserId:userCreated[5].dataValues.id,
-              CategoryId: 5,
-            },
-          ]
-            ),
-          ]);
-        })
-        .then(() => {
-          console.log("Questions et réponses par défaut créées avec succès.");
-          createRoutineWithTrigger()
-
-          db.connection.close();
-        })
-        .catch((error) => {
-          console.error("Une erreur s'est produite lors de la création des questions et des réponses :", error);
-          db.connection.close();
-        });
-    } catch (error) {
-      console.error("Une erreur s'est produite lors de la création des questions et des réponses :", error);
-      db.connection.close();
     }
-  })
-  .catch((error) => {
-    console.error("Une erreur s'est produite lors de la synchronisation de la base de données :", error);
+    await db.UserCategory.bulkCreate(userCategoryData);
+
+    console.log("Default questions and answers created successfully.");
+    await createRoutineWithTrigger();
+
     db.connection.close();
-  });
+  } catch (error) {
+    console.error("An error occurred while creating default questions and answers:", error);
+    db.connection.close();
+    throw error;
+  }
+}
+
+async function synchronizeDatabase() {
+  try {
+    await db.connection.sync({ [mode]: true });
+    await createDefaultUsersAndQuestions();
+  } catch (error) {
+    console.error("An error occurred during database synchronization:", error);
+    db.connection.close();
+    throw error;
+  }
+}
+
+synchronizeDatabase().catch((error) => {
+  console.error('An error occurred during database synchronization:', error);
+});

@@ -305,5 +305,6 @@ db.User.sync().then(() => {
     });
 
 
+  app.use('/api', authenticateToken);
 
   app.use('/api', apiRouter);

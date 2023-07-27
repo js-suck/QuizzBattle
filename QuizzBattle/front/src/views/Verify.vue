@@ -24,9 +24,6 @@ onMounted(() => {
 
 
 async function updateUserVerificationStatus(tokenemail) {
-  // Effectuez une requête HTTP vers votre API pour mettre à jour le statut de vérification de l'utilisateur
-  // Vous pouvez utiliser fetch, axios ou toute autre bibliothèque de requête HTTP
-  // Par exemple :
   const response = await fetch(`http://localhost:3000/verify`, {
     method: 'POST',
     headers: {

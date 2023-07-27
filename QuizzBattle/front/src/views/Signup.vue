@@ -1,26 +1,21 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import jwtDecode from 'jwt-decode';
-import { useRouter } from 'vue-router';
+import {
+  computed,
+  reactive,
+  ref
+} from 'vue'
 import { API_URL } from '@/constants';
+
+import jwtDecode from 'jwt-decode'
+import { useRouter } from 'vue-router'
 
 const router = useRouter();
 
 const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
-
-
-const tokenemail = token.replaceAll('.','');
+const tokenemail = token?.replaceAll('.','');
 
 // console.log(tokenemail);
 
-const startValidation = ref(false);
-
-
-const firstname = ref('');
-const lastname = ref('');
-const email = ref('');
-const password = ref('');
 
 function validateForm() {
   if (!formData.firstname.trim()) {

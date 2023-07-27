@@ -52,7 +52,7 @@
   >
     <v-slide-group
     >
-      <v-slide-group-item 
+      <v-slide-group-item   
       v-for="(category, key) in categories"
         :key="category"
       >              <QuizzCard @click="startGameWithCategory(category.name)" class="ma-2" :title="category.name" :text="category.description" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`"/>
@@ -103,6 +103,7 @@ import QuizzGame from '../components/QuizzGame.vue'
 import RoundedSquare from '../components/RoundedSquare.vue'
 import { API_URL } from '../constants'
 import { FILE_PATHS } from '../constants/files'
+import client from './../helpers/client'
 
 const gameStarted = ref(false)
 const gameStartedWithCategory = ref(false)
@@ -159,7 +160,7 @@ onMounted(() => {
     showResults.value = true
   })
 
-  axios
+  client
     .get(`${API_URL}/api/quizzes`)
     .then((response) => {
       quizList.value = response.data
@@ -168,7 +169,7 @@ onMounted(() => {
       console.error('Erreur lors de la récupération des quiz', error)
     })
 
-  axios
+  client
     .get(`${API_URL}/api/category`)
     .then((response) => {
       categories.value = response.data

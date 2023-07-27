@@ -1,16 +1,21 @@
 import './assets/main.css'
+import 'vuetify/styles'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp } from 'vue'
+
 import { createPinia } from 'pinia'
-import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import {
+  aliases,
+  mdi
+} from 'vuetify/iconsets/mdi'
+
 import App from './App.vue'
 import router from './router'
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import '@mdi/font/css/materialdesignicons.css'
 
 const vuetify = createVuetify({
     components,
@@ -34,10 +39,31 @@ function changeBodyClass(to) {
   }
 }
 
+const checkIfUserIsAuthenticated = () => {
+  
+  // check si le JWT est encore valide ou sinon renvoie sur login
+  return true;
+}
+
+
 // Surveiller les changements de route pour appliquer la classe appropriée
 router.afterEach((to) => {
   changeBodyClass(to);
 });
+
+// // Middleware de routage pour vérifier l'authentification avant d'accéder aux routes protégées
+// router.beforeEach((to, from, next) => {
+//   const isAuthenticated = checkIfUserIsAuthenticated(); // Fonction qui vérifie si l'utilisateur est authentifié
+//   //const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+//   const requiresAuth = true;
+
+
+//   if (requiresAuth && !isAuthenticated) {
+//     next('/login'); // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
+//   } else {
+//     next();
+//   }
+// });
 
 
 const app = createApp(App)

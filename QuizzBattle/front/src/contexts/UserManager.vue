@@ -9,16 +9,30 @@ const user = ref(token ? jwtDecode(token) : null);
 const isLoading = ref(false);
 
 async function loginUser(_user) {
-  const response = await fetch(`${API_URL}/api/login`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(_user)
-  }).then((response) => {
-    return response.json();
-  });
+  try {
+    const response = await fetch(`${API_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(_user)
+    });
 
+    if (response.status !== 200) {
+      const data = await response.json();
+      return data;
+    } else {
+      const data = await response.json();
+      const token = data.token;
+      user.value = jwtDecode(token);
+      localStorage.setItem('token', token);
+      return data;
+    }
+  } catch (error) {
+
+    console.error('Erreur lors de la requête fetch :', error);
+    return { message: 'Une erreur s\'est produite lors de la connexion.' };
+  }
 }
 
 

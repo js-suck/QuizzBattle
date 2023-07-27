@@ -1,11 +1,20 @@
 <script setup>
-import axios from 'axios';
-import { reactive, ref, onMounted, provide } from 'vue';
-import { API_URL } from '../constants';
-import {playerManager, questionManager, quizzList} from "./quizzKeys"
-import io from 'socket.io-client';
-import qs from 'qs';
-const socket = io(API_URL);
+import {
+  provide,
+  reactive,
+  ref
+} from 'vue'
+
+import qs from 'qs'
+
+import { API_URL } from '../constants'
+import client from '../helpers/client'
+import {
+  playerManager,
+  questionManager,
+  quizzList
+} from './quizzKeys'
+
 const players = ref([
   {
     id: 1,
@@ -21,18 +30,41 @@ const questionLabel = ref("")
 const answerList = ref([])
 const questionNumber = ref(0)
 const isLoading = ref(true)
+const category = ref("music")
 
-const getQuestions = () => {
+const getQuestions = async () => {
+
+  let categoryId = 1;
+// request axios get category by 
+let params = new URLSearchParams();
+params.append('quizzId', category.value);
+let config = {
+  method: 'get',
+  maxBodyLength: Infinity,
+  url: `${API_URL}/api/category/${category.value}`,
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+}
+
+await client
+  .request(config)
+  .then((response) => {
+    console.log(response)
+    categoryId = response?.data?.id
+  })
+
 
 
   const queryParams = {
     _itemsPerPage: '10',
+    quizzId: categoryId
   };
 
   // Convertir les paramètres de requête en chaîne de requête
   const queryString = qs.stringify(queryParams);
 
-  let config = {
+   config = {
     method: 'get',
     maxBodyLength: Infinity,
     url: `${API_URL}/api/questions?${queryString}`,
@@ -42,7 +74,7 @@ const getQuestions = () => {
   }
 
 
-  axios
+  client
     .request(config)
     .then((response) => {
       quizzQuestionList.value = response.data
@@ -73,6 +105,10 @@ const setPlayers = (users) => {
 const setScore = (score, player) => {
   scores[player] = score;
 };
+
+const setCategory = (value) => {
+  category.value = value;
+}
   
 
 
@@ -85,7 +121,8 @@ provide(questionManager, {
   questionLabel,
   answerList,
   questionNumber,
-  isLoading
+  isLoading,
+  setCategory
 });
 
 provide(playerManager, {

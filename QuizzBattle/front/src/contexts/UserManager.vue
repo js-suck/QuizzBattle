@@ -2,35 +2,29 @@
 import { reactive, ref, onMounted, provide } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { userManagerKey, userManagerUsersKey, userManagerIsLoadingKey } from './userManagerKeys.js';
+import { API_URL } from '../constants';
 const users = reactive({});
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 const isLoading = ref(false);
 
 async function loginUser(_user) {
-  const response = await fetch(`http://localhost:3000/login`, {
+  const response = await fetch(`${API_URL}/api/login`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify(_user)
+  }).then((response) => {
+    return response.json();
   });
-  if (response.status === 422) {
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    const data = await response.json();
-    const token = data.token;
-    user.value = jwtDecode(token)
-    localStorage.setItem('token', token);
-    return Promise.resolve(data);
-  }
-  throw new Error('Fetch failed');
+
 }
 
 
 function addUser(user) {
   let hasError = false;
-  return fetch('http://localhost:3000/users', {
+  return fetch(`${API_URL}/api/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -54,7 +48,7 @@ function addUser(user) {
 
 function editUser(user) {
   let hasError = false;
-  return fetch(`http://localhost:3000/users/${user.id}`, {
+  return fetch(`${API_URL}/api/users/${user.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -81,7 +75,7 @@ onMounted(() => {
 });
 
 function fetchUsers() {
-  fetch('http://localhost:3000/users')
+  fetch(`${API_URL}/api/users`)
     .then((response) => response.json())
     .then((data) => {
       users.push(...data);
@@ -94,7 +88,7 @@ function fetchUsers() {
 }
 
 function deleteUser(user) {
-  fetch(`http://localhost:3000/users/${user.id}`, {
+  fetch(`${API_URL}/api/users/${user.id}`, {
     method: 'DELETE'
   }).then((response) => {
     if (response.status === 204) users.splice(users.indexOf(user), 1);

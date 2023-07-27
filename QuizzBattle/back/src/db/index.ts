@@ -9,10 +9,30 @@ console.log("files", files)
 files.forEach((file) => {
 
   if (file.endsWith(".map")) return;
-
   const model = require(path.join(__dirname, "models", file))(connection);
   database[model.name] = model;
 });
+
+database["User"].hasMany(database["UserCategory"], {
+   foreignKey: "UserId",
+   as: "a"
+});
+
+database["UserCategory"].belongsTo(database["User"], {
+   foreignKey: "UserId",
+   as: "user"
+});
+
+database["Category"].hasMany(database["UserCategory"], {
+   foreignKey: "CategoryId",
+   as: "c"
+});
+
+database["UserCategory"].belongsTo(database["Category"], {
+   foreignKey: "CategoryId",
+   as: "category"
+});
+
 database["Answer"].belongsTo(database["Question"], {
        foreignKey: "questionId",
        as: "question",

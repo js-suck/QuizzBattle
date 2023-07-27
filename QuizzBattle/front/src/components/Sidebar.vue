@@ -11,7 +11,6 @@
         <ul class="space-y-6 font-medium">
             <li>
                 <img src="@/assets/images/LogoQuizzBattleWithoutBG.png">
-
             </li>
             <li>
                 <router-link :to="{ name: 'admin_dashboard' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">

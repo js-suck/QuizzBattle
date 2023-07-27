@@ -75,7 +75,6 @@ import axios from "axios";
 import { API_URL } from "@/constants";
 import { FILE_PATHS } from "@/constants/files";
 
-
 const responseUser = ref({});
 const fileInputRef = ref(null);
 const profilePicture = ref(null);
@@ -129,11 +128,11 @@ async function submitForm() {
         const userUpdateResponse = await axios.put(`${API_URL}/api/users/edit/${props.user}`, formData);
         responseUser.value = userUpdateResponse.data;
         console.log('Updated user data:', responseUser.value);
+
     } catch (error) {
         console.error('Error while updating user data:', error);
     }
 }
-
 </script>
 <style>
 .hidden-input {

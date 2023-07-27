@@ -8,5 +8,6 @@ const quizzController = GenericController(scoreboardServiceInstance);
 const quizzRouter = express.Router();
 
 quizzRouter.get('/', quizzController.getAll);
+quizzRouter.get('/:categoryId', quizzController.getAllBy);
 
 export default quizzRouter;

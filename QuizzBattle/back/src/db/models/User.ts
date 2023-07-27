@@ -1,9 +1,11 @@
 import { request } from "express";
+import { SITE_URL } from "../../helpers/sentEmail";
 
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
   const bcrypt = require("bcrypt");
   const Mailjet = require("node-mailjet");
+  
 
 
   const mailjetClient = new Mailjet({
@@ -130,7 +132,7 @@ module.exports = (connection) => {
 
   function generateVerificationLink(tokenemail) {
     // Générer le lien de vérification avec l'ID de l'utilisateur
-    return `http://localhost:5173/verify/${tokenemail}`;
+    return `${SITE_URL}/verify/${tokenemail}`;
   }
 
   User.addHook("beforeCreate", uptadePassword);

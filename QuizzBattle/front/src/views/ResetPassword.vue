@@ -5,7 +5,14 @@
     <label for="password">Enter new password:</label>
     <input v-model.trim="formData.password" type="password" id="password" required />
     <p class="error" v-if="errors.password">{{ errors.password }}</p>
+        <a class="link" href="/login">
+       <h2 class="text-violet-500 font-bold">
+        Login
+       </h2> 
+    </a>
     <button type="submit">Reset Password</button>
+    <br>
+    <p class="sent text-center" v-if="res.all">{{ res.all }}</p>
   </form>
 </template>
 
@@ -27,8 +34,10 @@ form {
     min-height: 80vh;
 }
 
+
 h2 {
     cursor: pointer;
+    font-size: 1rem!important;
 }
 
 .error {
@@ -85,10 +94,12 @@ input {
 import { reactive, ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/constants';
 
 const router = useRouter();
 const errors = ref({});
 
+const res = ref({});
 const tokenemail = router.currentRoute.value.params.tokenemail;
 // console.log(tokenemail);
 
@@ -110,37 +121,49 @@ const defaultValue = {
 
 const formData = reactive({ ...defaultValue });
 
-async function resetpassword({tokenemail, password}) {
-  console.log(tokenemail, password)
-    const response = await fetch('http://localhost:3000/reset-password', { 
+async function handleReset() {
+   validateForm();
+    if (errors.value.password) {
+    return; // If there are errors, do not submit the form
+
+  }
+
+
+
+  try {
+     const response =await fetch(`${API_URL}/reset-password`, { 
         method: 'POST',
         headers: {
           'Content-type': 'application/json'
         },
-        body: JSON.stringify({tokenemail: tokenemail, password: password})
-    });
-    if (response.status === 200) {
-      return response.json();
-      router.push('../login');
-    }
-  throw new Error('Fetch failed');
-
-}
-
-function handleReset() {
-  validateForm();
-    if (
-    errors.value.password
-  ) {
-    return; // If there are errors, do not submit the form
-  }
-  resetpassword(formData)
-    .then(() => {
-      console.log("ok");
-      Object.assign(formData, defaultValue);
-      errors.value = {};
-      router.push('../login');
+        body: JSON.stringify(formData)
     })
-    .catch((_errors) => (console.log(_errors)));
+    const data = await response.json();
+
+    res.value.all = data.message;
+    console.log("data", data);
+  }
+  catch (error) {
+
+    console.log(error);
+  }
+
+  //  await fetch('http://localhost:3000/reset-password', { 
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-type': 'application/json'
+  //       },
+  //       body: JSON.stringify(formData)
+  //   }).then((response) => {
+
+  //      console.log("response", response.json());
+  //     Object.assign(formData, defaultValue);
+  //     errors.value = {};
+  //     res.value.all = response.message;
+  //     return response.json();
+  //   }).catch((_errors) => (console.log(_errors)));
+ 
+    
+
 }
 </script>

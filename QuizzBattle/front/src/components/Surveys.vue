@@ -32,7 +32,7 @@ import axios from 'axios';
 import {API_URL} from "@/constants";
 const surveys = reactive([]);
 import { RouterLink } from 'vue-router';
-import SurveyModalForm from "@/components/SurveyModalForm.vue"; // Vous pouvez également utiliser RouterLink pour générer des liens de navigation
+import SurveyModalForm from "@/components/SurveyModalForm.vue";
 
 onMounted(() => {
     axios.get(`${API_URL}/api//category/`)

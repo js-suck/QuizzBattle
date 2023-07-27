@@ -16,7 +16,6 @@ import { useRoute } from 'vue-router';
 
 const surveyId = ref(null);
 const route = useRoute();
-// Récupérer l'ID de l'utilisateur à partir des paramètres de la route
 surveyId.value = route.params.id;
 </script>
 

@@ -13,7 +13,6 @@ files.forEach((file) => {
   const model = require(path.join(__dirname, "models", file))(connection);
   database[model.name] = model;
 });
-console.log(database, 'ococoo')
 database["Answer"].belongsTo(database["Question"], {
        foreignKey: "questionId",
        as: "question",

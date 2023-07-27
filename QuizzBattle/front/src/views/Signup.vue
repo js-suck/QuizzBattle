@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/constants';
 
 const router = useRouter();
 
@@ -52,37 +53,13 @@ const defaultValue = {
   lastname: '',
   email: '',
   password: '',
-  tokenemail: tokenemail 
 };
 const formData = reactive({ ...defaultValue });
 const errors = ref({});
+const res = ref({});
 
-async function signupUser(_user) {
-  const response = await fetch(`http://localhost:3000/signup`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(_user)
-  }).then((response) => {
-    if (response.status === 409) {
-      return response.json();
-    }
-    if (response.status === 422) {
-      return response.json();
-    }
-    if (response.ok) {
-      return response.json();
-    }
-  });
 
-  console.log(response)
-
-  errors.value.all = response.errors;
-  throw new Error('Fetch failed');
-}
-
-function handleSubmit() {
+async function handleSubmit() {
    validateForm();
     if (
     errors.value.firstname ||
@@ -92,16 +69,25 @@ function handleSubmit() {
   ) {
     return; // If there are errors, do not submit the form
   }
-  signupUser(formData)
-    .then(() => {
-      Object.assign(formData, defaultValue);
-      errors.value = {};
-      router.push('./login');
-    })
-     .catch((_errors) => {
-      //errors.value = _errors; // Stocker les erreurs renvoyées par l'API
-      console.log(_errors);
-    });
+
+  try {
+  const response = await fetch(`${API_URL}/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+  const data = await response.json();
+
+  errors.value.all = data.errors;
+  res.value.all = data.message;
+  console.log("data", data);
+  } catch (error) {
+    console.log(error);
+
+
+}
 }
 
 
@@ -131,7 +117,8 @@ function handleSubmit() {
     </a>
     <button type="submit">Submit</button>
     <br>
-    <p class="error" v-if="errors.all">{{ errors.all }}</p>
+    <p class="error text-center" v-if="errors.all">{{ errors.all }}</p>
+    <p class="sent text-center" v-if="res.all">{{ res.all }}</p>
   </form>
 
   <!-- {{ formData }}

@@ -121,7 +121,11 @@ app.post('/api/login', (req, res) => {
 });
 
 app.post('/signup', (req, res) => {
-  const { email, password, firstname, lastname, tokenemail } = req.body;
+  const { email, password, firstname, lastname } = req.body;
+
+  const token = generateToken(req.body);
+  console.log(token, "uii");
+  const tokenemail2 = token.replaceAll('.', '');
 
   db.User.findOne({ where: { email } })
   .then((user) => {
@@ -136,7 +140,7 @@ app.post('/signup', (req, res) => {
         profilePicturePath: "defaultUser.png",
         role: 'user',
         isVerified: false,
-        tokenemail,
+        tokenemail: tokenemail2,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -144,7 +148,7 @@ app.post('/signup', (req, res) => {
 
       newUser.save().then((user) => {
         const token = generateToken(user);
-        res.status(201).send({ token });
+        res.status(201).send({ message : 'User created', token });
       }).catch((error) => {
         console.error('Error while saving the user', error);
         res.status(500).send({ error: 'Error while saving the user' });
@@ -180,7 +184,7 @@ app.post('/verify', (req, res) => {
 });
 
 app.post('/forgot-password', (req, res) => {
-  const { email, token } = req.body;
+  const { email } = req.body;
 
   // Vérifier si l'utilisateur avec cet e-mail existe dans votre base de données
   // Si l'utilisateur existe, générer un token de réinitialisation de mot de passe
@@ -189,14 +193,12 @@ app.post('/forgot-password', (req, res) => {
   db.User.findOne({ where: { email } })
   .then((user) => {
     if (user) {
-      user.update({ tokenemail: token }).then(() => {
+
+      
+
   // Envoie d'un e-mail à l'utilisateur avec le lien de réinitialisation contenant le token
-    sendResetEmail(email, token);
+    sendResetEmail(email, user.tokenemail);
     res.status(200).json({ message: "Reset email sent successfully." });
-  }).catch((error) => {
-    console.error('Error while updating user', error);
-    res.status(500).send({ error: 'Error while updating user' });
-  });
   } else {
     res.status(404).json({ error: "User not found." });
   }
@@ -242,7 +244,7 @@ app.post('/reset-password',  (req, res) => {
     if (user) {
       const hashedPassword = bcrypt.hashSync(password, 10);
       user.update({ password: hashedPassword }).then(() => {
-        res.status(200).send({ message: 'password update', status: 'success' });
+        res.status(200).send({ message: 'Your Password is updated', status: 'success' });
       }).catch((error) => {
         console.error('Error while updating user', error);
         res.status(500).send({ error: 'Error while updating user' });

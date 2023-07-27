@@ -14,22 +14,22 @@ files.forEach((file) => {
 });
 
 database["User"].hasMany(database["UserCategory"], {
-   foreignKey: "UserId",
+   foreignKey: "userId",
    as: "a"
 });
 
 database["UserCategory"].belongsTo(database["User"], {
-   foreignKey: "UserId",
+   foreignKey: "userId",
    as: "user"
 });
 
 database["Category"].hasMany(database["UserCategory"], {
-   foreignKey: "CategoryId",
+   foreignKey: "categoryId",
    as: "c"
 });
 
 database["UserCategory"].belongsTo(database["Category"], {
-   foreignKey: "CategoryId",
+   foreignKey: "categoryId",
    as: "category"
 });
 

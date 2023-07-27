@@ -69,8 +69,8 @@ const router = createRouter({
     },
     {
       path: '/waiting/:categoryId',
-      name: 'waintingRoom',
-      component: () => import('../views/WaintingGameView.vue')
+      name: 'waitingRoom',
+      component: () => import('../views/WaitingGameView.vue')
     },
     {
       path: '/scoreboard',

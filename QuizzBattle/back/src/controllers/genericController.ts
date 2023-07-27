@@ -106,6 +106,23 @@ function GenericController(service, options = {}) {
     }
   }
 
+  async function createOrIncrement(req, res, next) {
+    console.log('req.body', req.body);
+    try {
+      const [user, created] = await service.createOrIncrement(
+        req.body
+      );
+
+      if (!user) {
+        res.sendStatus(404);
+      } else {
+        res.status(created ? 201 : 200).json(user);
+      }  
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async function update(req, res, next) {
     try {
       const user = await service.updateOne(
@@ -147,6 +164,7 @@ function GenericController(service, options = {}) {
     replace,
     translate,
     update,
+    createOrIncrement,
   };
 }
 

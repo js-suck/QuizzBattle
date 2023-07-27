@@ -30,6 +30,11 @@ const router = createRouter({
       component: Singup
     },
     {
+      path: '/profile/:id/show',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue')
+    },
+    {
       path: '/history',
       name: 'history',
       component: () => import('../views/HistoryView.vue')

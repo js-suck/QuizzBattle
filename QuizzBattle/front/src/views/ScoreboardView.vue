@@ -137,7 +137,6 @@ onMounted(() => {
             return (player.score / player.gamesPlayed).toFixed(2);
         }
         };
-
     const currentPage = ref(1);
 
     const paginatedPlayers = computed(() => {

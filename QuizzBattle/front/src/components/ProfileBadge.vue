@@ -1,13 +1,19 @@
 <template>
   <div class="profile-badge-wrapper">
-    <div class="flex items-center justify-center w-12 h-12 rounded-full overflow-hidden" :style="{
-      backgroundColor: color
+    <div class="flex items-center justify-center rounded-full overflow-hidden" :style="{
+      backgroundColor: color,
+      width: width,
+      height: height
     }">
       <img
-        src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+        :src="image"
         alt="Profil" class="w-full h-full object-cover" />
     </div>
-    <h4>{{ name }}</h4>
+    <h4
+    :style="{
+      color: textColor
+    }"
+    >{{ name }}</h4>
     {{ score }}
   </div>
 </template>
@@ -23,12 +29,32 @@ export default {
     name: {
       type: String,
       required: true,
-      default: ""
+      default: "User"
     },
     score: {
       type: Number,
       required: false,
       default: 0
+    },
+    image : {
+        type: String,
+        required: false,
+        default: "https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+    },
+    width: {
+      type: String,
+      required: false,
+      default: "3rem"
+    },
+    height: {
+      type: String,
+      required: false,
+      default: "3rem"
+    },
+    textColor: {
+      type: String,
+      required: false,
+      default: "white"
     }
   },
 
@@ -36,7 +62,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .profile-badge-wrapper {
   display: flex;
   flex-direction: column;
@@ -44,8 +70,4 @@ export default {
   align-items: center;
 }
 
-h4 {
-  margin-top: 0.5rem;
-  color: white;
-}
 </style>

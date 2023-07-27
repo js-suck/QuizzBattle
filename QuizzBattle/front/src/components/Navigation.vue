@@ -31,6 +31,7 @@
           <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
           <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
+          <v-list-item prepend-icon="mid-logout" title="Logout" value="logout" @click="logout"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main >
@@ -44,8 +45,26 @@ import { inject, ref } from 'vue'
 
 import { theme } from '../constants/theme'
 import { userManagerKey } from '../contexts/userManagerKeys'
+import { useRoute } from 'vue-router';
+
+
+
 const {user} = inject(userManagerKey)
 const drawer = ref(true)
-        const rail = ref(true)
+const rail = ref(true)
+
+const router = useRoute();
+
+const logout = () => {
+  // Clear the JWT token from local storage
+  localStorage.removeItem('token');
+
+  console.log('User logged out');
+
+  // Redirect the user to the login page or home page
+  // For example, using Vue Router: router.push('/login');
+
+  window.location.href = '/login';
+};
 
 </script>

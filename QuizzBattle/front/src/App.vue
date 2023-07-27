@@ -1,83 +1,36 @@
 <template>
-  <div>
-    <h1>Quiz en temps réel</h1>
-    <div v-if="gameStarted">
-      <Question :question="currentQuestion" @answer="submitAnswer" />
-      <div v-if="showResults">
-        <h2>Résultats</h2>
-        <ul>
-          <li v-for="(score, playerId) in playerScores" :key="playerId">
-            Joueur {{ playerId }} : {{ score }} points
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div v-else>
-      <button @click="startGame">Commencer le jeu</button>
-    </div>
-  </div>
+  <ThemeProviderManager>
+  <UserManager>
+    <QuizzProvider>
+    <router-view/>
+    </QuizzProvider>
+  </UserManager>
+</ThemeProviderManager>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import UserManager from './contexts/UserManager.vue';
+import QuizzProvider from './contexts/QuizzProvider.vue'
+import ThemeProviderManager from './contexts/ThemeProvider.vue'
+import Navigation from "./components/Navigation.vue"
+import jwtDecode from 'jwt-decode';
+
+const token = localStorage.getItem('token');
+const user = ref(token ? jwtDecode(token) : null);
+
 import io from 'socket.io-client';
-import axios from 'axios';
-
-import Question from './components/Question.vue';
 import { API_URL } from './constants/index';
-
-export default {
-  components: {
-    Question
-  },
-  data() {
-    return {
-      socket: null,
-      gameStarted: false,
-      currentQuestion: null,
-      playerScores: {},
-      showResults: false,
-      quizzList: null,
-    };
-  },
-  created() {
+const socket = io(API_URL);
 
 
+// check if socket is deconnected
+socket.on('disconnect', () => {
+  console.log('Disconnected from socket');
+});
 
-    this.socket = io(API_URL); // Remplacez l'URL par celle de votre serveur Socket.IO
+socket.on("userConnected", () => {
+  console.log("new user connected")
+})
 
-    this.socket.on('connect', () => {
-      console.log('Connecté au serveur Socket.IO');
-    });
-
-    this.socket.on('question', (question) => {
-      this.currentQuestion = question;
-    });
-
-    this.socket.on('results', (scores) => {
-      this.playerScores = scores;
-      this.showResults = true;
-    });
-
-     axios.get(`${API_URL}/api/quizzes`)  
-    .then(response => {
-      // La réponse contient les données des quiz
-      const quizList = response.data;
-
-      // Faites quelque chose avec les données des quiz, par exemple, affectez-les à une variable dans votre composant
-      this.quizList = quizList;
-    })
-    .catch(error => {
-      console.error('Erreur lors de la récupération des quiz', error);
-    });
-  },
-  methods: {
-    startGame() {
-      this.socket.emit('startGame');
-      this.gameStarted = true;
-    },
-    submitAnswer(answer) {
-      this.socket.emit('answer', answer);
-    }
-  }
-};
 </script>

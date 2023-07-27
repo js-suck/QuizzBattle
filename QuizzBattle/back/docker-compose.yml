@@ -2,13 +2,26 @@ version: '3.6'
 
 services:
   mongo:
-    image: mongo
+    image: mongo:4.4.6
     ports:
       - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - db-data:/data/db
+      - db-dataa:/data/db
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
 volumes:
-  db-data: {}
+  db-dataa: {}
+  pg-data: {}

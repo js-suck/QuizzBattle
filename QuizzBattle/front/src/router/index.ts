@@ -5,7 +5,6 @@ import Singup from '../views/Signup.vue'
 /*
 const isAdmin = true; // Remplacez cette variable par la logique de vérification du rôle d'administrateur
 
-
 // Middleware pour vérifier le rôle de l'utilisateur
 const roleCheckMiddleware = (to: any, from: any, next: any) => {
   if (isAdmin) {
@@ -113,6 +112,15 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/SurveysList.vue')
+//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+    },
+    {
+      path: '/admin/survey/show/:id',
+      name: 'admin_survey_show_id',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/SurveyShow.vue')
 //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     }
   ]

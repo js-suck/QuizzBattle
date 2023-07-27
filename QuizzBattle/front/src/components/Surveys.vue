@@ -1,73 +1,47 @@
 <template>
-    <div class="p-4 sm:ml-64 flex">
-            <div class="card flex mr-4">
+    <SurveyModalForm />
+    <div class="p-4 sm:ml-64 flex flex-wrap">
+            <div v-for="survey in surveys.value" :key="survey.id" class="card m-2 flex min-w-20 max-w-20 mr-4" @click="$router.push(`/admin/survey/show/${survey.id}`)">
+                <img
+                    v-if="survey.image_url"
+                    :src="`${API_URL}/uploads/${survey.image_url}`"
+                    alt="Survey Picture"
+                    id="profile-picture-img"
+                    class="w-full h-full object-cover"
+                    ref="profilePicture"
+                />
+                <img
+                    v-else
+                    src="@/assets/images/LogoQuizzBattleWithoutBG.png"
+                    alt="Profile Picture"
+                    id="profile-picture-img"
+                    class="w-full h-full object-cover"
+                    ref="profilePicture"
+                />
                 <div class="w-full flex flex-row justify-between	">
-                    <span class="title-stat">34000</span>
-                    <svg class="w-6 h-6 text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-2 3h4a4 4 0 0 1 4 4v2H1v-2a4 4 0 0 1 4-4Z"/>
-                    </svg>
+                    <span class="title-stat">{{survey.name}}</span>
                 </div>
-                <span>User activity this mounth</span>
+                <!-- me nique le front si dscp trolong<span>{{survey.description}}</span>-->
             </div>
-        <!-- Dynamic pagination
-            <nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
-                <span class="px-6 py-4 text-sm font-normal text-gray-500">
-                    Showing <span class="font-semibold text-gray-900">{{ startIndex }}-{{ endIndex }}</span> of
-                    <span class="font-semibold text-gray-900">{{ users.length }}</span>
-                </span>
-                <ul class="px-6 py-4 inline-flex -space-x-px text-sm">
-                    <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700" @click="goToPage(1)">First</a>
-                    </li>
-
-                    <template v-for="pageNumber in visiblePages">
-                        <li v-if="pageNumber === currentPage">
-                            <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700">{{ pageNumber }}</a>
-                        </li>
-                        <li v-else>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" @click="goToPage(pageNumber)">{{ pageNumber }}</a>
-                        </li>
-                    </template>
-                    <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700" @click="goToPage(pageCount)">Last({{ pageCount }})</a>
-                    </li>
-                </ul>
-            </nav>-->
         </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import {onMounted, reactive} from 'vue';
+import axios from 'axios';
+import {API_URL} from "@/constants";
+const surveys = reactive([]);
+import { RouterLink } from 'vue-router';
+import SurveyModalForm from "@/components/SurveyModalForm.vue";
 
-
-/*const currentPage = ref(1);
-
-const paginatedUsers = computed(() => {
-    const startIndex = (currentPage.value - 1) * 10;
-    const endIndex = startIndex + 10;
-    return surveys.slice(startIndex, endIndex);
+onMounted(() => {
+    axios.get(`${API_URL}/api//category/`)
+        .then((response) => {
+            surveys.value = response.data;
+            console.log(surveys.value);
+        })
+        .catch((error) => {
+            console.error('Erreur lors de la récupération des quiz', error);
+        });
 });
-
-const itemsPerPage = 10;
-
-const pageCount = computed(() => Math.ceil(users.length / itemsPerPage));
-
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage + 1);
-const endIndex = computed(() => Math.min(currentPage.value * itemsPerPage, users.length));
-
-// Compute visible pages (current page and two pages before and after it)
-const visiblePages = computed(() => {
-    const pagesBefore = Math.max(currentPage.value - 2, 1);
-    const pagesAfter = Math.min(currentPage.value + 2, pageCount.value);
-    const visiblePageNumbers = [];
-    for (let i = pagesBefore; i <= pagesAfter; i++) {
-        visiblePageNumbers.push(i);
-    }
-    return visiblePageNumbers;
-});
-
-// Function to handle page change event
-function goToPage(pageNumber) {
-    currentPage.value = pageNumber;
-}*/
 </script>

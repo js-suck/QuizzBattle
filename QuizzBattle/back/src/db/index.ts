@@ -38,10 +38,21 @@ database["Answer"].belongsTo(database["Question"], {
        as: "question",
     });
 
- // reverse 
- database["Question"].hasMany(database["Answer"], {
-        foreignKey: "questionId",
-        as: "answers",
-   })
+// reverse
+database["Question"].hasMany(database["Answer"], {
+    foreignKey: "questionId",
+    as: "answers",
+});
+
+database["Question"].belongsTo(database["Category"], {
+    foreignKey: "categoryId",
+    as: "category",
+});
+
+database["Category"].hasMany(database["Question"], {
+    foreignKey: "categoryId",
+    as: "question",
+});
+
 
 module.exports = database;

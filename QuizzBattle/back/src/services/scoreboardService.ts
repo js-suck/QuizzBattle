@@ -9,7 +9,7 @@ class ScoreboardService {
         const users = await User.findAll({
             attributes: [
                 'nickname',
-                'score', 
+                'score',
                 'gamesPlayed',
             ],
             where: {

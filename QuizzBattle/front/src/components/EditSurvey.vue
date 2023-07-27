@@ -20,6 +20,7 @@
                     <div class="mb-6">
                         <label class="block mb-2 font-medium text-gray-700">Profile Picture:</label>
                         <div class="flex items-center">
+                            <!-- Show the current profile picture -->
                             <div class="w-16 h-16 rounded-full overflow-hidden">
                                 <img
                                     v-if="!beforeChange"
@@ -61,9 +62,6 @@
                     </div>
                 </form>
             </div>
-            <div class="card flex mr-4">
-                <span>Match History In Coming</span>
-            </div>
         </div>
     </div>
 </template>
@@ -72,26 +70,28 @@
 import { onMounted, defineProps, ref} from 'vue';
 import axios from "axios";
 import { API_URL } from "@/constants";
-import { FILE_PATHS } from "@/constants/files";
+
 
 const responseUser = ref({});
+const categoryData = ref({});
 const fileInputRef = ref(null);
 const profilePicture = ref(null);
 const beforeChange = ref(false);
 const profilePictureSrc = ref(''); // To store the profile picture URL
 
 const props = defineProps({
-    user: {
+    survey: {
         required: true,
         type: String,
     },
 });
 
 onMounted(() => {
+    console.log(props.survey)
     // Fetch the user data
-    axios.get(`${API_URL}/api/users/show/${props.user}`)
+    axios.get(`${API_URL}/trivia/categories`, props.survey)
         .then((response) => {
-            responseUser.value = response.data;
+            categoryData.value = response.data;
         })
         .catch((error) => {
             console.error('Error while fetching user data:', error);
@@ -127,11 +127,11 @@ async function submitForm() {
         const userUpdateResponse = await axios.put(`${API_URL}/api/users/edit/${props.user}`, formData);
         responseUser.value = userUpdateResponse.data;
         console.log('Updated user data:', responseUser.value);
-
     } catch (error) {
         console.error('Error while updating user data:', error);
     }
 }
+
 </script>
 <style>
 .hidden-input {

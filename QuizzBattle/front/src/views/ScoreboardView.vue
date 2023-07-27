@@ -107,9 +107,9 @@ onMounted(() => {
         categories.value = response.data;
         });
 
-        
+
     });
-    
+
     watch(selectedCategory, async (newValue) => {
         if (newValue === null) {
             axios.get(`${API_URL}/api/scoreboard`).then((response) => {
@@ -137,7 +137,6 @@ onMounted(() => {
             return (player.score / player.gamesPlayed).toFixed(2);
         }
         };
-
     const currentPage = ref(1);
 
     const paginatedPlayers = computed(() => {

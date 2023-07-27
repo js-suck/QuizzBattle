@@ -76,12 +76,12 @@ db.connection
     try {
       const question1 = db.Question.create({
         label: "Quelle est la capitale de la France ?",
-        quizzId: 1,
+        categoryId: 1,
       });
 
       const question2 = db.Question.create({
         label: "Quelle est la couleur du ciel ?",
-        quizzId: 1,
+        categoryId: 1,
       });
 
   

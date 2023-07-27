@@ -1,6 +1,8 @@
 import express from 'express';
 import http from 'http';
-
+import path from 'path';
+import mongoose = require('mongoose');
+import { mongoURI } from './config/db'
 import { initializeSocket } from './config/socket';
 import { initMongo } from './db/mongo/db';
 import {
@@ -37,7 +39,7 @@ pgClient.on('notification', async (msg) => {
     try {
       console.log(msg)
       const [id, firstname] = msg.payload.split(",");
-      const newData = await getUserDataFromPostgres(id); 
+      const newData = await getUserDataFromPostgres(id);
       console.log("notification user update", id, newData)
      await updateMongoDBGame(id, newData);
     } catch (error) {
@@ -46,8 +48,8 @@ pgClient.on('notification', async (msg) => {
   }
 });
 
-pgClient.query('LISTEN user_update'); 
-  
+pgClient.query('LISTEN user_update');
+
 
 const db = require('./db');
 const app = express();
@@ -65,14 +67,14 @@ const server = http.createServer(app);
 
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); 
+const upload = multer({ dest: __dirname + '/uploads/' });
 
 
 app.use(express.urlencoded({ extended: false }));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
-
   if (!req['file']) {
     res.send('Aucun fichier sélectionné.');
   } else {
@@ -107,13 +109,13 @@ app.post('/api/login', (req, res) => {
         res.status(401).send({ errors: "Invalid password" });
       }
     } else {
-      res.status(404).send({ errors: 'User not found' }); 
+      res.status(404).send({ errors: 'User not found' });
     }
   })
   .catch((error) => {
     // Error while querying the database
     console.log(error);
-    res.status(500).send({ errors: 'Internal server error' }); 
+    res.status(500).send({ errors: 'Internal server error' });
   });
 
 });
@@ -296,7 +298,7 @@ db.User.sync().then(() => {
     server.listen(3000, () => {
         console.log('Serveur Socket.IO en cours d\'exécution sur le port 3000');
     });
-  
+
 
 
   app.use('/api', apiRouter);

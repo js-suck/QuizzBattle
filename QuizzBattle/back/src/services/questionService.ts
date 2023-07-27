@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import { formatQuestionsToMimickTrivia } from "../helpers/quizzHelper";
+const Category = require('../db').Category;
 const ValidationError = require("../errors/ValidationError");
 const SequelizeDb = require("sequelize");
 const Question = require("../db").Question;
@@ -84,6 +85,25 @@ class QuizzesService {
   async deleteOne(id) {
     const nbDeleted = await Question.destroy({ where: { id } });
     return nbDeleted === 1;
+  }
+  async findAllBy(categoryId) {
+    const questions = await Question.findAll({
+      attributes: ["label"],
+      include: [
+        {
+          model: Category,
+          attributes: ["name", "description", "image_url"],
+          as: 'category' // On n'a pas besoin des attributs de la table Category dans ce cas
+        },
+      ],
+    });
+    const transformedArray = questions.map(item => ({
+      "label": item.label,
+      "name": item.category.name,
+      "description": item.category.description,
+      "image_url": item.category.image_url
+    }));
+    return transformedArray;
   }
 }
 

@@ -31,7 +31,7 @@
           <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
           <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
-          <v-list-item prepend-icon="mid-logout" title="Logout" value="logout" @click="logout"></v-list-item>
+          <v-list-item prepend-icon="mdi-logout" title="Logout" value="logout" @click="logout"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main >

@@ -27,10 +27,10 @@ const vuetify = createVuetify({
 
 // Définir une fonction pour changer la classe du body
 function changeBodyClass(to) {
-  if (to.name !== 'StartQuizz') {
-    document.body.classList.add('black-background');
+  if (to.name === 'game' || to.name === 'waitingRoom') {
+    document.body.classList.add('black-background')
   } else {
-    document.body.classList.remove('black-background');
+    document.body.classList.remove('black-background')
   }
 }
 

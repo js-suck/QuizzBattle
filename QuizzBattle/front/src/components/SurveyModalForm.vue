@@ -114,6 +114,7 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {API_URL} from "@/constants";
+import client from '../helpers/client';
 const fileInputRef = ref(null);
 const categoryData = ref(null); // Add this line to define categoryData
 
@@ -162,7 +163,7 @@ export default {
             formData.append('profileImage', this.$refs.fileInputRef.files[0]);
             formData.append('image_url', this.$refs.fileInputRef.files[0].name);
 
-            axios.post(`${API_URL}/api/category/add`, formData)
+            client.post(`${API_URL}/api/category/add`, formData)
                 .then((response) => {
                     const categoryId = response.data.id;
                     const questionFormData = new FormData();

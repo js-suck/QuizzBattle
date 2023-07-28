@@ -1,6 +1,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.css" rel="stylesheet" />
 
 <template>
+    <Navigation>
     <h1>Scoreboard</h1>
     <div class="p-4 sm:ml-64 flex">
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
@@ -82,28 +83,30 @@
             </nav>
         </div>
     </div>
+</Navigation>
 </template>
 
 <script setup lang="ts">
 import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js';
 import { ref, computed, onMounted, watch } from 'vue';
 import {API_URL} from '../constants';
-import axios from 'axios'
+import Navigation from "@/components/Navigation.vue";
 const players = ref([]);
 const categories = ref([]);
 const selectedCategory = ref(null);
+import client from "@/helpers/client"
 
 onMounted(() => {
-        axios
+        client
         .get(`${API_URL}/api/scoreboard`)
         .then((response) => {
         players.value = response.data
         })
         .catch((error) => {
-        console.error('Erreur lors de la récupération des quiz', error)
+        console.error('Erreur lors de la récupération des scores', error)
         });
 
-        axios.get(`${API_URL}/api/category`).then((response) => {
+        client.get(`${API_URL}/api/category`).then((response) => {
         categories.value = response.data;
         });
 
@@ -112,11 +115,11 @@ onMounted(() => {
 
     watch(selectedCategory, async (newValue) => {
         if (newValue === null) {
-            axios.get(`${API_URL}/api/scoreboard`).then((response) => {
+            client.get(`${API_URL}/api/scoreboard`).then((response) => {
                 players.value = response.data;
             });
         } else {
-            axios.get(`${API_URL}/api/scoreboard/${newValue}`).then((response) => {
+            client.get(`${API_URL}/api/scoreboard/${newValue}`).then((response) => {
                 players.value = response.data;
             });
         }

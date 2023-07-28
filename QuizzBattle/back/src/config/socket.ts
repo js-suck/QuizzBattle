@@ -23,11 +23,8 @@ io.on('connection', (socket: any) => {
     connectedSockets.push(socket.id);
   
     socket.on('disconnect', () => {
-      const index = connectedSockets.indexOf(socket.id);
-      if (index !== -1) {
-        connectedSockets.splice(index, 1);
-      }
-    });
+
+     });
   
     io.emit('userConnected', null);
   
@@ -40,7 +37,18 @@ io.on('connection', (socket: any) => {
   
   console.log(getConnectedSockets());
     socket.on('disconnect', () => {
-      console.log('Déconnexion socket');
+      const index = connectedSockets.indexOf(socket.id);
+      console.log(index, socket.id, connectedSockets)
+      if (index !== -1) {
+        connectedSockets.splice(index, 1);
+      }
+      const user = connectedSockets.find((id) => id == socket.id);
+      console.log(user)
+      if (user) {
+        const { roomId } = user;
+        console.log("SEND USER IS DISCONNECTED")
+        socket.to(roomId).emit('userDisconnected', user.id);
+      }
     });
   
   
@@ -70,6 +78,7 @@ io.on('connection', (socket: any) => {
         }
 
         rooms[category].push(room);
+        console.log(rooms)
         socket.join(room.id);
       } else {
 

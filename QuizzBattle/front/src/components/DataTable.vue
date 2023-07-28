@@ -97,10 +97,11 @@
 import axios from 'axios';
 import { onMounted, ref , computed} from 'vue';
 import {API_URL} from '../constants';
+import client from '../helpers/client';
 const usersList = ref([]); // Reactive ref to hold the user data
 
 onMounted(() => {
-    axios.get(`${API_URL}/api/users`)
+    client.get(`${API_URL}/api/users`)
         .then((response) => {
             usersList.value = response.data;
         })

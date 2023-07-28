@@ -12,7 +12,7 @@
       >
         <v-list-item
         v-if="user"
-          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+          :prepend-avatar="`${API_URL}/uploads/${user.profilePicturePath}`"
           :title="`${user.firstname}  ${user.lastname}`"
           nav
         >
@@ -27,10 +27,10 @@
 
         <v-divider></v-divider>
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-history" title="Game history" value="history"></v-list-item>
+          <v-list-item to="/history" prepend-icon="mdi-history" title="Game history" value="history"></v-list-item>
           <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
           <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
+          <v-list-item to="/" prepend-icon="mdi-home-variant-outline" title="dashboard" value="dashboard"></v-list-item>
           <v-list-item prepend-icon="mdi-logout" title="Logout" value="logout" @click="logout"></v-list-item>
         </v-list>
       </v-navigation-drawer>
@@ -42,7 +42,7 @@
 </template>
 <script setup>
 import { inject, ref } from 'vue'
-
+import { API_URL } from '../constants'
 import { theme } from '../constants/theme'
 import { userManagerKey } from '../contexts/userManagerKeys'
 import { useRoute } from 'vue-router';

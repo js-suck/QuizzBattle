@@ -84,6 +84,7 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
 });
 
 
+
 initializeSocket(server)
 initMongo()
 app.use(express.json())
@@ -103,7 +104,6 @@ app.post('/api/login', (req, res) => {
       // Check if password is correct (TODO: replace with comparePassword when encrypted registration is available)
       if (check) {
         const token = generateToken(user);
-        console.log(token, "uii");
         res.status(200).send({ token });
       } else {
         res.status(401).send({ errors: "Invalid password" });
@@ -124,7 +124,6 @@ app.post('/signup', (req, res) => {
   const { email, password, firstname, lastname } = req.body;
 
   const token = generateToken(req.body);
-  console.log(token, "uii");
   const tokenemail2 = token.replaceAll('.', '');
 
   db.User.findOne({ where: { email } })
@@ -278,9 +277,8 @@ db.User.sync().then(() => {
       console.log('Le modèle User existe déjà. Aucun nouvel utilisateur ne sera créé.');
     } else {
       const newUser = db.User.build({
-        username: 'John Doe',
-        firstName: 'John',
-        lastName: 'Doe',
+        firstname: 'John',
+        lastname: 'Doe',
         nickname: 'JohnDoe',
         email: 'test@gmail.com',
         profilePicturePath: "defaultUser.png",
@@ -305,5 +303,6 @@ db.User.sync().then(() => {
     });
 
 
+  app.use('/api', authenticateToken);
 
   app.use('/api', apiRouter);

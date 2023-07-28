@@ -22,14 +22,6 @@ watch(players,
     }
 )
 
-
-
-// watch score 
-// if score change, then update the score in the player list
-// if score change, then update the score in the player list
-
-
-
 const props = defineProps({
     color: {
         type: String,

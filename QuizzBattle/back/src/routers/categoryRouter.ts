@@ -5,7 +5,7 @@ const multer = require('multer');
 import path from 'path';
 import usersRouter from "./userRouter";
 const storage = multer.diskStorage({
-    destination: 'src/uploads/',
+    destination: 'uploads/',
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const fileExtension = path.extname(file.originalname);

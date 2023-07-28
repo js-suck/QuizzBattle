@@ -1,64 +1,62 @@
 <template>
     <div class="p-4 sm:ml-64 flex flex-col">
-        <h2 class="text-2xl font-semibold mb-4">User Sheet</h2>
+        <h2 class="text-2xl font-semibold mb-4">User Info</h2>
         <div class="container flex">
-            <div class="card flex mr-4">
-                <form class="my-4 w-full" @submit.prevent="submitForm" enctype="multipart/form-data">
-                    <div class="mb-6">
-                        <label for="lastname" class="block mb-2 font-medium text-gray-700">Lastname :</label>
-                        <input v-model.lazy="responseUser.lastname" type="text" id="lastname" name="lastname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
-                    </div>
-                    <div class="mb-6">
-                        <label for="firstname" class="block mb-2 font-medium text-gray-700">Firstname :</label>
-                        <input v-model.lazy="responseUser.firstname" type="text" id="firstname" name="firstname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
-                    </div>
-                    <div class="mb-6">
-                        <label for="email" class="block mb-2 font-medium text-gray-700">Email :</label>
-                        <input v-model.lazy="responseUser.email" type="email" id="email" name="email" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
-                    </div>
-                    <!-- Profile picture card -->
-                    <div class="mb-6">
-                        <label class="block mb-2 font-medium text-gray-700">Profile Picture:</label>
-                        <div class="flex items-center">
-                            <div class="w-16 h-16 rounded-full overflow-hidden">
-                                <img
-                                    v-if="!beforeChange"
-                                    :src="`${API_URL}/uploads/${user.profilePicturePath}`"
-                                    alt="Profile Picture"
-                                    id="profile-picture-img"
-                                    class="w-full h-full object-cover"
-                                    ref="profilePicture"
-                                />
-                                <img
-                                    v-else
-                                    v-bind:src="profilePictureSrc"
-                                    alt="Profile Picture"
-                                    id="profile-picture-img"
-                                    class="w-full h-full object-cover"
-                                    ref="profilePicture"
-                                />
-                                <input
-                                    type="file"
-                                    id="profilePictures"
-                                    name="profilePictures"
-                                    class="ml-4 hidden-input"
-                                    accept="image/*"
-                                    multiple
-                                    @change="changeProfilePicture"
-                                    ref="fileInputRef"
-                                />
-                            </div>
-                            <!-- Fake button to replace the file input -->
-                            <label for="profilePictures" class="ml-4 fake-button">Change Picture</label>
+            <form class="my-4 w-full" @submit.prevent="submitForm" enctype="multipart/form-data">
+                <div class="mb-6">
+                    <label for="lastname" class="block mb-2 font-medium text-gray-700">Lastname :</label>
+                    <input v-model.lazy="responseUser.lastname" type="text" id="lastname" name="lastname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                </div>
+                <div class="mb-6">
+                    <label for="firstname" class="block mb-2 font-medium text-gray-700">Firstname :</label>
+                    <input v-model.lazy="responseUser.firstname" type="text" id="firstname" name="firstname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                </div>
+                <div class="mb-6">
+                    <label for="email" class="block mb-2 font-medium text-gray-700">Email :</label>
+                    <input v-model.lazy="responseUser.email" type="email" id="email" name="email" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                </div>
+                <!-- Profile picture card -->
+                <div class="mb-6">
+                    <label class="block mb-2 font-medium text-gray-700">Profile Picture:</label>
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full overflow-hidden">
+                            <img
+                                v-if="!beforeChange"
+                                :src="`${API_URL}/uploads/${user.profilePicturePath}`"
+                                alt="Profile Picture"
+                                id="profile-picture-img"
+                                class="w-full h-full object-cover"
+                                ref="profilePicture"
+                            />
+                            <img
+                                v-else
+                                v-bind:src="profilePictureSrc"
+                                alt="Profile Picture"
+                                id="profile-picture-img"
+                                class="w-full h-full object-cover"
+                                ref="profilePicture"
+                            />
+                            <input
+                                type="file"
+                                id="profilePictures"
+                                name="profilePictures"
+                                class="ml-4 hidden-input"
+                                accept="image/*"
+                                multiple
+                                @change="changeProfilePicture"
+                                ref="fileInputRef"
+                            />
                         </div>
+                        <!-- Fake button to replace the file input -->
+                        <label for="profilePictures" class="ml-4 fake-button">Change Picture</label>
                     </div>
-                    <div class="flex flex-row justify-between">
-                        <div class="mt-6">
-                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
-                        </div>
+                </div>
+                <div class="flex flex-row justify-between">
+                    <div class="mt-6">
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </template>
@@ -139,13 +137,17 @@ const getUserDataFromToken = () => {
 const submitForm = async () => {
     try {
         console.log('toto', fileInputRef.value.files[0], fileInputRef.value.files[0].name)
-        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${responseUser.value.id}`, {
-            lastname: responseUser.value.lastname,
-            firstname: responseUser.value.firstname,
-            email: responseUser.value.email,
-            profileImage: fileInputRef.value.files[0],
-            profilePicturePath: fileInputRef.value.files[0]?.name,
-        });
+        const formData = new FormData();
+        formData.append('lastname', responseUser.value.lastname);
+        formData.append('description', responseUser.value.lastname);
+        formData.append('email', responseUser.value.email);
+        if(fileInputRef.value.files[0])
+        {
+            formData.append('profileImage', fileInputRef.value.files[0]);
+            formData.append('profilePicturePath', fileInputRef.value.files[0].name);
+
+        }
+        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${responseUser.value.id}`, formData);
         responseUser.value = userUpdateResponse.data;
 
         console.log('Updated user data:', responseUser.value);

@@ -16,7 +16,7 @@ const usersRouter = express.Router();
 const destinationFolder = path.join(__dirname, 'uploads/');
 
 const storage = multer.diskStorage({
-    destination: 'src/uploads/',
+    destination: 'uploads/',
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const fileExtension = path.extname(file.originalname);
@@ -44,7 +44,9 @@ usersRouter.put(
     upload.single('profileImage'),
     (req, res, next) => {
         if (req.params.id != req.user?.id && !req.isAdmin) {
-           return res.status(404).send('Unauthorized');
+            console.log('icicici', req.file, req.body);
+
+            return res.status(404).send('Unauthorized');
         }
          next()
     },

@@ -68,11 +68,12 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { onMounted, defineProps, ref} from 'vue';
 import axios from "axios";
 import { API_URL } from "@/constants";
 import { FILE_PATHS } from "@/constants/files";
+import client from '../helpers/client';
 
 const responseUser = ref({});
 const fileInputRef = ref(null);
@@ -89,7 +90,7 @@ const props = defineProps({
 
 onMounted(() => {
     // Fetch the user data
-    axios.get(`${API_URL}/api/users/show/${props.user}`)
+    client.get(`${API_URL}/api/users/show/${props.user}`)
         .then((response) => {
             responseUser.value = response.data;
         })
@@ -99,7 +100,7 @@ onMounted(() => {
 });
 
 const changeProfilePicture = (event) => {
-    const fileInput = event.target as HTMLInputElement;
+    const fileInput = event.target;
     const files = fileInput.files;
     if (!files || files.length === 0) {
         console.log('No file selected.');
@@ -117,14 +118,19 @@ const changeProfilePicture = (event) => {
 };
 
 async function submitForm() {
+    console.log("submiiiiit")
     try {
         const formData = new FormData();
         formData.append('lastname', responseUser.value.lastname);
         formData.append('firstname', responseUser.value.firstname);
         formData.append('email', responseUser.value.email);
         formData.append('profileImage', fileInputRef.value.files[0]);
-        formData.append('profilePicturePath', fileInputRef.value.files[0].name);
-        const userUpdateResponse = await axios.put(`${API_URL}/api/users/edit/${props.user}`, formData);
+        if(fileInputRef.value.files[0])
+        {
+            formData.append('profilePicturePath', fileInputRef.value.files[0].name);
+
+        }
+        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${props.user}`, formData);
         responseUser.value = userUpdateResponse.data;
         console.log('Updated user data:', responseUser.value);
 

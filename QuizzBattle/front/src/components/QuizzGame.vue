@@ -75,26 +75,36 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch, inject, computed } from 'vue'
-import axios from 'axios'
+import {
+  inject,
+  onMounted,
+  ref,
+  watch
+} from 'vue'
+
+import qs from 'qs'
+import { io } from 'socket.io-client'
+import { useRoute } from 'vue-router'
+
 import { API_URL } from '../constants'
+import {
+  playerManager,
+  questionManager
+} from '../contexts/quizzKeys'
+import { userManagerKey } from '../contexts/userManagerKeys'
+import client from '../helpers/client'
+import { increaseScore } from '../helpers/quizz'
 import GameHeader from './GameHeader/GameHeader.vue'
 import QuestionBlock from './QuestionBlock.vue'
-import ShowResult from "./ShowResults.vue"
-import qs from 'qs'
-import { useRoute } from 'vue-router';
-import { playerManager, questionManager } from '../contexts/quizzKeys'
-import { io } from 'socket.io-client'
-import { increaseScore } from '../helpers/quizz';
-import { userManagerKey } from '../contexts/userManagerKeys'
+import ShowResult from './ShowResults.vue'
+
 const {user} = inject(userManagerKey)
 const theme = inject("theme")
-const {getQuestions,  quizzQuestionList, questionLabel, answerList, questionNumber, isLoading} = inject(questionManager)
+const {getQuestions,  quizzQuestionList, questionLabel, answerList, questionNumber, isLoading, setCategory, category, categoryId} = inject(questionManager)
 const {players, setPlayers, scores} = inject(playerManager)
 const socket = io(API_URL)
 const route = useRoute();  
 const roomId = route.params.id;
-const categoryId = route.params.categoryId;
 const colorVars = [theme.colors.blue, theme.colors.green, theme.colors.orange, theme.colors.red]
 const isElementsRevealed = ref(false)
 const isWinnerQuestion = ref(false)
@@ -105,12 +115,6 @@ const timer = ref(null)
 const transitionEnabled = ref(false)
 const barColor = ref(theme.colors.blue);
 const timeLeftInPercent = ref(0)
-const props = defineProps({
-  category: {
-    required: false,
-    type: String
-  }
-})
 const userQuestionPoints = ref(0)
 
 
@@ -154,12 +158,10 @@ const handleRevealCorrectAnswer = (answer) => {
   timeLeft.value = 10000;
   transitionEnabled.value = false; 
 
-
-  console.log(scores.player1)
   socket.emit("update score", {
     room: roomId,
     user: user.value,
-    category: categoryId,
+    category: category.value,
     score: scores.player1
   })
 
@@ -186,56 +188,55 @@ const handleResult = () => {
   socket.emit("user finished", {
     user: user.value,
     room: roomId,
-    category: categoryId
+    category:  category.value
   })
 
 }
 
-const getQuestionsTrivia = (category) => {
-  let data = qs.stringify({
-    limit: '10',
-    categories: category,
-    difficulties: 'easy',
-    region: 'FR',
-    types: 'text_choice'
-  })
-  let config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: `${API_URL}/api/questions?${queryString}`,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: data
-  }
+// const getQuestionsTrivia = (category) => {
+//   let data = qs.stringify({
+//     limit: '10',
+//     categories: category,
+//     difficulties: 'easy',
+//     region: 'FR',
+//     types: 'text_choice'
+//   })
+//   let config = {
+//     method: 'post',
+//     maxBodyLength: Infinity,
+//     url: `${API_URL}/api/questions?${queryString}`,
+//     headers: {
+//       'Content-Type': 'application/x-www-form-urlencoded'
+//     },
+//     data: data
+//   }
 
 
-  axios
-    .request(config)
-    .then((response) => {
-      quizzQuestionList.value = response.data
-      answerList.value = [
-        response.data[questionNumber.value].correctAnswer,
-        ...response.data[questionNumber.value].incorrectAnswers
-      ]
-      answerList.value = answerList.value.sort(() => Math.random() - 0.5)
-      questionLabel.value = response.data[questionNumber.value].question.text;
-      //isLoading.value = false
-      startTimer();
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la récupération des quiz', error)
-    })
-}
+//   client
+//     .request(config)
+//     .then((response) => {
+//       quizzQuestionList.value = response.data
+//       answerList.value = [
+//         response.data[questionNumber.value].correctAnswer,
+//         ...response.data[questionNumber.value].incorrectAnswers
+//       ]
+//       answerList.value = answerList.value.sort(() => Math.random() - 0.5)
+//       questionLabel.value = response.data[questionNumber.value].question.text;
+//       //isLoading.value = false
+//       startTimer();
+//     })
+//     .catch((error) => {
+//       console.error('Erreur lors de la récupération des quiz', error)
+//     })
+// }
 
 
 
 onMounted(async () => {
 
-  // Emit an event to tell the socket that the user is connected to the roomID
   socket.emit('fetch room', {
     room: roomId,
-    category: categoryId
+    category : category.value
   });
 
   socket.on('startGame', (room) => {
@@ -255,19 +256,22 @@ onMounted(async () => {
 
   socket.on("game finished", (data) => {
 
-    console.log("GAME FINISHED", data)
+    console.log("GAME FINISHED", data, players)
     isGameFinished.value = true;
     clearInterval(timer.value)
     isLoading.value = false;
 
     let gameData = qs.stringify({
     username: user.value.firstname,
-    quizzName: categoryId,
+    quizzName:  category.value,
     userId:    user.value.id,
-    quizzId:   0,
+    quizzId:   categoryId.value,
+    userVsName: players?.value[1].firstname,
+    userVsScore: players?.value[1].score,
     score:     score.value,
-    isWinner:  true,
-    userVsID: 12,
+    isWinner:  players?.value[0].id > players?.value[1].score ,
+    userVsID: players?.value[0].id,
+    userProfilePicture: user.value?.profilePicturePath
 })
 
   let config = {
@@ -281,27 +285,26 @@ onMounted(async () => {
   }
 
 
-  axios
+  client
     .request(config)
     .then((response) => {
-      console.log(response, "requesssst")
-
+      console.log("Game envoyée", response.data)
     })
     .catch((error) => {
-      console.error('Erreur lors de la récupération des quiz', error)
+      console.error("Erreur lors de l'envoie de la game", error)
     })
 
-  axios.put(`${API_URL}/api/users/updateStats/${user.value.id}`, {
+  client.put(`${API_URL}/api/users/updateStats/${user.value.id}`, {
     score: score.value,
     gamesPlayed: 1,
     isIncrement: true
   })
 
-  axios.put(`${API_URL}/api/scoreboard/updateStats`, {
+  client.put(`${API_URL}/api/scoreboard/updateStats`, {
     score: score.value,
     gamesPlayed: 1,
     userId: user.value.id,
-    categoryId: 1 ,// TODO: change this to the category.id
+    categoryId: categoryId.value,
   });
 
   })

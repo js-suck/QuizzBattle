@@ -1,23 +1,68 @@
 <script setup>
-import { reactive, ref, onMounted, provide } from 'vue';
-import jwtDecode from 'jwt-decode';
-import { userManagerKey, userManagerUsersKey, userManagerIsLoadingKey } from './userManagerKeys.js';
-import { API_URL } from '../constants';
+import {
+  onMounted,
+  provide,
+  reactive,
+  ref
+} from 'vue'
+
+import jwtDecode from 'jwt-decode'
+import io from 'socket.io-client'
+
+import { API_URL } from '../constants'
+import client from '../helpers/client.js'
+import {
+  userManagerIsLoadingKey,
+  userManagerKey,
+  userManagerUsersKey
+} from './userManagerKeys.js'
+
 const users = reactive({});
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 const isLoading = ref(false);
 
+
 async function loginUser(_user) {
-  const response = await fetch(`${API_URL}/api/login`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(_user)
-  }).then((response) => {
-    return response.json();
-  });
+  try {
+    const response = await fetch(`${API_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(_user)
+    });
+
+    if (response.status !== 200) {
+      const data = await response.json();
+      return data;
+    } else {
+      const data = await response.json();
+      const token = data.token;
+      user.value = jwtDecode(token);
+      localStorage.setItem('token', token);
+      return data;
+    }
+  } catch (error) {
+
+    console.error('Erreur lors de la requête fetch :', error);
+    return { message: 'Une erreur s\'est produite lors de la connexion.' };
+  }
+}
+
+const refreshUserData = () => {
+
+  // check if we have a token
+  if(token) {
+    client.get(`${API_URL}/api/users/${user.value?.id}`)
+        .then((response) => {
+            user.value = response.data
+        })
+        .catch((error) => {
+            console.error('Erreur lors de la récupération des quiz', error);
+        });
+  }
+
 
 }
 
@@ -71,7 +116,9 @@ function editUser(user) {
 }
 
 onMounted(() => {
-  //fetchUsers();
+  
+refreshUserData()
+
 });
 
 function fetchUsers() {

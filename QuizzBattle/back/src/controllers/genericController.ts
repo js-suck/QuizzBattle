@@ -1,12 +1,13 @@
 const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
 
+
 function GenericController(service, options = {}) {
 
   async function getAll(req, res) {
     const {
       _page = 1,
-      _itemsPerPage = 30,
+      _itemsPerPage = 100,
       _sort = {},
       ...criteria
     } = req.query;
@@ -47,7 +48,7 @@ function GenericController(service, options = {}) {
   }
 
   async function getByName(req, res) {
-    const entity = await service?.findByName(req.params.name);
+    const entity = await service.findByName(req.params.name);
     if (!entity) {
       res.sendStatus(404);
     } else {

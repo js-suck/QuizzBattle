@@ -7,8 +7,9 @@ const Question = require("../db").Question;
 const Answer = require("../db").Answer
 
 
-class QuizzesService {
+class QuestionsService {
   async findAll(criteria, { page = null, itemsPerPage = null, order = {} }) {
+    console.log(criteria)
     const questions = await Question.findAll({
       where: criteria,
       limit: itemsPerPage,
@@ -108,4 +109,4 @@ class QuizzesService {
 }
 
 
-export default QuizzesService
+export default QuestionsService

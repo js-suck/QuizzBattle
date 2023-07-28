@@ -56,8 +56,15 @@
                         <label for="createdAt" class="block mb-2 font-medium text-gray-700">Account created at :</label>
                         <input v-model="responseUser.createdAt" type="email" id="email" name="email" disabled class="disabled mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
                     </div>
-                    <div class="mt-6">
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
+                    <div class="flex flex-row justify-between">
+                        <div class="mt-6">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
+                        </div>
+                        <div class="mt-6">
+                            <button v-if="isUserVerified" type="button" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:bg-red-600" @click="toggleVerification(false)">Delete</button>
+
+                            <button v-else type="button" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:bg-red-600" @click="toggleVerification(true)">Active</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -88,11 +95,15 @@ const props = defineProps({
     },
 });
 
+const isUserVerified = ref(false);
+
 onMounted(() => {
     // Fetch the user data
     client.get(`${API_URL}/api/users/show/${props.user}`)
         .then((response) => {
             responseUser.value = response.data;
+            isUserVerified.value = response.data.isVerified;
+            console.log(responseUser.value);
         })
         .catch((error) => {
             console.error('Error while fetching user data:', error);
@@ -116,9 +127,17 @@ const changeProfilePicture = (event) => {
     reader.readAsDataURL(file);
     beforeChange.value = true
 };
-
+const toggleVerification = (newVerificationStatus) => {
+    axios.put(`${API_URL}/api/users/editIsValidate/${props.user}`, { isVerified: newVerificationStatus })
+        .then(() => {
+            // Mettez à jour la variable de données pour refléter le nouvel état de vérification
+            isUserVerified.value = newVerificationStatus;
+        })
+        .catch((error) => {
+            console.error('Error while updating user verification status:', error);
+        });
+};
 async function submitForm() {
-    console.log("submiiiiit")
     try {
         const formData = new FormData();
         formData.append('lastname', responseUser.value.lastname);

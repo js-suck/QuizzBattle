@@ -15,6 +15,8 @@ class CategoryService {
   }
 
   async create(data) {
+    console.log('rrzearf:', data)
+
     try {
       const category = await Category.create(data);
       return category;
@@ -67,7 +69,6 @@ class CategoryService {
       throw error;
     }
   }
-
   async deleteOne(id) {
     const nbDeleted = await Category.destroy({ where: { id } });
     return nbDeleted === 1;

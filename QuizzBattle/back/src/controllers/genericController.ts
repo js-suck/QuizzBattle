@@ -31,6 +31,7 @@ function GenericController(service, options = {}) {
 
   async function create(req, res, next) {
     try {
+      console.log(req.body, "bodyyyy")
       const user = await service.create(req.body);
       res.status(201).json(user);
     } catch (error) {

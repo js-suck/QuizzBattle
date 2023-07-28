@@ -117,6 +117,7 @@ import {API_URL} from "@/constants";
 import client from '../helpers/client';
 const fileInputRef = ref(null);
 const categoryData = ref(null); // Add this line to define categoryData
+const question = ref(null); // Add this line to define categoryData
 
 
 export default {
@@ -156,49 +157,57 @@ export default {
         },
         submitForm() {
             // Log all the questions to the console
-            console.log(this.categories, this.$refs.fileInputRef.files[0]);
+            //console.log(this.categories, this.$refs.fileInputRef.files[0]);
             const formData = new FormData();
             formData.append('name', this.categories.name);
             formData.append('description', this.categories.description);
             formData.append('profileImage', this.$refs.fileInputRef.files[0]);
             formData.append('image_url', this.$refs.fileInputRef.files[0].name);
+            console.log('tous', formData.entries());
 
             client.post(`${API_URL}/api/category/add`, formData)
                 .then((response) => {
+                    console.log(this.newSection.questions);
                     const categoryId = response.data.id;
-                    const questionFormData = new FormData();
-                    questionFormData.append("categoryId", categoryId);
-                    questionFormData.append("label", question.questionText);
-                    console.log(question.questionText)
-                    axios.post(`${API_URL}/api/question/add`, questionFormData)
-                        .then((questionResponse) => {
-                            questionResponse.value = questionResponse.data;
-
-                            console.log("Question added:", questionResponse.value);
-                        })
-                        .catch((error) => {
-                            console.error('Error while fetching user data:', error);
-                        });
-                    /*axios.post(`${API_URL}/api/question/add`, formData)
-                        .then((response) => {
-
-                        })
-                        .catch((error) => {
-                            console.error('Error while fetching user data:', error);
-                        });
-                    window.location.reload();*/
-
+                    this.submitQuestion(categoryId)
+                    window.location.reload()
                 })
                 .catch((error) => {
                     console.error('Error while fetching user data:', error);
                 });
+        },
+        submitQuestion(id) {
             this.newSection.questions.forEach((question, index) => {
-                console.log(`Question ${index + 1}: ${question.questionText}`);
-                console.log(`  Good Answer: ${question.goodAnswer}`);
-                console.log(`  Bad Answers: ${question.badAnswers.join(', ')}`);
-            });
-        }
 
+                axios.post(`${API_URL}/api/questions/add`, {
+                    "categoryId": id,
+                    "label": question.questionText
+                })
+                    .then((questionResponse) => {
+                        console.log("Question added:", questionResponse.data);
+                        const questionId = questionResponse.data.id;
+                        this.submitAnswer(questionId, question.goodAnswer, question.badAnswers )
+                    })
+                    .catch((error) => {
+                        console.error('Error while adding question data:', error);
+                    });
+            });
+        },
+        submitAnswer(id,goodAnswer,badAnswers) {
+            console.log(id,goodAnswer,badAnswers)
+            axios.post(`${API_URL}/api/answers/add`, {
+                "questionId": id,
+                "label": goodAnswer,
+                "isCorrect": true,
+            })
+            badAnswers.forEach((badAnswer) => {
+                axios.post(`${API_URL}/api/answers/add`, {
+                    "questionId": id,
+                    "label": badAnswer,
+                    "isCorrect": false,
+                })
+            })
+        }
     },
 }
 

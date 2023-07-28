@@ -9,7 +9,7 @@ const QuestionController = GenericController(new QuestionService())
 const questionRouter = express.Router();
 
 questionRouter.get('', QuestionController.getAll);
-questionRouter.get('/:id', QuestionController.getOne);
+questionRouter.get('/one/:id', QuestionController.getOne);
 questionRouter.get("/trivia/categories", QuestionController.getAllCategoriesTrivia);
 questionRouter.get("/trivia/tags", QuestionController.getAllTagsTrivia);
 questionRouter.get("/trivia/:id", QuestionController.getOneTrivia);
@@ -19,8 +19,9 @@ questionRouter.get('/:categoryId', QuestionController.getAllBy);
 questionRouter.post('/add', (req, res, next) => {
     if (!req.isAdmin) {
        return res.status(404).send('Unauthorized');
-    }  
+    }
      next()
 }, QuestionController.create);
+questionRouter.put('/edit/:id', QuestionController.update);
 
 export default questionRouter;

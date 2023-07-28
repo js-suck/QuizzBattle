@@ -110,6 +110,11 @@ async function createDefaultUsersAndQuestions() {
       categoryId: categoryCreated[0].id,
     });
 
+    const question3 = await db.Question.create({
+      label: "What is Angelology the study of?",
+      categoryId: categoryCreated[5].id,
+    });
+
     // Create answers using the IDs of the created questions
     await Promise.all([
       db.Answer.create({
@@ -132,6 +137,17 @@ async function createDefaultUsersAndQuestions() {
         isCorrect: false,
         questionId: question1.id,
       }),
+      db.Answer.create({
+        label: "Angels",
+        isCorrect: true,
+        questionId: question3.id,
+      }),
+      db.Answer.create({
+        label: "numbers",
+        isCorrect: false,
+        questionId: question3.id,
+      }),
+
       // Add more answers here
     ]);
 
@@ -141,8 +157,8 @@ async function createDefaultUsersAndQuestions() {
       userCategoryData.push({
         score: Math.random() * 100000,
         gamesPlayed: Math.random() * 10,
-        UserId: userCreated[i].dataValues.id,
-        CategoryId: categoryCreated[i % categoryCreated.length].dataValues.id,
+        userId: userCreated[i].dataValues.id,
+        categoryId: categoryCreated[i % categoryCreated.length].dataValues.id,
       });
     }
     await db.UserCategory.bulkCreate(userCategoryData);

@@ -12,7 +12,7 @@
       >
         <v-list-item
         v-if="user"
-          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+          :prepend-avatar="`${API_URL}/uploads/${user.profilePicturePath}`"
           :title="`${user.firstname}  ${user.lastname}`"
           nav
         >
@@ -27,11 +27,12 @@
 
         <v-divider></v-divider>
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-home-city" title="Historique de parties" value="home"></v-list-item>
+          <v-list-item to="/history" prepend-icon="mdi-history" title="Game history" value="history"></v-list-item>
             <router-link :to="`/admin/user/${user.id}/show`">
-                <v-list-item prepend-icon="mdi-account" title="Mon profil" value="account"></v-list-item>
+                <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
             </router-link>
-          <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
+          <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
+          <v-list-item to="/" prepend-icon="mdi-home-variant-outline" title="dashboard" value="classement"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main >
@@ -42,7 +43,7 @@
 </template>
 <script setup>
 import { inject, ref } from 'vue'
-
+import { API_URL } from '../constants'
 import { theme } from '../constants/theme'
 import { userManagerKey } from '../contexts/userManagerKeys'
 const {user} = inject(userManagerKey)

@@ -114,6 +114,7 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {API_URL} from "@/constants";
+import client from '../helpers/client';
 const fileInputRef = ref(null);
 const categoryData = ref(null); // Add this line to define categoryData
 const question = ref(null); // Add this line to define categoryData
@@ -164,7 +165,7 @@ export default {
             formData.append('image_url', this.$refs.fileInputRef.files[0].name);
             console.log('tous', formData.entries());
 
-            axios.post(`${API_URL}/api/category/add`, formData)
+            client.post(`${API_URL}/api/category/add`, formData)
                 .then((response) => {
                     console.log(this.newSection.questions);
                     const categoryId = response.data.id;

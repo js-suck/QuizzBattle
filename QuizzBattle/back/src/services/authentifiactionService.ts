@@ -1,9 +1,7 @@
- import jwt from 'jsonwebtoken';
- import bcrypt from 'bcrypt';
-import { TUser } from '../types/user';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-
- const generateToken = (user) => {
+const generateToken = (user) => {
     const payload = {
         id: user.id,
         email: user.email,
@@ -25,9 +23,16 @@ import { TUser } from '../types/user';
   }
 
   function authenticateToken(req, res, next) {
+
+      console.log(req.path, "REQUETE")
+    if (req.path === '/login') {
+      // Si c'est la route de login, passez directement à la route suivante sans exécuter le middleware
+      return next();
+    }
+
     console.log(
       'req.headers.authorization',
-      req.headers.authorization
+      req.header.authorization
       );
     
     const token = req.headers.authorization?.split(' ')[1];
@@ -40,12 +45,21 @@ import { TUser } from '../types/user';
         return res.sendStatus(403);
       }
       req.user = user;
-      console.log("ok")
+      req.isAdmin = user?.roles?.includes('admin')
       next();
     });
   }
 
-
+  function adminMiddleware(req, res, next) {
+    const isAdmin = req.user && req.user.role === 'admin';
+  
+    if (isAdmin) {
+      next();
+    } else {
+      res.sendStatus(404);
+    }
+  }
+  
 
   function roomId() {
 
@@ -62,5 +76,10 @@ import { TUser } from '../types/user';
     return room;
   }
 
-
-  export { createRoom, generateToken, comparePasswords, authenticateToken }
+export {
+  adminMiddleware,
+  authenticateToken,
+  comparePasswords,
+  createRoom,
+  generateToken,
+};

@@ -34,7 +34,7 @@ export default {
     score: {
       type: Number,
       required: false,
-      default: 0
+      default: null
     },
     image : {
         type: String,

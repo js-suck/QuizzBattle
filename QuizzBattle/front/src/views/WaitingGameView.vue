@@ -30,7 +30,7 @@ import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import io from 'socket.io-client'
 import { useRoute } from 'vue-router'
-
+import client from './../helpers/client'
 import Card from '../components/Card.vue'
 import { API_URL } from '../constants/index'
 import { playerManager } from '../contexts/quizzKeys'
@@ -61,7 +61,7 @@ onMounted(() => {
     window.location.href = url;
     })
 
-    axios.get(`${API_URL}/api/category/${categoryId}`)
+    client.get(`${API_URL}/api/category/${categoryId}`)
     .then((response) => {
       console.log(response.data)
       category.value = response.data;

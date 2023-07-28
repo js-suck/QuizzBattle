@@ -9,5 +9,6 @@ const scoreboardRouter = express.Router();
 
 scoreboardRouter.get('/', scoreboardController.getAll);
 scoreboardRouter.get('/:categoryId', scoreboardController.getAllBy);
+scoreboardRouter.put('/updateStats', scoreboardController.createOrIncrement);
 
 export default scoreboardRouter;

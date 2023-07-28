@@ -1,9 +1,16 @@
 <script setup>
-import { inject, reactive, ref, onMounted } from 'vue';
-import jwtDecode from 'jwt-decode';
-import { userManagerKey } from '../contexts/userManagerKeys';
-const {loginUser, user} = inject(userManagerKey)
+import {
+  inject,
+  onMounted,
+  reactive,
+  ref
+} from 'vue'
+import { useRouter } from 'vue-router';
 
+import { userManagerKey } from '../contexts/userManagerKeys'
+
+const {loginUser, user} = inject(userManagerKey)
+const router = useRouter()
 const email = ref('');
 const password = ref('');
 
@@ -39,12 +46,15 @@ function handleSubmit() {
 
   loginUser(formData)
     .then((response) => {
-      console.log("response", response );
       errors.value.all = response.errors;
-      console.log("errors", errors.value.all);
+      if(response.errors === undefined) {
+        router.push('/')
+      }
       Object.assign(formData, defaultValue);
+      
     })
     .catch((_errors) => (console.log(_errors)));
+
 
     
 }
@@ -127,7 +137,7 @@ input {
 }
 
 /**
- * on desktop style */
+ * on desktop styles */
 
 @media (min-width: 768px) {
     form {

@@ -1,13 +1,13 @@
-import QuizzesService from "../services/questionService";
 const translateService = require("../services/deeplApiService");
 const triviaApiService = require("../services/triviaApiService");
+
 
 function GenericController(service, options = {}) {
 
   async function getAll(req, res) {
     const {
       _page = 1,
-      _itemsPerPage = 30,
+      _itemsPerPage = 100,
       _sort = {},
       ...criteria
     } = req.query;
@@ -20,8 +20,18 @@ function GenericController(service, options = {}) {
     res.json(users);
   }
 
+  async function getAllBy(req, res) {
+    const users = await service.findAllBy(req.params.categoryId);
+    if (!users) {
+      res.sendStatus(404);
+    } else {
+      res.json(users);
+    }
+  }
+
   async function create(req, res, next) {
     try {
+      console.log(req.body, "bodyyyy")
       const user = await service.create(req.body);
       res.status(201).json(user);
     } catch (error) {
@@ -39,7 +49,7 @@ function GenericController(service, options = {}) {
   }
 
   async function getByName(req, res) {
-    const entity = await service?.findByName(req.params.name);
+    const entity = await service.findByName(req.params.name);
     if (!entity) {
       res.sendStatus(404);
     } else {
@@ -98,6 +108,23 @@ function GenericController(service, options = {}) {
     }
   }
 
+  async function createOrIncrement(req, res, next) {
+    console.log('req.body', req.body);
+    try {
+      const [user, created] = await service.createOrIncrement(
+        req.body
+      );
+
+      if (!user) {
+        res.sendStatus(404);
+      } else {
+        res.status(created ? 201 : 200).json(user);
+      }  
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async function update(req, res, next) {
     try {
       const user = await service.updateOne(
@@ -129,6 +156,7 @@ function GenericController(service, options = {}) {
     create,
     deleteOne,
     getAll,
+    getAllBy,
     getAllCategoriesTrivia,
     getAllTagsTrivia,
     getAllTrivia,
@@ -138,6 +166,7 @@ function GenericController(service, options = {}) {
     replace,
     translate,
     update,
+    createOrIncrement,
   };
 }
 

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/constants';
 
 const router = useRouter();
 
@@ -24,10 +25,7 @@ onMounted(() => {
 
 
 async function updateUserVerificationStatus(tokenemail) {
-  // Effectuez une requête HTTP vers votre API pour mettre à jour le statut de vérification de l'utilisateur
-  // Vous pouvez utiliser fetch, axios ou toute autre bibliothèque de requête HTTP
-  // Par exemple :
-  const response = await fetch(`http://localhost:3000/verify`, {
+  const response = await fetch(`${API_URL}/verify`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'

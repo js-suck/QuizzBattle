@@ -1,11 +1,13 @@
-const ValidationErrorInstance = require("../errors/ValidationErrorInstance");
+//const ValidationErrorInstance = require("../errors/ValidationErrorInstance");
+const ValidationErrorInstance = require("../errors/ValidationError");
+
 const Sequelize = require("sequelize");
 const User = require("../db").User;
-console.log("***", User, typeof User, "***");
 
 module.exports = function () {
   return {
     async findAll(criteria, { page = null, itemsPerPage = null, order = {} }) {
+      console.log(criteria)
       return await User.findAll({
         where: criteria,
         limit: itemsPerPage,
@@ -15,6 +17,9 @@ module.exports = function () {
     },
     async create(data) {
       try {
+        if(data.role =="admin"){
+          delete data.role;
+        }
         const user = await User.create(data);
         return user;
       } catch (error) {
@@ -41,20 +46,44 @@ module.exports = function () {
       }
     },
     async updateOne(id, newData) {
-      try {
-        const [nbUpdated, newValues] = await User.update(newData, {
-          where: { id },
-          returning: true,
-        });
-        if (nbUpdated === 0) {
-          return null;
+      if (newData.isIncrement !== undefined && newData.isIncrement === true) {
+        try {
+          let user = await User.increment({
+            score: newData.score,
+            gamesPlayed: newData.gamesPlayed,
+          }, {
+            where: { id },
+            returning: true,
+            });
+
+            user = {
+              nickname: user[0][0][0].nickname,
+              score: user[0][0][0].score,
+              gamesPlayed: user[0][0][0].gamesPlayed
+            }
+          return user;
+        } catch (error) {
+          if (error instanceof Sequelize.ValidationErrorInstance) {
+            throw ValidationErrorInstance.createFromSequelizeValidationError(error);
+          }
+          throw error;
         }
-        return newValues[0];
-      } catch (error) {
-        if (error instanceof Sequelize.ValidationErrorInstance) {
-          throw ValidationErrorInstance.createFromSequelizeValidationError(error);
+      } else {
+        try {
+          const [nbUpdated, newValues] = await User.update(newData, {
+            where: { id },
+            returning: true,
+          });
+          if (nbUpdated === 0) {
+            return null;
+          }
+          return newValues[0];
+        } catch (error) {
+          if (error instanceof Sequelize.ValidationErrorInstance) {
+            throw ValidationErrorInstance.createFromSequelizeValidationError(error);
+          }
+          throw error;
         }
-        throw error;
       }
     },
     async deleteOne(id) {

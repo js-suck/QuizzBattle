@@ -1,9 +1,11 @@
 import { request } from "express";
+import { SITE_URL } from "../../helpers/sentEmail";
 
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
   const bcrypt = require("bcrypt");
   const Mailjet = require("node-mailjet");
+  
 
 
   const mailjetClient = new Mailjet({
@@ -57,6 +59,7 @@ module.exports = (connection) => {
     {
       lastname: DataTypes.STRING,
       firstname: DataTypes.STRING,
+      nickname: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -102,9 +105,22 @@ module.exports = (connection) => {
         allowNull: true,
         defaultValue: DataTypes.NOW,
       },
+      score: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      gamesPlayed: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     },
     { sequelize: connection, tableName: "users" }
   );
+    User.prototype.toJSON = function () {
+        const values = { ...this.get() };
+        delete values.password;
+        return values;
+    };
 
   function uptadePassword(user) {
     if (user.changed("password")) {
@@ -116,7 +132,7 @@ module.exports = (connection) => {
 
   function generateVerificationLink(tokenemail) {
     // Générer le lien de vérification avec l'ID de l'utilisateur
-    return `http://localhost:5173/verify/${tokenemail}`;
+    return `${SITE_URL}/verify/${tokenemail}`;
   }
 
   User.addHook("beforeCreate", uptadePassword);

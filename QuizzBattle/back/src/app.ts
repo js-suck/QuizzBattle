@@ -1,6 +1,8 @@
 import express from 'express';
 import http from 'http';
-
+import path from 'path';
+import mongoose = require('mongoose');
+import { mongoURI } from './config/db'
 import { initializeSocket } from './config/socket';
 import { initMongo } from './db/mongo/db';
 import {
@@ -13,6 +15,7 @@ import {
   comparePasswords,
   generateToken,
 } from './services/authentifiactionService';
+import { FRONT_URL } from './constants';
 
 const { Client } = require('pg');
 
@@ -37,7 +40,7 @@ pgClient.on('notification', async (msg) => {
     try {
       console.log(msg)
       const [id, firstname] = msg.payload.split(",");
-      const newData = await getUserDataFromPostgres(id); 
+      const newData = await getUserDataFromPostgres(id);
       console.log("notification user update", id, newData)
      await updateMongoDBGame(id, newData);
     } catch (error) {
@@ -46,8 +49,8 @@ pgClient.on('notification', async (msg) => {
   }
 });
 
-pgClient.query('LISTEN user_update'); 
-  
+pgClient.query('LISTEN user_update');
+
 
 const db = require('./db');
 const app = express();
@@ -65,14 +68,14 @@ const server = http.createServer(app);
 
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); 
+const upload = multer({ dest: __dirname + '/uploads/' });
 
 
 app.use(express.urlencoded({ extended: false }));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
-
   if (!req['file']) {
     res.send('Aucun fichier sélectionné.');
   } else {
@@ -80,6 +83,7 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
     res.send('Fichier uploadé avec succès.');
   }
 });
+
 
 
 initializeSocket(server)
@@ -90,7 +94,7 @@ app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
    db.User.findOne({ where: { email } })
@@ -101,25 +105,27 @@ app.post('/login', (req, res) => {
       // Check if password is correct (TODO: replace with comparePassword when encrypted registration is available)
       if (check) {
         const token = generateToken(user);
-        console.log(token, "uii");
         res.status(200).send({ token });
       } else {
         res.status(401).send({ errors: "Invalid password" });
       }
     } else {
-      res.status(404).send({ errors: 'User not found' }); 
+      res.status(404).send({ errors: 'User not found' });
     }
   })
   .catch((error) => {
     // Error while querying the database
     console.log(error);
-    res.status(500).send({ errors: 'Internal server error' }); 
+    res.status(500).send({ errors: 'Internal server error' });
   });
 
 });
 
 app.post('/signup', (req, res) => {
-  const { email, password, firstname, lastname, tokenemail } = req.body;
+  const { email, password, firstname, lastname } = req.body;
+
+  const token = generateToken(req.body);
+  const tokenemail2 = token.replaceAll('.', '');
 
   db.User.findOne({ where: { email } })
   .then((user) => {
@@ -129,12 +135,15 @@ app.post('/signup', (req, res) => {
       const newUser = db.User.build({
         firstname,
         lastname,
+        nickname: firstname + ' ' + lastname,
         email,
         password,
         profilePicturePath: "defaultUser.png",
         role: 'user',
         isVerified: false,
-        tokenemail,
+        tokenemail: tokenemail2,
+        score: 0,
+        gamesPlayed: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -142,7 +151,7 @@ app.post('/signup', (req, res) => {
 
       newUser.save().then((user) => {
         const token = generateToken(user);
-        res.status(201).send({ token });
+        res.status(201).send({ message : 'User created', token });
       }).catch((error) => {
         console.error('Error while saving the user', error);
         res.status(500).send({ error: 'Error while saving the user' });
@@ -178,7 +187,7 @@ app.post('/verify', (req, res) => {
 });
 
 app.post('/forgot-password', (req, res) => {
-  const { email, token } = req.body;
+  const { email } = req.body;
 
   // Vérifier si l'utilisateur avec cet e-mail existe dans votre base de données
   // Si l'utilisateur existe, générer un token de réinitialisation de mot de passe
@@ -187,14 +196,12 @@ app.post('/forgot-password', (req, res) => {
   db.User.findOne({ where: { email } })
   .then((user) => {
     if (user) {
-      user.update({ tokenemail: token }).then(() => {
+
+      
+
   // Envoie d'un e-mail à l'utilisateur avec le lien de réinitialisation contenant le token
-    sendResetEmail(email, token);
+    sendResetEmail(email, user.tokenemail);
     res.status(200).json({ message: "Reset email sent successfully." });
-  }).catch((error) => {
-    console.error('Error while updating user', error);
-    res.status(500).send({ error: 'Error while updating user' });
-  });
   } else {
     res.status(404).json({ error: "User not found." });
   }
@@ -218,7 +225,7 @@ async function sendResetEmail(email, tokenemail) {
           },
         ],
         Subject: "Réinitialisation du mot de passe",
-        HTMLPart: `<p>Click the following link to reset your password: <a href="http://localhost:5173/reset-password/${tokenemail}">Reset Password</a></p>`,
+        HTMLPart: `<p>Click the following link to reset your password: <a href="${FRONT_URL}/reset-password/${tokenemail}">Reset Password</a></p>`,
       },
     ],
   });
@@ -240,7 +247,7 @@ app.post('/reset-password',  (req, res) => {
     if (user) {
       const hashedPassword = bcrypt.hashSync(password, 10);
       user.update({ password: hashedPassword }).then(() => {
-        res.status(200).send({ message: 'password update', status: 'success' });
+        res.status(200).send({ message: 'Your Password is updated', status: 'success' });
       }).catch((error) => {
         console.error('Error while updating user', error);
         res.status(500).send({ error: 'Error while updating user' });
@@ -273,6 +280,7 @@ db.User.sync().then(() => {
       const newUser = db.User.build({
         firstname: 'John',
         lastname: 'Doe',
+        nickname: 'JohnDoe',
         email: 'test@gmail.com',
         profilePicturePath: "defaultUser.png",
         password: 'Test1234*',
@@ -294,7 +302,8 @@ db.User.sync().then(() => {
     server.listen(3000, () => {
         console.log('Serveur Socket.IO en cours d\'exécution sur le port 3000');
     });
-  
 
+
+  app.use('/api', authenticateToken);
 
   app.use('/api', apiRouter);

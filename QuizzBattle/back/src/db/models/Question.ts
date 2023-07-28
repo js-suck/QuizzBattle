@@ -9,10 +9,6 @@ module.exports = (connection) => {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        quizzId: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-        },
       },
       { sequelize: connection, tableName: "questions" }
     );

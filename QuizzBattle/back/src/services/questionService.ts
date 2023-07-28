@@ -1,13 +1,15 @@
 import { Op } from "sequelize";
 import { formatQuestionsToMimickTrivia } from "../helpers/quizzHelper";
+const Category = require('../db').Category;
 const ValidationError = require("../errors/ValidationError");
 const SequelizeDb = require("sequelize");
 const Question = require("../db").Question;
 const Answer = require("../db").Answer
 
 
-class QuizzesService {
+class QuestionsService {
   async findAll(criteria, { page = null, itemsPerPage = null, order = {} }) {
+    console.log(criteria)
     const questions = await Question.findAll({
       where: criteria,
       limit: itemsPerPage,
@@ -85,7 +87,30 @@ class QuizzesService {
     const nbDeleted = await Question.destroy({ where: { id } });
     return nbDeleted === 1;
   }
+  async findAllBy(categoryId) {
+    const questions = await Question.findAll({
+      attributes: ["id", "label"],
+      include: [
+        {
+          model: Category,
+          attributes: ["name", "description", "image_url"],
+          where: {
+            id: categoryId
+          },
+          as: 'category' // On n'a pas besoin des attributs de la table Category dans ce cas
+        },
+      ],
+    });
+    const transformedArray = questions.map(item => ({
+      "id": item.id,
+      "label": item.label,
+      "name": item.category.name,
+      "description": item.category.description,
+      "image_url": item.category.image_url
+    }));
+    return transformedArray;
+  }
 }
 
 
-export default QuizzesService
+export default QuestionsService

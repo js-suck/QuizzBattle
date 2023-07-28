@@ -13,15 +13,46 @@ files.forEach((file) => {
   database[model.name] = model;
 });
 
+database["User"].hasMany(database["UserCategory"], {
+   foreignKey: "userId",
+   as: "a"
+});
+
+database["UserCategory"].belongsTo(database["User"], {
+   foreignKey: "userId",
+   as: "user"
+});
+
+database["Category"].hasMany(database["UserCategory"], {
+   foreignKey: "categoryId",
+   as: "c"
+});
+
+database["UserCategory"].belongsTo(database["Category"], {
+   foreignKey: "categoryId",
+   as: "category"
+});
+
 database["Answer"].belongsTo(database["Question"], {
        foreignKey: "questionId",
        as: "question",
     });
 
- // reverse 
- database["Question"].hasMany(database["Answer"], {
-        foreignKey: "questionId",
-        as: "answers",
-   })
+// reverse
+database["Question"].hasMany(database["Answer"], {
+    foreignKey: "questionId",
+    as: "answers",
+});
+
+database["Question"].belongsTo(database["Category"], {
+    foreignKey: "categoryId",
+    as: "category",
+});
+
+database["Category"].hasMany(database["Question"], {
+    foreignKey: "categoryId",
+    as: "question",
+});
+
 
 module.exports = database;

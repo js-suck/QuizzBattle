@@ -2,11 +2,8 @@
 import { reactive, ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/constants';
 
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
-
-const tokenreset = token.replaceAll('.','');
 
 const verif = ref(false);
 const errors = ref({});
@@ -15,12 +12,11 @@ const res = ref({});
 
 const defaultValue = {
   email: '',
-  token: tokenreset
 };
 const formData = reactive({ ...defaultValue });
 
 function forgotpassword(email, token) {
-  return fetch(`http://localhost:3000/forgot-password`, {
+  return fetch(`${API_URL}/forgot-password`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'

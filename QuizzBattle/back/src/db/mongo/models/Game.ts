@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 const gameSchema = new mongoose.Schema({
     username: {
       type: String,
@@ -36,7 +37,20 @@ const gameSchema = new mongoose.Schema({
       userVsID : {
           type: String,
           required: true
+      },
+      userVsName : {
+          type: String, 
+          required: true  
+      },
+      userVsScore : {
+          type: Number,
+          required: true
+      },
+      userProfilePicture: {
+        type: String,
+        required: false
       }
+      
   });
 
   export const Game = mongoose.model('Game', gameSchema);

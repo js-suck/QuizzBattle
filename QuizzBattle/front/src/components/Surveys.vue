@@ -35,7 +35,11 @@ import { RouterLink } from 'vue-router';
 import SurveyModalForm from "@/components/SurveyModalForm.vue";
 
 onMounted(() => {
-    axios.get(`${API_URL}/api/category/`)
+    axios.get(`${API_URL}/api/category/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+        })
         .then((response) => {
             surveys.value = response.data;
             console.log(surveys.value);

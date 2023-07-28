@@ -90,5 +90,6 @@ module.exports = function () {
       const nbDeleted = await User.destroy({ where: { id } });
       return nbDeleted === 1;
     },
-  };
+  };  
 };
+

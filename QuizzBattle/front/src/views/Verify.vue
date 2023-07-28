@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import { API_URL } from '@/constants';
 
 const router = useRouter();
 
@@ -24,7 +25,7 @@ onMounted(() => {
 
 
 async function updateUserVerificationStatus(tokenemail) {
-  const response = await fetch(`http://localhost:3000/verify`, {
+  const response = await fetch(`${API_URL}/verify`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'

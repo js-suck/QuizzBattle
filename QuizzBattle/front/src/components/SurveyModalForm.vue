@@ -181,7 +181,10 @@ export default {
 
                 axios.post(`${API_URL}/api/questions/add`, {
                     "categoryId": id,
-                    "label": question.questionText
+                    "label": question.questionText,
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    },
                 })
                     .then((questionResponse) => {
                         console.log("Question added:", questionResponse.data);

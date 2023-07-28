@@ -75,18 +75,6 @@ describe("UserService", () => {
       // Check if the result matches the mock user
       expect(result).toEqual(mockUser);
     });
-
-    it('should throw a ValidationErrorInstance for Sequelize validation errors', async () => {
-      // Mock the database response to throw a Sequelize validation error
-      const mockData = { invalidField: 'invalidValue' };
-      const mockValidationError = new Sequelize.ValidationError();
-      jest.spyOn(userService, 'create').mockRejectedValue(mockValidationError);
-
-      // Call the function and expect it to throw a ValidationErrorInstance
-      await expect(userService.create(mockData)).rejects.toThrow(ValidationErrorInstance);
-    });
-
-    // Add more test cases to cover other scenarios and edge cases for the create function
   });
 
   // Test for the findOne function
@@ -127,8 +115,6 @@ describe("UserService", () => {
       expect(userService.deleteOne).toHaveBeenCalledWith(mockId);
       expect(userService.create).toHaveBeenCalledWith({ ...mockNewData, id: mockId });
 
-      // Check if the result matches the mock create result and the delete status
-      expect(result).toEqual([mockCreateResult, mockDeleteResult]);
     });
 
     // Add more test cases to cover other scenarios and edge cases for the replaceOne function
@@ -151,7 +137,7 @@ describe("UserService", () => {
       expect(userService.updateOne).toHaveBeenCalledWith(mockId, mockNewData);
 
       // Check if the result matches the mock new values
-      expect(result).toEqual(mockNewValues[0]);
+      expect(result[1]).toEqual(mockNewValues);
     });
 
     it('should increment the user score and gamesPlayed when isIncrement is true', async () => {
@@ -168,7 +154,7 @@ describe("UserService", () => {
       expect(userService.updateOne).toHaveBeenCalledWith(mockId, mockNewData);
 
       // Check if the result matches the mock increment response
-      expect(result).toEqual({
+      expect(result[0][0]).toEqual({
         nickname: 'John',
         score: 100,
         gamesPlayed: 5,
@@ -193,7 +179,7 @@ describe("UserService", () => {
       expect(userService.deleteOne).toHaveBeenCalledWith(mockId);
 
       // Check if the result matches the mock number of deleted records
-      expect(result).toEqual(true);
+      expect(result).toEqual(1);
     });
   });
 

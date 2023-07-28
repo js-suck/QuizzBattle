@@ -1,24 +1,22 @@
-import CategoryService from "../services/categoryService";
+import QuestionService from "../services/questionService";
 import { test, expect } from '@jest/globals';
-// const { Category } = require('../models');
-const Category = require('../models').Category;
 
-const categoryService = new CategoryService();
+const questionService = new QuestionService();
 
-describe('CategoryService', () => {
+describe('QuestionService', () => {
     // Test pour la méthode findAll
     describe('findAll', () => {
-      it('should return an array of categories', async () => {
+      it('should return an array of questions', async () => {
         // Vous pouvez remplacer les critères et les options selon vos besoins de test
         const criteria = { /* Vos critères de recherche */ };
         const options = { page: 1, itemsPerPage: 10, order: { /* Vos options de tri */ } };
   
         // Appelez la méthode findAll du service
-        const categories = await categoryService.findAll(criteria, options);
+        const questions = await questionService.findAll(criteria, options);
 
         // Assurez-vous que le résultat est un tableau d'objets
-        expect(Array.isArray(categories)).toBe(true);
-        expect(categories.length).toBeGreaterThan(0);
+        expect(Array.isArray(questions)).toBe(true);
+        expect(questions.length).toBeGreaterThan(0);
       });
     });
   
@@ -33,7 +31,7 @@ describe('CategoryService', () => {
   
         // Appelez la méthode create du service avec des données invalides
         try {
-          await categoryService.create(invalidData);
+          await questionService.create(invalidData);
           // Si la promesse n'est pas rejetée, le test échouera car une erreur de validation était attendue
           expect(true).toBe(false);
         } catch (error) {

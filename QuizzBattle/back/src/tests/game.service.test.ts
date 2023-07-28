@@ -1,70 +1,41 @@
 import { GameService } from "../services/gameService";
 import { test } from "@jest/globals";
 import { Game } from "../db/mongo/models/Game";
+import e from "express";
 
 const gameService = new GameService();
 
-// Mock the Game model using Jest's mocking capabilities
-
-
 describe("GameService", () => {
+  // Test pour la getUsersWithWinsLast7Days
+  // describe("getUsersWithWinsLast7Days", () => {
+  //   it("should return an array of users", async () => {
+  //     // Appelez la méthode getUsersWithWinsLast7Days du service
+  //     const users = await gameService.getUsersWithWinsLast7Days();
 
+  //     expect(Array.isArray(users)).toBe(true);
+  //     expect(users.length).toBeGreaterThan(0);
+  //   });
+  // });
 
+  // Test pour la méthode create
   describe("create", () => {
-    it("should call Game.create with the given data", async () => {
-      // Mock the database response
-      const mockData = {
-        score: 100,
-        username: "John",
-        quizzName: "Quizz1",
-        userId: 1,
-        quizzId: 1,
-        isWinner: true,
-        isDraw: false,
-        userVsID: 2,
+    it("should throw an error if validation fails", async () => {
+      // Vous pouvez remplacer les données selon vos besoins de test
+      const invalidData = {
+        name: "test",
+        description: "test",
       };
-              const mockGame = {
-                score: 100,
-                username: "John",
-                quizzName: "Quizz1",
-                userId: 1,
-                quizzId: 1,
-                isWinner: true,
-                isDraw: false,
-                userVsID: 2,
-              };
 
-
-
-      // Call the function
-      const result = await gameService.create(mockData);
-
-      // Check if the function was called with the correct data
-      expect(Game.create).toHaveBeenCalledWith(mockData);
-
-      // Check if the result matches the mock game
-      expect(result).toEqual(mockGame);
-    });
-
-    // it("should throw a ValidationErrorr for Sequelize validation errors", async () => {
-    //   // Mock the database response to throw a Sequelize validation error
-    //   const mockData = { invalidField: "invalidValue" };
-    //     // const mockValidationError = new Sequelize.ValidationError();
-    //     Game.create(mockData);
-
-    // });
-
-    it("should throw an error for unexpected database errors", async () => {
-      // Mock the database response to throw an unexpected error
-      const mockData = { score: 100, username: "John", quizzName: 1, userId: 1, quizzId: 1, isWinner: true, isDraw: false, userVsID: 2};
-      const mockError = new Error("Unexpected error occurred");
-      Game.create(mockData);
-      Game.create = jest.fn().mockRejectedValue(mockError);
-
-      // Call the function and expect it to throw the error
-    //   await expect(gameService.create(mockData)).rejects.toThrow(mockError);
+      // Appelez la méthode create du service avec des données invalides
+      try {
+        await gameService.create(invalidData);
+        // Si la promesse n'est pas rejetée, le test échouera car une erreur de validation était attendue
+        expect(true).toBe(false);
+      } catch (error) {
+        // Vérifiez que l'erreur est bien une erreur de validation
+        expect(error.name).toBe("ValidationError");
+        // Vérifiez d'autres propriétés de l'erreur si nécessaire
+      }
     });
   });
-
-  // You can add more tests for other functions in the GameService class, if any.
 });

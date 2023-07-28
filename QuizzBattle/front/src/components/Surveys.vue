@@ -35,7 +35,7 @@ import { RouterLink } from 'vue-router';
 import SurveyModalForm from "@/components/SurveyModalForm.vue";
 
 onMounted(() => {
-    axios.get(`${API_URL}/api//category/`)
+    axios.get(`${API_URL}/api/category/`)
         .then((response) => {
             surveys.value = response.data;
             console.log(surveys.value);

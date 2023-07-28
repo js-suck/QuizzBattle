@@ -28,7 +28,9 @@
         <v-divider></v-divider>
         <v-list density="compact" nav>
           <v-list-item prepend-icon="mdi-home-city" title="Historique de parties" value="home"></v-list-item>
-          <v-list-item prepend-icon="mdi-account" title="Mon profil" value="account"></v-list-item>
+            <router-link :to="`/admin/user/${user.id}/show`">
+                <v-list-item prepend-icon="mdi-account" title="Mon profil" value="account"></v-list-item>
+            </router-link>
           <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
         </v-list>
       </v-navigation-drawer>

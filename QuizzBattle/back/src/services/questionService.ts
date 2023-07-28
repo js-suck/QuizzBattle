@@ -88,16 +88,20 @@ class QuizzesService {
   }
   async findAllBy(categoryId) {
     const questions = await Question.findAll({
-      attributes: ["label"],
+      attributes: ["id", "label"],
       include: [
         {
           model: Category,
           attributes: ["name", "description", "image_url"],
+          where: {
+            id: categoryId
+          },
           as: 'category' // On n'a pas besoin des attributs de la table Category dans ce cas
         },
       ],
     });
     const transformedArray = questions.map(item => ({
+      "id": item.id,
       "label": item.label,
       "name": item.category.name,
       "description": item.category.description,

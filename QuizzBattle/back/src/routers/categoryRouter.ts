@@ -3,6 +3,7 @@ import GenericController from "../controllers/genericController";
 import CategoryService from "./../services/categoryService";
 const multer = require('multer');
 import path from 'path';
+import usersRouter from "./userRouter";
 const storage = multer.diskStorage({
     destination: 'src/uploads/',
     filename: function (req, file, cb) {
@@ -26,6 +27,10 @@ categoryRouter.post(
         next()
     },
     CategoryController.create
+);
+categoryRouter.put(
+    '/edit/:id',
+    CategoryController.update
 );
 
 export default categoryRouter;

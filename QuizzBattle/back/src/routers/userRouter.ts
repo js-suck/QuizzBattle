@@ -31,5 +31,9 @@ usersRouter.put(
     },
     userController.update
 );
+usersRouter.put(
+    '/editIsValidate/:id',
+    userController.update
+);
 
 export default usersRouter ;

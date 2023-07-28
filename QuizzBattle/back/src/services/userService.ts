@@ -3,11 +3,11 @@ const ValidationErrorInstance = require("../errors/ValidationError");
 
 const Sequelize = require("sequelize");
 const User = require("../db").User;
-console.log("***", User, typeof User, "***");
 
 module.exports = function () {
   return {
     async findAll(criteria, { page = null, itemsPerPage = null, order = {} }) {
+      console.log(criteria)
       return await User.findAll({
         where: criteria,
         limit: itemsPerPage,

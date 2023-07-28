@@ -31,10 +31,9 @@ const answerList = ref([])
 const questionNumber = ref(0)
 const isLoading = ref(true)
 const category = ref("music")
-
+const categoryId = ref(0)
 const getQuestions = async () => {
-
-  let categoryId = 1;
+console.log(category.value)
 // request axios get category by 
 let params = new URLSearchParams();
 params.append('quizzId', category.value);
@@ -47,18 +46,20 @@ let config = {
   },
 }
 
+console.log("ici request")
+
 await client
   .request(config)
   .then((response) => {
     console.log(response)
-    categoryId = response?.data?.id
+    categoryId.value = response?.data?.id
   })
 
 
 
   const queryParams = {
     _itemsPerPage: '10',
-    quizzId: categoryId
+    categoryId: categoryId.value
   };
 
   // Convertir les paramètres de requête en chaîne de requête
@@ -122,7 +123,9 @@ provide(questionManager, {
   answerList,
   questionNumber,
   isLoading,
-  setCategory
+  setCategory, 
+  category,
+  categoryId
 });
 
 provide(playerManager, {

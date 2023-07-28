@@ -23,6 +23,13 @@ const generateToken = (user) => {
   }
 
   function authenticateToken(req, res, next) {
+
+      console.log(req.path, "REQUETE")
+    if (req.path === '/login') {
+      // Si c'est la route de login, passez directement à la route suivante sans exécuter le middleware
+      return next();
+    }
+
     console.log(
       'req.headers.authorization',
       req.header.authorization
@@ -38,14 +45,21 @@ const generateToken = (user) => {
         return res.sendStatus(403);
       }
       req.user = user;
-      console.log("user authenticated")
+      req.isAdmin = user?.roles?.includes('admin')
       next();
     });
   }
 
-  const shouldBeAdminOrUserConnected = (req, res, next) => {
-
+  function adminMiddleware(req, res, next) {
+    const isAdmin = req.user && req.user.role === 'admin';
+  
+    if (isAdmin) {
+      next();
+    } else {
+      res.sendStatus(404);
+    }
   }
+  
 
   function roomId() {
 
@@ -62,4 +76,10 @@ const generateToken = (user) => {
     return room;
   }
 
-export { authenticateToken, comparePasswords, createRoom, generateToken };
+export {
+  adminMiddleware,
+  authenticateToken,
+  comparePasswords,
+  createRoom,
+  generateToken,
+};

@@ -1,7 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import {
+  createRouter,
+  createWebHistory
+} from 'vue-router'
+
 import Login from '../views/Login.vue'
-import Singup from '../views/Signup.vue'
+
 /*
 const isAdmin = true; // Remplacez cette variable par la logique de vérification du rôle d'administrateur
 
@@ -127,6 +130,11 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/SurveyShow.vue')
 //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+    },
+    {
+      path: '/404',
+      name: '404',
+      component: () => import('../views/404.vue')
     }
   ]
 })

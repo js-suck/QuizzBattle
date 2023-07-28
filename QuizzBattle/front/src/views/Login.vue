@@ -47,7 +47,7 @@ function handleSubmit() {
   loginUser(formData)
     .then((response) => {
       errors.value.all = response.errors;
-      if(response.error === undefined) {
+      if(response.errors === undefined) {
         router.push('/')
       }
       Object.assign(formData, defaultValue);

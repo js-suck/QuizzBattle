@@ -5,6 +5,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp } from 'vue'
 
+import jwtDecode from 'jwt-decode'
 import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -21,14 +22,14 @@ const vuetify = createVuetify({
     components,
     directives,
     icons: {
-      defaultSet: 'mdi',
-      aliases,
-      sets: {
-        mdi,
-      },
+        defaultSet: 'mdi',
+        aliases,
+        sets: {
+            mdi,
+        },
     },
-  })
-  
+})
+
 
 // Définir une fonction pour changer la classe du body
 function changeBodyClass(to) {
@@ -39,31 +40,31 @@ function changeBodyClass(to) {
   }
 }
 
-const checkIfUserIsAuthenticated = () => {
+const checkIfUserIsAdmin = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return false;
+    }
   
-  // check si le JWT est encore valide ou sinon renvoie sur login
-  return true;
-}
+    try {
+      const user = jwtDecode(token);
+      return user?.roles.includes('admin') || false;
+    } catch (error) {
+      return false;
+    }
+  };
 
-
-// Surveiller les changements de route pour appliquer la classe appropriée
 router.afterEach((to) => {
-  changeBodyClass(to);
+    changeBodyClass(to);
 });
 
-// // Middleware de routage pour vérifier l'authentification avant d'accéder aux routes protégées
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = checkIfUserIsAuthenticated(); // Fonction qui vérifie si l'utilisateur est authentifié
-//   //const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-//   const requiresAuth = true;
-
-
-//   if (requiresAuth && !isAuthenticated) {
-//     next('/login'); // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+    if (to.path.startsWith('/admin') && !checkIfUserIsAdmin()) {
+        next({ path: '/404' }); 
+    }
+    next();
+});
 
 
 const app = createApp(App)

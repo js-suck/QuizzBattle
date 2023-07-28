@@ -18,19 +18,23 @@ client.interceptors.request.use((config) => {
 })
 
 client.interceptors.response.use(
-        (response) => {
-            return response
-        },
-        (error) => {
-            if (error.response && (error.response.status === 403  | error.response.status === 401 )) 
-            {
-                    window.location.href = "/login"
+    (response) => {
+        return response
+    },
+    (error) => {
+        if (error.response && (error.response.status === 403) | (error.response.status === 401)) {
+            window.location.href = '/login'
 
-                    localStorage.removeItem('token')
-                }
+            localStorage.removeItem('token')
+        }
 
-                return Promise.reject(error)
-            }
-        )
+        if (error.response && error.response.status === 404) {
 
-        export default client
+            //window.location.href = '/404'
+        }
+
+        return Promise.reject(error)
+    }
+)
+
+export default client

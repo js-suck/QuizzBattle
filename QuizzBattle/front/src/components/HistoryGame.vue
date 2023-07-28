@@ -3,8 +3,8 @@
      <h2>Historique des Matchs</h2>
      <br>
      <br>
-    <table class="w-full text-sm text-left text-gray-500 border">
-      <thead class="text-xs text-gray-700 uppercase bg-indigo-400 ">
+    <table class="w-full text-sm text-left text-gray-500 border rounded-lg first-letter:">
+      <thead class="text-xs text-gray-700 uppercase rounded">
         <tr>
           <th scope="col" class="px-6 py-3 text-center">Résultat</th>
           <th scope="col" class="px-6 py-3 text-center">Score</th>
@@ -20,11 +20,13 @@
           :key="index" :class="index % 2 === 0 ? 'bg-white' : 'bg-gray-50'" 
           class="border-b table-row"
         >
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.resultat}}</td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">
+             <p :class="`p-2 ${match.isWinner ? 'bg-yellow-500' : 'bg-red-500'} rounded-md`">{{match.isWinner ? 'Gagnant' : 'Perdant'}}</p> 
+            </td>
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.score}}</td>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.scoreAdversaire}}</td>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.nameAdversaire}}</td>
-            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.categorie}}</td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.userVsScore ?? 0}}</td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.userVsName ?? match.userVsID}}</td>
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.quizzName}}</td>
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-center">{{match.date}}</td>
         </tr>
       </tbody>
@@ -64,118 +66,32 @@ th{
 </style>
 
 <script setup>
-import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js';
-import { ref, computed, onMounted, watch } from 'vue';
-import jwtDecode from 'jwt-decode';
+import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js'
 
-const historique = ref([
-  {
-    date: '2023-07-26',
-    categorie: 'Football',
-    nameAdversaire: 'Équipe A',
-    score: 2,
-    scoreAdversaire: 1,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe B',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe C',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe D',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe E',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe F',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe G',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe H',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe I',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-  {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe J',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-    {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe J',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-    {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe J',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
-    {
-    date: '2023-07-20',
-    categorie: 'Basketball',
-    nameAdversaire: 'Équipe AKKK',
-    score: 80,
-    scoreAdversaire: 75,
-    resultat: 'Victoire',
-  },
+import {
+  computed,
+  inject,
+  onMounted,
+  ref
+} from 'vue'
 
-  // Ajoutez d'autres matchs ici
-]);
+import { API_URL } from '../constants'
+import { userManagerKey } from '../contexts/userManagerKeys'
+import client from '../helpers/client'
+
+const { user } = inject(userManagerKey);
+
+const historique = ref([]);
+
+onMounted(() => {
+  client.get(`${API_URL}/api/users/${user.value.id}/games`)
+    .then((response) => {
+      historique.value = response.data; // Correction : Utiliser response.data au lieu de response
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des games', error)
+    });
+});
 
 const history = computed(() => {
   return historique.value.slice().sort((a, b) => {
@@ -183,34 +99,34 @@ const history = computed(() => {
   });
 });
 
-  const currentPage = ref(1);
+const currentPage = ref(1);
 
-    const paginatedGames = computed(() => {
-        const startIndex = (currentPage.value - 1) * 10;
-        const endIndex = startIndex + 10;
-        return history.value.slice(startIndex, endIndex);
-    });
+const paginatedGames = computed(() => {
+  const startIndex = (currentPage.value - 1) * 10;
+  const endIndex = startIndex + 10;
+  return history.value.slice(startIndex, endIndex); // Correction : Utiliser history.value au lieu de historique.value
+});
 
-    const itemsPerPage = 10;
+const itemsPerPage = 10;
 
-    const pageCount = computed(() => Math.ceil(history.value.length / itemsPerPage));
+const pageCount = computed(() => Math.ceil(history.value.length / itemsPerPage));
 
-    const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage + 1);
-    const endIndex = computed(() => Math.min(currentPage.value * itemsPerPage, history.value.length));
+const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage + 1);
+const endIndex = computed(() => Math.min(currentPage.value * itemsPerPage, history.value.length));
 
 // Compute visible pages (current page and two pages before and after it)
-    const visiblePages = computed(() => {
-        const pagesBefore = Math.max(currentPage.value - 2, 1);
-        const pagesAfter = Math.min(currentPage.value + 2, pageCount.value);
-        const visiblePageNumbers = [];
-        for (let i = pagesBefore; i <= pagesAfter; i++) {
-            visiblePageNumbers.push(i);
-        }
-        return visiblePageNumbers;
-    });
+const visiblePages = computed(() => {
+  const pagesBefore = Math.max(currentPage.value - 2, 1);
+  const pagesAfter = Math.min(currentPage.value + 2, pageCount.value);
+  const visiblePageNumbers = [];
+  for (let i = pagesBefore; i <= pagesAfter; i++) {
+    visiblePageNumbers.push(i);
+  }
+  return visiblePageNumbers;
+});
 
 // Function to handle page change event
-    function goToPage(pageNumber) {
-        currentPage.value = pageNumber;
-    }
+function goToPage(pageNumber) {
+  currentPage.value = pageNumber;
+}
 </script>

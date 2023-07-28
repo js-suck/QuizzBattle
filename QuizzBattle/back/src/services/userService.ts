@@ -17,6 +17,9 @@ module.exports = function () {
     },
     async create(data) {
       try {
+        if(data.role =="admin"){
+          delete data.role;
+        }
         const user = await User.create(data);
         return user;
       } catch (error) {

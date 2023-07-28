@@ -12,7 +12,7 @@
         <li class="text-white p-2 flex flex-col">
 
           <div :class="`rounded-full p-1 ${winnerPlayer === player1 ? 'border-yellow-500 border-4' : 'border-red-500 border-4'}`">
-            <img :src="`${FILE_PATHS.profilePictures}${player1.profileFile}`"
+            <img :src="`${API_URL}/uploads/${player.profilePicturePath}`"
               class="rounded-full w-40 h-40 object-cover">
           </div>
           <div class="flex flex-col p-4">
@@ -26,7 +26,7 @@
         <li class="text-white p-2 flex flex-col">
 
           <div :class="`rounded-full p-1 ${winnerPlayer === player2 ? 'border-yellow-500 border-4' : 'border-red-500 border-4'}`">
-            <img :src="`${FILE_PATHS.profilePictures}${player1.profileFile}`"
+            <img :src="`${API_URL}/uploads/${player2.profilePicturePath}`"
               class="rounded-full w-40 h-40 object-cover">
           </div>
           <div class="flex flex-col p-4">

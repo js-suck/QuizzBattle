@@ -49,19 +49,40 @@ const checkIfUserIsAdmin = () => {
   
     try {
       const user = jwtDecode(token);
-      return user?.roles.includes('admin') || false;
+      return user?.role =='admin' || false;
     } catch (error) {
       return false;
     }
   };
+
+  const checkIfUserIsVerified = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return false;
+    }
+  
+    try {
+      const user = jwtDecode(token);
+      return user?.isVerified === true;
+    } catch (error) {
+      return false;
+    }
+  };
+
 
 router.afterEach((to) => {
     changeBodyClass(to);
 });
 
 router.beforeEach((to, from, next) => {
+
+    // if(!checkIfUserIsVerified() && to.path === "/" ){
+    //     return next({ path: '/login' });
+    // }
+
     if (to.path.startsWith('/admin') && !checkIfUserIsAdmin()) {
-        next({ path: '/404' }); 
+       return next({ path: '/404' }); 
     }
     next();
 });

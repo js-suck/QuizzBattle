@@ -35,15 +35,12 @@ io.on('connection', (socket: any) => {
   
 
   
-  console.log(getConnectedSockets());
     socket.on('disconnect', () => {
       const index = connectedSockets.indexOf(socket.id);
-      console.log(index, socket.id, connectedSockets)
       if (index !== -1) {
         connectedSockets.splice(index, 1);
       }
       const user = connectedSockets.find((id) => id == socket.id);
-      console.log(user)
       if (user) {
         const { roomId } = user;
         console.log("SEND USER IS DISCONNECTED")
@@ -78,7 +75,6 @@ io.on('connection', (socket: any) => {
         }
 
         rooms[category].push(room);
-        console.log(rooms)
         socket.join(room.id);
       } else {
 
@@ -87,7 +83,6 @@ io.on('connection', (socket: any) => {
           if (user.id === user.id) {
             return;
           }})
-          console.log("ici..")
 
         room.users.push(user);
         socket.join(room.id);
@@ -106,7 +101,8 @@ io.on('connection', (socket: any) => {
 
 
     socket.on("fetch room", ({room: roomId, category}) => {
-     
+        console.log(roomId, category, "ICI")
+        console.log(rooms)
         const room = rooms?.[category]?.find((r) => r.id === roomId);
         console.log("finded room:", room)
         if (room !== undefined) {

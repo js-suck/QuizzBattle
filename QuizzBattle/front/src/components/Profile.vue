@@ -23,7 +23,7 @@
                             <div class="w-16 h-16 rounded-full overflow-hidden">
                                 <img
                                     v-if="!beforeChange"
-                                    :src="`${API_URL}/uploads/${responseUser.profilePicturePath}`"
+                                    :src="`${API_URL}/uploads/${user.profilePicturePath}`"
                                     alt="Profile Picture"
                                     id="profile-picture-img"
                                     class="w-full h-full object-cover"
@@ -52,63 +52,45 @@
                             <label for="profilePictures" class="ml-4 fake-button">Change Picture</label>
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <label for="createdAt" class="block mb-2 font-medium text-gray-700">Account created at :</label>
-                        <input v-model="responseUser.createdAt" type="email" id="email" name="email" disabled class="disabled mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
-                    </div>
                     <div class="flex flex-row justify-between">
                         <div class="mt-6">
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
                         </div>
-                        <div class="mt-6">
-                            <button v-if="isUserVerified" type="button" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:bg-red-600" @click="toggleVerification(false)">Delete</button>
-
-                            <button v-else type="button" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:bg-red-600" @click="toggleVerification(true)">Active</button>
-                        </div>
                     </div>
                 </form>
-            </div>
-            <div class="card flex mr-4">
-                <span>Match History In Coming</span>
             </div>
         </div>
     </div>
 </template>
-
 <script setup>
-import { onMounted, defineProps, ref} from 'vue';
+import { inject, onMounted, defineProps, ref} from 'vue';
+import {API_URL} from "@/constants";
 import axios from "axios";
-import { API_URL } from "@/constants";
-import { FILE_PATHS } from "@/constants/files";
-import client from '../helpers/client';
-
-const responseUser = ref({});
-const fileInputRef = ref(null);
-const profilePicture = ref(null);
-const beforeChange = ref(false);
-const profilePictureSrc = ref(''); // To store the profile picture URL
-
+import client from "@/helpers/client";
+import { userManagerKey } from '@/contexts/userManagerKeys'
+const {user} = inject(userManagerKey)
+const responseUser = ref({
+    lastname: '',
+    firstname: '',
+    email: '',
+    createdAt: '',
+    profilePicturePath: '', // Make sure you have this property in your responseUser object
+});
 const props = defineProps({
     user: {
         required: true,
         type: String,
     },
 });
-
-const isUserVerified = ref(false);
-
+const beforeChange = ref(false);
+const profilePictureSrc = ref(''); // To store the profile picture URL
+const fileInputRef = ref(null);
+const profilePicture = ref(null);
 onMounted(() => {
     // Fetch the user data
-    client.get(`${API_URL}/api/users/show/${props.user}`)
-        .then((response) => {
-            responseUser.value = response.data;
-            isUserVerified.value = response.data.isVerified;
-            console.log(responseUser.value);
-        })
-        .catch((error) => {
-            console.error('Error while fetching user data:', error);
-        });
+    getUserDataFromToken();
 });
+
 
 const changeProfilePicture = (event) => {
     const fileInput = event.target;
@@ -127,36 +109,51 @@ const changeProfilePicture = (event) => {
     reader.readAsDataURL(file);
     beforeChange.value = true
 };
-const toggleVerification = (newVerificationStatus) => {
-    axios.put(`${API_URL}/api/users/editIsValidate/${props.user}`, { isVerified: newVerificationStatus })
-        .then(() => {
-            // Mettez à jour la variable de données pour refléter le nouvel état de vérification
-            isUserVerified.value = newVerificationStatus;
-        })
-        .catch((error) => {
-            console.error('Error while updating user verification status:', error);
-        });
-};
-async function submitForm() {
-    try {
-        const formData = new FormData();
-        formData.append('lastname', responseUser.value.lastname);
-        formData.append('firstname', responseUser.value.firstname);
-        formData.append('email', responseUser.value.email);
-        formData.append('profileImage', fileInputRef.value.files[0]);
-        if(fileInputRef.value.files[0])
-        {
-            formData.append('profilePicturePath', fileInputRef.value.files[0].name);
 
+// Function to retrieve user data from the JWT token in local storage
+const getUserDataFromToken = () => {
+    const token = localStorage.getItem('token'); // Replace 'your-jwt-token-key' with the key you used to store the token
+
+    if (token) {
+        const tokenParts = token.split('.');
+        if (tokenParts.length === 3) {
+            const encodedPayload = tokenParts[1];
+            const decodedPayload = atob(encodedPayload);
+            const userData = JSON.parse(decodedPayload);
+            console.log('User data from JWT token:', userData);
+            responseUser.value.id = userData.id;
         }
-        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${props.user}`, formData);
-        responseUser.value = userUpdateResponse.data;
-        console.log('Updated user data:', responseUser.value);
+        client.get(`${API_URL}/api/users/show/${responseUser.value.id}`)
+            .then((response) => {
+                responseUser.value = response.data;
+                console.log(responseUser.value);
+            })
+            .catch((error) => {
+                console.error('Error while fetching user data:', error);
+            });
+    } else {
+        console.log('No JWT token found in local storage.');
+    }
+};
 
+const submitForm = async () => {
+    try {
+        console.log('toto', fileInputRef.value.files[0], fileInputRef.value.files[0].name)
+        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${responseUser.value.id}`, {
+            lastname: responseUser.value.lastname,
+            firstname: responseUser.value.firstname,
+            email: responseUser.value.email,
+            profileImage: fileInputRef.value.files[0],
+            profilePicturePath: fileInputRef.value.files[0]?.name,
+        });
+        responseUser.value = userUpdateResponse.data;
+
+        console.log('Updated user data:', responseUser.value);
     } catch (error) {
         console.error('Error while updating user data:', error);
     }
-}
+};
+
 </script>
 <style>
 .hidden-input {

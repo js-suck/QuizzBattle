@@ -28,9 +28,7 @@
         <v-divider></v-divider>
         <v-list density="compact" nav>
           <v-list-item to="/history" prepend-icon="mdi-history" title="Game history" value="history"></v-list-item>
-            <router-link :to="`/admin/user/${user.id}/show`">
-                <v-list-item prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
-            </router-link>
+          <v-list-item to="/user_profile" prepend-icon="mdi-account-outline" title="Profile" value="account"></v-list-item>
           <v-list-item to="/scoreboard" prepend-icon="mdi-trophy-variant-outline" title="Leaderboard" value="classement"></v-list-item>
           <v-list-item to="/" prepend-icon="mdi-home-variant-outline" title="dashboard" value="classement"></v-list-item>
         </v-list>

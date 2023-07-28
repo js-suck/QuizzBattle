@@ -33,7 +33,7 @@
         :answer="answer"
         :correctAnswer="quizzQuestionList.value[questionNumber].correctAnswer"
         :isCorrect="isCorrectAnswer(answer)"
-        @click="handleRevealCorrectAnswer(answer)"
+        @click="handleAnswerClick(answer)"
         :isReveal="isElementsRevealed"
         :index="index"
         :style="'margin-bottom: 2em'"
@@ -116,7 +116,8 @@ const transitionEnabled = ref(false)
 const barColor = ref(theme.colors.blue);
 const timeLeftInPercent = ref(0)
 const userQuestionPoints = ref(0)
-
+const isAnswerRevealed = ref(false);
+const categoryName = route.params.categoryId
 
 const isCorrectAnswer = answer => {
   return quizzQuestionList.value[questionNumber.value].correctAnswer === answer
@@ -148,9 +149,9 @@ const handleRevealCorrectAnswer = (answer) => {
   clearInterval(timer.value)
   isElementsRevealed.value = true
   if (quizzQuestionList.value[questionNumber.value].correctAnswer === answer) {
-    score.value = increaseScore(timeLeft.value);
-    scores.player1 = increaseScore(timeLeft.value)
-    userQuestionPoints.value = increaseScore(timeLeft.value)
+    score.value = score.value + increaseScore(timeLeft.value);
+    scores.player1 = scores.player1 + increaseScore(timeLeft.value)
+    userQuestionPoints.value =  increaseScore(timeLeft.value)
     isWinnerQuestion.value = true
   } else {
     isWinnerQuestion.value = false
@@ -164,23 +165,38 @@ const handleRevealCorrectAnswer = (answer) => {
     category: category.value,
     score: scores.player1
   })
+  isAnswerRevealed.value = true;
+
 
 }
-
 const handleNextQuestion = () => {
-  console.log("handleNextQuestion")
-  isElementsRevealed.value = false
-  questionNumber.value++
-  answerList.value = [
-    quizzQuestionList.value[questionNumber.value].correctAnswer,
-    ...quizzQuestionList.value[questionNumber.value].incorrectAnswers
-  ]
-  questionLabel.value = quizzQuestionList.value[questionNumber.value].question.text;
-  clearInterval(timer.value); // Arrêter l'intervalle précédent
+  console.log("handleNextQuestion");
+  isElementsRevealed.value = false;
+  questionNumber.value++;
+  
+  const currentQuestion = quizzQuestionList.value[questionNumber.value];
+  const answers = [currentQuestion.correctAnswer, ...currentQuestion.incorrectAnswers];
+  
+  // Shuffle the answers using the Fisher-Yates algorithm
+  for (let i = answers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [answers[i], answers[j]] = [answers[j], answers[i]];
+  }
+  
+  answerList.value = answers;
+  questionLabel.value = currentQuestion.question.text;
+  clearInterval(timer.value);
   timeLeft.value = 10000;
-  startTimer()
+  isAnswerRevealed.value = false;
+  startTimer();
 }
 
+
+const handleAnswerClick = (answer) => {
+  if (!isAnswerRevealed.value) {
+    handleRevealCorrectAnswer(answer);
+  }
+}
 const handleResult = () => {
   isElementsRevealed.value = false;
   isLoading.value = true;
@@ -233,7 +249,7 @@ const handleResult = () => {
 
 
 onMounted(async () => {
-
+  setCategory(categoryName)
   socket.emit('fetch room', {
     room: roomId,
     category : category.value
@@ -261,16 +277,20 @@ onMounted(async () => {
     clearInterval(timer.value)
     isLoading.value = false;
 
+  
+    const player = players.value.find((p) => p.id === user.value.id)
+    const player2 = players.value.find((p) => p.id !== user.value.id)
+
     let gameData = qs.stringify({
     username: user.value.firstname,
     quizzName:  category.value,
     userId:    user.value.id,
     quizzId:   categoryId.value,
-    userVsName: players?.value[1].firstname,
-    userVsScore: players?.value[1].score,
-    score:     score.value,
-    isWinner:  players?.value[0].id > players?.value[1].score ,
-    userVsID: players?.value[0].id,
+    userVsName: player2.firstname,
+    userVsScore: player2.score,
+    score:     player.score,
+    isWinner:  player.score > player2.score ,
+    userVsID: player2.id,
     userProfilePicture: user.value?.profilePicturePath
 })
 

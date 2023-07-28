@@ -99,19 +99,8 @@ async function createDefaultUsersAndQuestions() {
       users,
     ]);
 
-    // Store the created questions in variables
-    const question1 = await db.Question.create({
-      label: "What is the color of the sky?",
-      categoryId: categoryCreated[0].id,
-    });
-
     const question2 = await db.Question.create({
       label: "What is the capital of France?",
-      categoryId: categoryCreated[0].id,
-    });
-
-    const question3 = await db.Question.create({
-      label: "What is Angelology the study of?",
       categoryId: categoryCreated[5].id,
     });
 
@@ -449,22 +438,12 @@ async function createDefaultUsersAndQuestions() {
       db.Answer.create({
         label: "Marseille",
         isCorrect: false,
-        questionId: question1.id,
+        questionId: question2.id,
       }),
       db.Answer.create({
         label: "Grenoble",
         isCorrect: false,
-        questionId: question1.id,
-      }),
-      db.Answer.create({
-        label: "Angels",
-        isCorrect: true,
-        questionId: question3.id,
-      }),
-      db.Answer.create({
-        label: "numbers",
-        isCorrect: false,
-        questionId: question3.id,
+        questionId: question2.id,
       }),
       db.Answer.create({
         label: "Comet",

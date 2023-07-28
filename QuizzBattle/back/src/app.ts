@@ -15,6 +15,7 @@ import {
   comparePasswords,
   generateToken,
 } from './services/authentifiactionService';
+import { FRONT_URL } from './constants';
 
 const { Client } = require('pg');
 
@@ -224,7 +225,7 @@ async function sendResetEmail(email, tokenemail) {
           },
         ],
         Subject: "Réinitialisation du mot de passe",
-        HTMLPart: `<p>Click the following link to reset your password: <a href="http://localhost:5173/reset-password/${tokenemail}">Reset Password</a></p>`,
+        HTMLPart: `<p>Click the following link to reset your password: <a href="${FRONT_URL}/reset-password/${tokenemail}">Reset Password</a></p>`,
       },
     ],
   });

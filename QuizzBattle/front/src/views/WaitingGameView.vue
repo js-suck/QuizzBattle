@@ -44,7 +44,7 @@ const socket = io(API_URL);
 const categoryId = route.params.categoryId;
 
 const handleGoBackToDashboard = () => {
-  window.location.href = "http://localhost:5173"
+  window.location.href = "/"
 }
 
 onMounted(() => {
@@ -57,7 +57,7 @@ onMounted(() => {
 
     socket.on("roomFound", (room) => {
     // redirect to url generated with the room name
-    const url = `http://localhost:5173/game/${categoryId}/${room.id}`
+    const url = `/game/${categoryId}/${room.id}`
     window.location.href = url;
     })
 

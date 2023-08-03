@@ -111,7 +111,7 @@ const user = ref(token ? jwtDecode(token) : null);
 const startGame = () => {
   socket.emit('startGame')
   gameStarted.value = true
-  window.location.href = "http://localhost:5173/waiting";
+  window.location.href = "/waiting";
 }
 
 const startGameWithCategory = (cat) => {
@@ -119,7 +119,7 @@ const startGameWithCategory = (cat) => {
   // gameStartedWithCategory.value = true
   // category.value = cat
 
-  window.location.href = `http://localhost:5173/waiting/${cat}`;
+  window.location.href = `/waiting/${cat}`;
 }
 
 const submitAnswer = (answer) => {

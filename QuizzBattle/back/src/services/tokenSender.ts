@@ -1,3 +1,5 @@
+import { FRONT_URL } from "../constants";
+
 const Mailjet = require("node-mailjet");
 const jwt = require('jsonwebtoken');
 
@@ -47,7 +49,7 @@ function sendVerificationEmail() {
 
 function generateVerificationLink(token) {
     // Générer le lien de vérification avec l'ID de l'utilisateur
-    return `http://localhost:5173/verify/token=${token}`;
+    return `${FRONT_URL}/verify/token=${token}`;
 }
 
 

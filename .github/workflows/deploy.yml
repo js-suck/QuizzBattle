@@ -1,0 +1,33 @@
+name: Deployment
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deployment:
+    name: Connexion au serveur de prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: Connect with SSH to server
+      uses: fifsky/ssh-action@master
+      with:
+        command: |
+          sudo -i
+          cd /home/debian/QuizzBattle
+          git stash
+          git pull origin main --rebase
+          git status
+          git stash pop
+          git status
+          git log --oneline
+          cd /home/debian/QuizzBattle/QuizzBattle/front
+          yarn prod
+        host: ${{ env.REMOTE_HOST }}
+        user: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.REMOTE_PWD }}

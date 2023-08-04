@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   deployment:
     name: Connexion au serveur de prod
@@ -20,14 +23,27 @@ jobs:
         command: |
           sudo -i
           cd /home/debian/QuizzBattle
+          eval "$(ssh-agent -s)"
+          ssh-add /home/debian/.ssh/id_ed25519
           git stash
           git pull origin main --rebase
           git status
           git stash pop
           git status
-          git log --oneline
+          git log -10 --oneline
           cd /home/debian/QuizzBattle/QuizzBattle/front
-          yarn prod
-        host: ${{ env.REMOTE_HOST }}
+          yarn
+          yarn build-only
+          cd /home/debian/QuizzBattle/QuizzBattle/back
+          docker compose up -d
+          yarn
+          yarn pm2 stop dist/app.js
+          yarn build
+          yarn pm2 start dist/app.js
+          yarn pm2 stop dist/migration.js
+          yarn pm2 start dist/migration.js
+          yarn pm2 status
+        host: ${{ secrets.REMOTE_HOST }}
         user: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.REMOTE_PWD }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        pass: ${{ secrets.REMOTE_PWD }}

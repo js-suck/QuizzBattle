@@ -9,7 +9,7 @@
         "prod": "tsc && node dist/app.js",
         "d:s:u": "tsc && node dist/migration.js",
         "build": "tsc",
-        "jest": "jest"
+        "jest": "jest --runInBand --coverage"
     },
     "keywords": [],
     "author": "",

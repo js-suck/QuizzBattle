@@ -93,10 +93,25 @@ async function createDefaultUsersAndQuestions() {
 
     const users = await db.User.bulkCreate(usersData);
 
+    const adminData = {
+      lastname: "Admin",
+      firstname: "Admin",
+      nickname: "Admin",
+      email: "admin@admin.fr",
+      password: "Test1234",
+      profilePicturePath: "defaultUser.png",
+      score: 0,
+      gamesPlayed: 0,
+      role: "admin",
+    };
+
+    const admin = await db.User.create(adminData);
+
     // Create default categories and users
     const [categoryCreated, userCreated] = await Promise.all([
       createDefaultCategories(),
       users,
+      admin,
     ]);
 
     const question2 = await db.Question.create({

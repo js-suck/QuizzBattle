@@ -72,6 +72,16 @@
    </div>
    <ShowResult v-if="isGameFinished"/>
   </div>
+    <v-dialog v-model="showModal" max-width="500px">
+      <v-card>
+        <v-card-title class="headline">Congratulations</v-card-title>
+        <v-card-text>You earned the badge : {{ showModal }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="showModal = false">Cool !</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -118,6 +128,7 @@ const timeLeftInPercent = ref(0)
 const userQuestionPoints = ref(0)
 const isAnswerRevealed = ref(false);
 const categoryName = route.params.categoryId
+const showModal = ref(false)
 
 const isCorrectAnswer = answer => {
   return quizzQuestionList.value[questionNumber.value].correctAnswer === answer
@@ -313,6 +324,32 @@ onMounted(async () => {
     .catch((error) => {
       console.error("Erreur lors de l'envoie de la game", error)
     })
+
+  client.get(`${API_URL}/api/users/${user.value.id}/games`)
+    .then((response) => {
+      // count the number of games played
+      const gamesPlayed = response.data.length;
+      if (gamesPlayed == 1) {
+        console.log("Première game jouée", response.data)
+        showModal.value = "FirstGame";
+      } else if (gamesPlayed == 10) {
+        console.log("10 games jouées", response.data)
+        showModal.value = "10Games";
+      } else if (gamesPlayed == 50) {
+        console.log("50 games jouées", response.data)
+        showModal.value = "50Games";
+      } else if (gamesPlayed == 100) {
+        console.log("100 games jouées", response.data)
+        showModal.value = "100Games";
+      } else {
+        console.log("Autre nombre de games jouées", response.data.length)
+        showModal.value = "OtherGames";
+
+      }
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des games', error)
+    });
 
   client.put(`${API_URL}/api/users/updateStats/${user.value.id}`, {
     score: score.value,

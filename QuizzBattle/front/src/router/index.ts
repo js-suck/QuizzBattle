@@ -89,6 +89,11 @@ const router = createRouter({
       component: () => import('../views/ScoreboardView.vue')
     },
     {
+      path: '/userstat',
+      name: 'userstat',
+      component: () => import('../views/UserStatView.vue')
+    },
+    {
       path: '/scoreboard/:categoryId',
       name: 'scoreboardCategory',
       component: () => import('../views/ScoreboardView.vue')
@@ -101,7 +106,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/HomeView.vue')
-//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     },
     {
       path: '/admin/users',
@@ -110,7 +115,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/UsersList.vue')
-//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     },
     {
       path: '/admin/user/:id/show',
@@ -119,7 +124,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/UserShow.vue')
-//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     },
     {
       path: '/admin/surveys',
@@ -128,7 +133,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/SurveysList.vue')
-//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     },
     {
       path: '/admin/survey/show/:id',
@@ -137,7 +142,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/SurveyShow.vue')
-//      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
+      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
     },
     {
       path: '/404',

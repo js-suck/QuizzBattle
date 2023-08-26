@@ -254,6 +254,30 @@ p {
     border-radius: 10px;
 }
 
+@media (max-width: 1080px) {
+    .stats {
+        flex-direction: column;
+    }
+
+    .column{
+        border-right: none;
+         padding: .5rem 1rem;
+        border-bottom: .5px solid rgb(226 232 240);
+    }
+    .column:last-child {
+        border-bottom: none;
+    }
+    
+}
+
+@media (max-width: 768px) {
+
+    .stats{
+        overflow: scroll;
+    }
+    
+}
+
 </style>
 
 

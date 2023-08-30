@@ -1,176 +1,187 @@
+import {
+  Server,
+  Socket,
+} from 'socket.io';
+
 import { createRoom } from '../services/authentifiactionService';
 
-function initializeSocket(server)
-{
-const io =  require("socket.io")(server, {
-    cors: {
-      origin: "*",
-    }
-  })
-
-  let rooms = [];
-  const connectedSockets = [];
-  function getConnectedSockets() {
-    return connectedSockets;
-  }
-
-
-  const findRoomByCategory = (category, id) => {
-    return rooms[category]?.find((r) => r.id === id);
-  }
-
-io.on('connection', (socket: any) => {
-    connectedSockets.push(socket.id);
-  
-    socket.on('disconnect', () => {
-
-     });
-  
-    io.emit('userConnected', null);
-  
-    socket.on('message', (data: any) => {
-      console.log('Message reçu :', data);
-      io.emit('message', data); 
-    });
-  
-
-  
-    socket.on('disconnect', () => {
-      const index = connectedSockets.indexOf(socket.id);
-      if (index !== -1) {
-        connectedSockets.splice(index, 1);
-      }
-      const user = connectedSockets.find((id) => id == socket.id);
-      if (user) {
-        const { roomId } = user;
-        console.log("SEND USER IS DISCONNECTED")
-        socket.to(roomId).emit('userDisconnected', user.id);
-      }
-    });
-  
-  
-    socket.on('search a room', ({user, category }) => {
-      let room = null;
- 
-      if(rooms?.[category] !== undefined)
-      {
-      // search if a room with same category exist 
-      rooms?.[category]?.forEach(r => {
-        console.log(r.category, r.users)
-        if (r.users.length === 1 && !r.users.find(u => u.id === user.id))
-        {
-          room = r;
-        }
-      })
-
-    }
-
-      if (!room){
-        room = createRoom(user);
-        console.log("create a room", room)
-
-        // check if category exist or create 
-        if (!rooms[category]) {
-          rooms[category] = [];
-        }
-
-        rooms[category].push(room);
-        socket.join(room.id);
-      } else {
-
-        console.log("room with user", room)
-        room.users.forEach(user => {
-          if (user.id === user.id) {
-            return;
-          }})
-
-        room.users.push(user);
-        socket.join(room.id);
-        user.roomId = room.id;
-    
-        if (room.users.length === 2) {         
-          io.to(room.id).emit('roomFound', room);
-  
-        } else {
-          console.log("wait for other player")
-        }
-      }
-  
-  
-    });
-
-
-    socket.on("fetch room", ({room: roomId, category}) => {
-        console.log(roomId, category, "ICI")
-        console.log(rooms)
-        const room = rooms?.[category]?.find((r) => r.id === roomId);
-        console.log("finded room:", room)
-        if (room !== undefined) {
-            socket.join(room.id)
-            io.to(room.id).emit('startGame', room);
-        } else {
-              console.log("room not found")
-        }
-    } )
-
-    socket.on("update score", ({ user, room, score, category }) => {
-      console.log("update score", rooms[category]);
-    
-      // Recherche de la salle spécifique par son identifiant
-      const roomToUpdate = rooms[category]?.find((r) => r?.id === room);
-      // console.log(roomToUpdate, "room to update", user.id, roomToUpdate.users[0]);
-    console.log("room to update", roomToUpdate)
-      if (roomToUpdate) {
-
-        const userToUpdate = roomToUpdate?.users?.find((u) => {
-          return u.id === user.id
-        });
-
-        if (userToUpdate) { 
-          console.log(userToUpdate)
-          userToUpdate.score = score;
-        }
-        else{
-          console.log("user not found")
-        }
-
-      }
-
-      io.to(room).emit('update score', roomToUpdate);
-    });
-    
-    socket.on("user finished", ({ user, room, category }) => {    
-      const roomToUpdate = findRoomByCategory(category, room);
-      if (roomToUpdate) {
-        const userToUpdate = roomToUpdate.users?.find((u) => u.id === user.id);
-        if (userToUpdate) {
-          userToUpdate.finished = true;
-        } else {
-          console.log("user not found");
-        }
-      }
-    
-      const allFinished = roomToUpdate?.users?.every((u) => u.finished);
-      if (allFinished) {
-        io.to(roomToUpdate.id).emit('game finished', roomToUpdate);
-    
-        const indexToRemove = rooms[category].indexOf(roomToUpdate);
-        if (indexToRemove !== -1) {
-          rooms[category].splice(indexToRemove, 1);
-          console.log("Salle supprimée :", roomToUpdate);
-        } else {
-          console.log("La salle n'a pas été trouvée dans le tableau");
-        }
-      }
-    });
-    
-
-
-});
-
-
-
-return io;
+interface User {
+  id: string;
+  name: string;
+  score: number;
+  finished: boolean;
+  roomId: string;
+  category?: string; // Ajouter une propriété category optionnelle
 }
 
-export { initializeSocket };
+interface Room {
+  id: string;
+  users: User[];
+  category: string;
+}
+
+class QuizzBattleSocket {
+  private io: Server;
+  private rooms: { [category: string]: Room[] } = {};
+  private connectedUsers: Map<string, User> = new Map(); 
+
+  constructor(server: any) {
+    this.io = require("socket.io")(server, {
+      cors: {
+        origin: "*",
+      }
+    });
+
+    this.initializeSocketEvents();
+  }
+
+  private findRoomByCategory(category: string, id: string): Room | undefined {
+    return this.rooms[category]?.find((r) => r.id === id);
+  }
+
+  private getUserKey(socketId: string, category: string): string {
+    return `${socketId}:${category}`; // Combine l'identifiant du socket et la catégorie pour créer une clé unique
+  }
+
+  private initializeSocketEvents() {
+    this.io.on('connection', (socket: Socket) => {
+      console.log(socket.id)
+      socket.on('disconnect', () => {
+        console.log(socket.id, 'is disconnected')
+        console.log(this.connectedUsers)
+        console.log(this.connectedUsers.get(socket.id))
+        const user = this.connectedUsers.get(socket.id); // Obtenez l'objet User à partir du Map
+
+        if (user) {
+          console.log(user.roomId)
+          const { roomId } = user;
+          socket.to(roomId).emit('userDisconnected', user.id);
+        }
+
+        this.connectedUsers.delete(socket.id); 
+      });
+
+      socket.on('search a room', ({ user, category }) => {
+        let room: Room | null = null;
+
+        if (this.rooms?.[category] !== undefined) {
+          // Search if a room with the same category exists and has only one user
+          this.rooms[category].forEach((r) => {
+            if (r.users.length === 1 && !r.users.find(u => u.id === user.id)) {
+              room = r;
+            }
+          });
+        }
+
+        if (!room) {
+          room = createRoom(user, category);
+          console.log("Created a room", room);
+
+          // Check if the category exists or create it
+          if (!this.rooms[category]) {
+            this.rooms[category] = [];
+          }
+
+          this.rooms[category].push(room);
+          socket.join(room.id);
+        } else {
+          console.log("\x1b[31m%s\x1b[0m","ROOM WITH USER", room);
+          room.users.forEach((user) => {
+            if (user.id === user.id) {
+              return;
+            }
+          });
+          user.roomId = room.id;
+
+         // Définir la propriété category de l'objet User avec la catégorie sélectionnée
+
+          if (room.users.length === 1) {
+            room.users.push(user);
+            socket.join(room.id);
+            user.category = category; 
+            console.log("\x1b[31m%s\x1b[0m","roomFound");
+            this.io.to(room.id).emit('roomFound', room);
+          } else {
+ 
+            console.log("\x1b[31m%s\x1b[0m","Wait for other player");
+          }
+        }
+        console.log(user, 'is added to the connected sockets')
+        this.connectedUsers.set(socket.id, user); // Ajoutez l'objet User au Map lorsque l'utilisateur se connecte
+        console.log(this.connectedUsers)
+      });
+
+      socket.on("fetch room", ({ room: roomId, category, user }) => {
+
+        user.roomId = roomId;
+        this.connectedUsers.set(socket.id, user);
+        console.log(roomId, category, "ICI");
+
+        console.log(this.rooms);
+        const room = this.rooms?.[category]?.find((r) => r.id === roomId);
+        console.log("finded room:", room);
+        if (room !== undefined) {
+          socket.join(room.id);
+          this.io.to(room.id).emit('startGame', room);
+        } else {
+          console.log("room not found");
+        }
+        
+      });
+
+      socket.on("update score", ({ user, room, score, category }) => {
+        // ... Votre code pour mettre à jour le score ...
+        const roomToUpdate = this.rooms[category]?.find((r) => r.id === room);
+        if (roomToUpdate) {
+          const userToUpdate = roomToUpdate.users.find((u) => u.id === user.id);
+          if (userToUpdate) {
+            userToUpdate.score = score;
+          } else {
+            console.log("user not found");
+          }
+        }
+
+        this.io.to(room).emit('update score', roomToUpdate);
+      });
+
+      socket.on("user finished", ({ user, room, category }) => {
+        const roomToUpdate = this.findRoomByCategory(category, room);
+        if (roomToUpdate) {
+          const userToUpdate = roomToUpdate.users.find((u) => u.id === user.id);
+          if (userToUpdate) {
+            userToUpdate.finished = true;
+          } else {
+            console.log("user not found");
+          }
+        }
+
+        const allFinished = roomToUpdate?.users.every((u) => u.finished);
+        if (allFinished) {
+          this.io.to(roomToUpdate.id).emit('game finished', roomToUpdate);
+
+          const indexToRemove = this.rooms[category]?.indexOf(roomToUpdate);
+          if (indexToRemove !== -1) {
+            this.rooms[category]?.splice(indexToRemove, 1);
+            console.log("Salle supprimée :", roomToUpdate);
+          } else {
+            console.log("La salle n'a pas été trouvée dans le tableau");
+          }
+        }
+      });
+
+
+
+    socket.on("send emote", ({user, room, category, emoteSrc}) => {
+      const roomToUpdate = this.findRoomByCategory(category, room);
+      if (roomToUpdate) {
+        this.io.to(roomToUpdate.id).emit('receive emote', {user, emoteSrc});
+      }
+    })
+
+    });
+  }
+
+  // ...
+}
+
+export default QuizzBattleSocket;

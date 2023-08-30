@@ -56,7 +56,10 @@ const refreshUserData = () => {
   if(token) {
     client.get(`${API_URL}/api/users/${user.value?.id}`)
         .then((response) => {
-            user.value = response.data
+            user.value = {
+              ...user.value,
+              ...response.data
+            }
         })
         .catch((error) => {
             console.error('Erreur lors de la récupération des quiz', error);

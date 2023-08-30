@@ -14,6 +14,10 @@ module.exports = (connection) => {
           allowNull: false,
           defaultValue: "defaultImage.png",
         },
+        description: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
       },
       { sequelize: connection, tableName: "badge" }
     );    

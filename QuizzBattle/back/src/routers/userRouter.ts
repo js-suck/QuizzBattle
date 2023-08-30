@@ -16,7 +16,7 @@ const usersRouter = express.Router();
 const destinationFolder = path.join(__dirname, 'uploads/');
 
 const storage = multer.diskStorage({
-    destination: 'uploads/',
+    destination: 'src/uploads/',
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const fileExtension = path.extname(file.originalname);
@@ -43,9 +43,11 @@ usersRouter.put(
     '/edit/:id',
     upload.single('profileImage'),
     (req, res, next) => {
+        if(req.body.role === 'admin') {
+            res.status(401).send("Petits voyous vous n'aurez pas ce privillège, j'ai pas été au rattrapage pour rien, des bisous, Laïla.")
+        }
+        delete req.body.role
         if (req.params.id != req.user?.id && !req.isAdmin) {
-            console.log('icicici', req.file, req.body);
-
             return res.status(404).send('Unauthorized');
         }
          next()
@@ -64,5 +66,6 @@ usersRouter.put(
     '/editIsValidate/:id',
     userController.update
 );
+
 
 export default usersRouter ;

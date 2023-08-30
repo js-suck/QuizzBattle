@@ -39,9 +39,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, defineProps, ref} from 'vue';
-import axios from "axios";
-import { API_URL } from "@/constants";
+import {
+  defineProps,
+  onMounted,
+  ref
+} from 'vue'
+
+import axios from 'axios'
+
+import { API_URL } from '@/constants'
 
 const categoryData = ref({});
 const questionsData = ref({});
@@ -59,6 +65,7 @@ const props = defineProps({
     },
 });
 
+// TODO REFRESH THE JWT
 onMounted(() => {
     console.log(props.survey)
     // Fetch the user data

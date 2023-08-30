@@ -62,7 +62,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .profile-badge-wrapper {
   display: flex;
   flex-direction: column;

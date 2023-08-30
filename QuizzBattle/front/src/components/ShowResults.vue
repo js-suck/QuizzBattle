@@ -2,7 +2,11 @@
   <div class="flex flex-col align-center items-center">
     <h2 class="text-gray-500 text-uppercase">Result</h2>
     <div v-if="isWinner">
-      <h2 class="text-white text-uppercase">You won !!!</h2>
+      <h2 class="text-white text-uppercase">You won !!!
+
+{{ otherPlayerDisconnect ? " Your adversaire has disconnected" : "" }}
+
+      </h2>
     </div>
     <div v-else>
       <h2 class="text-white">You lost...</h2>
@@ -63,11 +67,18 @@ import { userManagerKey } from '../contexts/userManagerKeys';
 import { useRoute } from 'vue-router';
 const route = useRoute()
 
+const props = defineProps({
+  otherPlayerDisconnect: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const {user} = inject(userManagerKey)
 const { players, scores } = inject(playerManager, ref([]));
 const player = players.value.find((p) => p.id === user.value.id)
 const player2 = players.value.find((p) => p.id !== user.value.id)
-const isWinner = player.score > player2.score
+const isWinner = props.otherPlayerDisconnect ? true : player.score > player2.score
 const player1 = {
   ...players.value[0],
   // profileFile: `@/assets/${FILE_PATHS.profilePictures}/${players.value[0].profilePicturePath}`

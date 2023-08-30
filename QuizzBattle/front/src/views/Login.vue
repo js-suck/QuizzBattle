@@ -5,14 +5,13 @@ import {
   reactive,
   ref
 } from 'vue'
-import { useRouter } from 'vue-router';
+
+import { useRouter } from 'vue-router'
 
 import { userManagerKey } from '../contexts/userManagerKeys'
 
-const {loginUser, user} = inject(userManagerKey)
+const {loginUser} = inject(userManagerKey)
 const router = useRouter()
-const email = ref('');
-const password = ref('');
 
 function validateForm() {
   if (formData.password.length < 8) {
@@ -54,16 +53,9 @@ function handleSubmit() {
       
     })
     .catch((_errors) => (console.log(_errors)));
-
-
-    
 }
 
-// onMounted(() => {
-//   if (user.value !== null) {
-//     window.location.href = 'http://localhost:5173';
-//   }
-// });
+
 </script>
 
 <template>

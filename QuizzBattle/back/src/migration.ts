@@ -1,4 +1,5 @@
 import { initMongo } from './db/mongo/db';
+
 const db = require("./db");
 const mode = process.argv[2] ?? "alter";
 const SequelizeInstance = require("sequelize");
@@ -76,6 +77,17 @@ async function createDefaultUsersAndQuestions() {
     // Generate user data using a for loop
     const usersData = [];
     const numberOfUsers = 50;
+
+    // const adminData = {
+    //   lastname: `admin`,
+    //   firstname: `administrator`,
+    //   nickname: `adminos`,
+    //   email: `admin@example.com`,
+    //   password: `password`,
+    //   profilePicturePath: "defaultUser.png",
+    //   score: Math.random() * 100000,
+    //   gamesPlayed: Math.random() * 10,
+    // }
 
     for (let i = 1; i <= numberOfUsers; i++) {
       const userData = {
@@ -2115,6 +2127,16 @@ async function createDefaultUsersAndQuestions() {
     }
     await db.UserCategory.bulkCreate(userCategoryData);
 
+    db.Badge.create({
+      label: "Jouer 10 parties",
+      image: "tenGamesPlayed.png" 
+    })
+    
+    db.Badge.create({
+      label: "Jouer 100 parties",
+      image: 'oneThousandGamesPlayed.png'
+    })
+    
     console.log("Default questions and answers created successfully.");
     await createRoutineWithTrigger();
 

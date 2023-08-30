@@ -3,7 +3,6 @@ import http from 'http';
 import path from 'path';
 import mongoose = require('mongoose');
 import { mongoURI } from './config/db'
-import { initializeSocket } from './config/socket';
 import { initMongo } from './db/mongo/db';
 import {
   getUserDataFromPostgres,
@@ -16,6 +15,7 @@ import {
   generateToken,
 } from './services/authentifiactionService';
 import { FRONT_URL } from './constants';
+import QuizzBattleSocket from './config/socket';
 
 const { Client } = require('pg');
 
@@ -66,13 +66,14 @@ const mailjetClient = new Mailjet({
 app.use(cors());
 const server = http.createServer(app);
 
+const quizzBattleSocket = new QuizzBattleSocket(server)
 
 const multer = require('multer');
 const upload = multer({ dest: __dirname + '/uploads/' });
 
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, './../uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
@@ -86,7 +87,6 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
 
 
 
-initializeSocket(server)
 initMongo()
 app.use(express.json())
 

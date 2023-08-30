@@ -42,13 +42,13 @@ class ScoreboardService {
             include: [
               {
                 model: User,
-                attributes: ["nickname"],
+                attributes: ["nickname", "profilePicturePath", 'id'],
                 as: 'user'
               },
               {
                 model: Category,
                 attributes: ["name"],
-                as: 'category' // On n'a pas besoin des attributs de la table Category dans ce cas
+                as: 'category' 
               },
             ],
         });
@@ -57,7 +57,9 @@ class ScoreboardService {
             "gamesPlayed": item.gamesPlayed,
             "nickname": item.user.nickname,
             "category": item.category.name,
-            "position": index + 1
+            "position": index + 1,
+            "profilePicturePath": item.user.profilePicturePath,
+            "userId": item.user.id
         }));
         return transformedArray;
     }

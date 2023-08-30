@@ -26,7 +26,7 @@
         marginBottom: '1em'
       }"
     ></v-progress-linear>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col">
     <GameHeader :users='players' :gameName="questionLabel" class="game-" :style="'margin-bottom: 2em'"/>
     <div v-for="(answer, index) in answerList" :key="answer">
       <QuestionBlock
@@ -56,6 +56,8 @@
       Afficher les résulats
     </button>
   </div>
+<Emotes/>
+
   <div v-if="isGameFinished == true" class="flex flex-col h-screen">
     <GameHeader
       :gameName="`Votre score est de ${score} / ${quizzQuestionList.value.length}`"
@@ -70,7 +72,7 @@
     </button>
   </div>
    </div>
-   <ShowResult v-if="isGameFinished"/>
+   <ShowResult v-if="isGameFinished" :otherPlayerDisconnect="otherPlayerDisconnect"/>
   </div>
     <v-dialog v-model="showModal" max-width="500px">
       <v-card>
@@ -93,9 +95,9 @@ import {
 } from 'vue'
 
 import qs from 'qs'
-import { io } from 'socket.io-client'
 import { useRoute } from 'vue-router'
 
+import socket from '../config/socket'
 import { API_URL } from '../constants'
 import {
   playerManager,
@@ -104,6 +106,7 @@ import {
 import { userManagerKey } from '../contexts/userManagerKeys'
 import client from '../helpers/client'
 import { increaseScore } from '../helpers/quizz'
+import Emotes from './Emotes.vue'
 import GameHeader from './GameHeader/GameHeader.vue'
 import QuestionBlock from './QuestionBlock.vue'
 import ShowResult from './ShowResults.vue'
@@ -112,7 +115,6 @@ const {user} = inject(userManagerKey)
 const theme = inject("theme")
 const {getQuestions,  quizzQuestionList, questionLabel, answerList, questionNumber, isLoading, setCategory, category, categoryId} = inject(questionManager)
 const {players, setPlayers, scores} = inject(playerManager)
-const socket = io(API_URL)
 const route = useRoute();  
 const roomId = route.params.id;
 const colorVars = [theme.colors.blue, theme.colors.green, theme.colors.orange, theme.colors.red]
@@ -129,6 +131,10 @@ const userQuestionPoints = ref(0)
 const isAnswerRevealed = ref(false);
 const categoryName = route.params.categoryId
 const showModal = ref(false)
+const otherPlayerDisconnect = ref(false)
+
+// count number of correct suite response
+const correctAnswersStrike = ref(0)
 
 const isCorrectAnswer = answer => {
   return quizzQuestionList.value[questionNumber.value].correctAnswer === answer
@@ -164,8 +170,10 @@ const handleRevealCorrectAnswer = (answer) => {
     scores.player1 = scores.player1 + increaseScore(timeLeft.value)
     userQuestionPoints.value =  increaseScore(timeLeft.value)
     isWinnerQuestion.value = true
+    correctAnswersStrike.value++
   } else {
     isWinnerQuestion.value = false
+    correctAnswersStrike.value = 0
   }
   timeLeft.value = 10000;
   transitionEnabled.value = false; 
@@ -177,6 +185,7 @@ const handleRevealCorrectAnswer = (answer) => {
     score: scores.player1
   })
   isAnswerRevealed.value = true;
+  
 
 
 }
@@ -220,50 +229,13 @@ const handleResult = () => {
 
 }
 
-// const getQuestionsTrivia = (category) => {
-//   let data = qs.stringify({
-//     limit: '10',
-//     categories: category,
-//     difficulties: 'easy',
-//     region: 'FR',
-//     types: 'text_choice'
-//   })
-//   let config = {
-//     method: 'post',
-//     maxBodyLength: Infinity,
-//     url: `${API_URL}/api/questions?${queryString}`,
-//     headers: {
-//       'Content-Type': 'application/x-www-form-urlencoded'
-//     },
-//     data: data
-//   }
-
-
-//   client
-//     .request(config)
-//     .then((response) => {
-//       quizzQuestionList.value = response.data
-//       answerList.value = [
-//         response.data[questionNumber.value].correctAnswer,
-//         ...response.data[questionNumber.value].incorrectAnswers
-//       ]
-//       answerList.value = answerList.value.sort(() => Math.random() - 0.5)
-//       questionLabel.value = response.data[questionNumber.value].question.text;
-//       //isLoading.value = false
-//       startTimer();
-//     })
-//     .catch((error) => {
-//       console.error('Erreur lors de la récupération des quiz', error)
-//     })
-// }
-
-
 
 onMounted(async () => {
   setCategory(categoryName)
   socket.emit('fetch room', {
     room: roomId,
-    category : category.value
+    category : category.value,
+    user: user.value
   });
 
   socket.on('startGame', (room) => {
@@ -274,12 +246,26 @@ onMounted(async () => {
 
   });
 
+  socket.on('userDisconnected', () => {
+
+    scores.player2 = 0;
+    isGameFinished.value = true;
+    clearInterval(timer.value)
+    isLoading.value = false;
+    otherPlayerDisconnect.value = true;
+  });
+
   socket.on('update score', (room) => {
     console.log("SCORE UPDATED", room)
     
     setPlayers(room.users);
     
   }); 
+
+  socket.on("receive emote", () => {
+
+  alert("rev emote")
+  })
 
   socket.on("game finished", (data) => {
 
@@ -325,27 +311,41 @@ onMounted(async () => {
       console.error("Erreur lors de l'envoie de la game", error)
     })
 
-  client.get(`${API_URL}/api/users/${user.value.id}/games`)
-    .then((response) => {
-      // count the number of games played
-      const gamesPlayed = response.data.length;
-      if (gamesPlayed == 1) {
-        console.log("Première game jouée", response.data)
-        showModal.value = "FirstGame";
-      } else if (gamesPlayed == 10) {
-        console.log("10 games jouées", response.data)
-        showModal.value = "10Games";
-      } else if (gamesPlayed == 50) {
-        console.log("50 games jouées", response.data)
-        showModal.value = "50Games";
-      } else if (gamesPlayed == 100) {
-        console.log("100 games jouées", response.data)
-        showModal.value = "100Games";
-      } else {
-        console.log("Autre nombre de games jouées", response.data.length)
-        showModal.value = "OtherGames";
+    console.log(correctAnswersStrike)
 
+
+    const response = client.get(`${API_URL}/api/game/stats/${user.value.id}`)
+    .then((response) => {
+      console.log(response.data.totalGamesStatsAndBadge.badges)
+
+
+      const newBadges = response.data.totalGamesStatsAndBadge.badges.filter(badge => badge.isNew === true)
+      console.log(newBadges)
+      if(newBadges.length > 0)
+      {
+        showModal.value = newBadges[0].label;
       }
+
+      
+      // count the number of games played
+      // const gamesPlayed = response.data.length;
+      // if (gamesPlayed == 1) {
+      //   console.log("Première game jouée", response.data)
+      //   showModal.value = "FirstGame";
+      // } else if (gamesPlayed == 10) {
+      //   console.log("10 games jouées", response.data)
+      //   showModal.value = "10Games";
+      // } else if (gamesPlayed == 50) {
+      //   console.log("50 games jouées", response.data)
+      //   showModal.value = "50Games";
+      // } else if (gamesPlayed == 100) {
+      //   console.log("100 games jouées", response.data)
+      //   showModal.value = "100Games";
+      // } else {
+      //   console.log("Autre nombre de games jouées", response.data.length)
+      //   showModal.value = "OtherGames";
+
+      // }
     })
     .catch((error) => {
       console.error('Erreur lors de la récupération des games', error)

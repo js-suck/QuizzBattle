@@ -5,15 +5,15 @@
             <form class="my-4 w-full" @submit.prevent="submitForm" enctype="multipart/form-data">
                 <div class="mb-6">
                     <label for="lastname" class="block mb-2 font-medium text-gray-700">Lastname :</label>
-                    <input v-model.lazy="responseUser.lastname" type="text" id="lastname" name="lastname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                    <input v-model.lazy="formDataUser.lastname" type="text" id="lastname" name="lastname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
                 </div>
                 <div class="mb-6">
                     <label for="firstname" class="block mb-2 font-medium text-gray-700">Firstname :</label>
-                    <input v-model.lazy="responseUser.firstname" type="text" id="firstname" name="firstname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                    <input v-model.lazy="formDataUser.firstname" type="text" id="firstname" name="firstname" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
                 </div>
                 <div class="mb-6">
                     <label for="email" class="block mb-2 font-medium text-gray-700">Email :</label>
-                    <input v-model.lazy="responseUser.email" type="email" id="email" name="email" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
+                    <input v-model.lazy="formDataUser.email" type="email" id="email" name="email" class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" />
                 </div>
                 <!-- Profile picture card -->
                 <div class="mb-6">
@@ -63,18 +63,17 @@
 <script setup>
 import { inject, onMounted, defineProps, ref} from 'vue';
 import {API_URL} from "@/constants";
-import axios from "axios";
 import client from "@/helpers/client";
 import { userManagerKey } from '@/contexts/userManagerKeys'
 const {user} = inject(userManagerKey)
-const responseUser = ref({
+const formDataUser = ref({
     lastname: '',
     firstname: '',
     email: '',
     createdAt: '',
-    profilePicturePath: '', // Make sure you have this property in your responseUser object
+    profilePicturePath: '', // Make sure you have this property in your formDataUser object
 });
-const props = defineProps({
+defineProps({
     user: {
         required: true,
         type: String,
@@ -108,9 +107,8 @@ const changeProfilePicture = (event) => {
     beforeChange.value = true
 };
 
-// Function to retrieve user data from the JWT token in local storage
 const getUserDataFromToken = () => {
-    const token = localStorage.getItem('token'); // Replace 'your-jwt-token-key' with the key you used to store the token
+    const token = localStorage.getItem('token'); 
 
     if (token) {
         const tokenParts = token.split('.');
@@ -119,12 +117,12 @@ const getUserDataFromToken = () => {
             const decodedPayload = atob(encodedPayload);
             const userData = JSON.parse(decodedPayload);
             console.log('User data from JWT token:', userData);
-            responseUser.value.id = userData.id;
+            formDataUser.value.id = userData.id;
         }
-        client.get(`${API_URL}/api/users/show/${responseUser.value.id}`)
+        client.get(`${API_URL}/api/users/show/${formDataUser.value.id}`)
             .then((response) => {
-                responseUser.value = response.data;
-                console.log(responseUser.value);
+                formDataUser.value = response.data;
+                console.log(formDataUser.value);
             })
             .catch((error) => {
                 console.error('Error while fetching user data:', error);
@@ -136,21 +134,22 @@ const getUserDataFromToken = () => {
 
 const submitForm = async () => {
     try {
-        console.log('toto', fileInputRef.value.files[0], fileInputRef.value.files[0].name)
+       // console.log('toto', fileInputRef.value.files[0], fileInputRef.value.files[0].name)
         const formData = new FormData();
-        formData.append('lastname', responseUser.value.lastname);
-        formData.append('description', responseUser.value.lastname);
-        formData.append('email', responseUser.value.email);
+        formData.append('lastname', formDataUser.value.lastname);
+        formData.append('firstname', formDataUser.value.firstname);
+        formData.append('description', formDataUser.value.lastname);
+        formData.append('email', formDataUser.value.email);
         if(fileInputRef.value.files[0])
         {
             formData.append('profileImage', fileInputRef.value.files[0]);
             formData.append('profilePicturePath', fileInputRef.value.files[0].name);
 
         }
-        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${responseUser.value.id}`, formData);
-        responseUser.value = userUpdateResponse.data;
+        const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${formDataUser.value.id}`, formData);
+        formDataUser.value = userUpdateResponse.data;
 
-        console.log('Updated user data:', responseUser.value);
+        console.log('Updated user data:', formDataUser.value);
     } catch (error) {
         console.error('Error while updating user data:', error);
     }

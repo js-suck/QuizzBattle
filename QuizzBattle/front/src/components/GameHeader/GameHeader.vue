@@ -1,17 +1,22 @@
 <template>
 <RoundedSquare>
-<ProfileBadge color="red" :name="users[0].firstname" :score="players[0].score"/>
+<ProfileBadge color="red" :name="users[0].firstname" :score="players[0].score" :image="`${API_URL}/uploads/${users[0].profilePicturePath}`"/>
 <h2>{{gameName}}</h2>
 <ProfileBadge color="green" :name="users[1].firstname" :score="players[1].score"/>
 </RoundedSquare>
 </template>
 
 <script setup>
-import ProfileBadge from './../ProfileBadge.vue';
-import RoundedSquare from './../RoundedSquare.vue';
-import { defineProps, inject, watch } from 'vue';
-import { playerManager } from '../../contexts/quizzKeys';
+import {
+  defineProps,
+  inject,
+  watch
+} from 'vue'
+import { API_URL } from '../../constants'
 
+import { playerManager } from '../../contexts/quizzKeys'
+import ProfileBadge from '../ProfileBadge.vue'
+import RoundedSquare from '../RoundedSquare.vue'
 
 const {players} = inject(playerManager)
 

@@ -22,6 +22,7 @@ const getUserDataFromPostgres = async (id) => {
           Object.assign(game, {
             userId: newData.id,
             username: newData.firstname,
+            userProfilePicture: newData.image
           });
           await game.save();
           console.log(`Entité Game avec gameId ${game.id} mise à jour dans MongoDB.`);
@@ -34,4 +35,4 @@ const getUserDataFromPostgres = async (id) => {
     }
   };
 
-export { getUserDataFromPostgres, updateMongoDBGame }; 
+export { getUserDataFromPostgres, updateMongoDBGame };

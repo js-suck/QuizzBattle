@@ -8,8 +8,9 @@ const badgeController = GenericController(badgeServiceInstance);
 
 const badgeRouter = express.Router();
 
-badgeRouter.post('/create', badgeController.create);
+badgeRouter.post('/', badgeController.create);
 badgeRouter.get('/:userId', badgeController.getAllBy);
 badgeRouter.post('/success/add', badgeController.addTenWinningGamesBadgeToUser);
+
 
 export default badgeRouter;

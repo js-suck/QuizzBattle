@@ -15,7 +15,7 @@ RETURNS TRIGGER AS $$
 DECLARE
   new_data TEXT;
 BEGIN
-  new_data := NEW.id || ',' || NEW.firstname;
+  new_data := NEW.id || ',' || NEW.firstname || ',' || NEW.image ;
   PERFORM pg_notify('user_update', new_data);
   RETURN NEW;
 END;
@@ -84,7 +84,7 @@ async function createDefaultUsersAndQuestions() {
     //   nickname: `adminos`,
     //   email: `admin@example.com`,
     //   password: `password`,
-    //   profilePicturePath: "defaultUser.png",
+    //   image: "defaultUser.png",
     //   score: Math.random() * 100000,
     //   gamesPlayed: Math.random() * 10,
     // }
@@ -96,7 +96,7 @@ async function createDefaultUsersAndQuestions() {
         nickname: `John Doe-${i}`,
         email: `john.doe${i}@example.com`,
         password: `password${i}`,
-        profilePicturePath: "defaultUser.png",
+        image: "defaultUser.png",
         score: Math.random() * 100000,
         gamesPlayed: Math.random() * 10,
       };
@@ -111,7 +111,7 @@ async function createDefaultUsersAndQuestions() {
       nickname: "Admin",
       email: "admin@admin.fr",
       password: "Test1234",
-      profilePicturePath: "defaultUser.png",
+      image: "defaultUser.png",
       score: 0,
       gamesPlayed: 0,
       role: "admin",
@@ -2137,7 +2137,57 @@ async function createDefaultUsersAndQuestions() {
       image: 'oneThousandGamesPlayed.png'
     })
     
-    console.log("Default questions and answers created successfully.");
+    db.Emote.create({
+      name: 'Adrien King',
+      src: `AdrienKing.png`,
+      price: 1,
+      price_id: 'price_1Nm1adLmxrb9sP3WLbH4tWjs'
+    })
+
+    db.Emote.create({
+      name: 'Adrien BG',
+      src: `adrienBG.png`,
+      price: 15,
+      price_id: 'price_1Nlvz6Lmxrb9sP3WcsOo7gNl'
+    })
+
+    db.Emote.create({
+      name: 'Karl super Js',
+      src: `KarlSuperJs.png`,
+      price: 4,
+      price_id: 'price_1Nm2O4Lmxrb9sP3WA1cyiRCg'
+    })
+
+    db.Emote.create({
+      name: 'Kamal',
+      src: `Kamal.png`,
+      price: 300,
+      price_id: 'price_1Nm2M3Lmxrb9sP3WB9JIzem1'
+    })
+
+    db.Emote.create({
+      name: 'Steve Jobs',
+      src: `SteveJobs.png`,
+      price: 2,
+      price_id: 'price_1Nm2IALmxrb9sP3W27ZgBipx'
+    })
+
+    db.Emote.create({
+      name: 'Elon Musk',
+      src: `ElonMusk.png`,
+      price: 1000,
+      price_id: 'price_1Nm2Q9Lmxrb9sP3WntnWsRIE'
+    })
+
+    db.Emote.create({
+      name: 'Karl nul',
+      src: `KarlNul.png`,
+      price: 1,
+      price_id: 'price_1NlHhGLmxrb9sP3WPRYwpjmS'
+    })
+
+
+    
     await createRoutineWithTrigger();
 
     db.connection.close();

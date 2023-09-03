@@ -138,7 +138,12 @@ const router = createRouter({
     {
       path: '/emotes',
       name: 'emotes',
-      component: () => import('../components/Emotes.vue')
+      component: () => import('../views/Emotes.vue')
+    },
+    {
+      path: '/emotes/pay/success',
+      name: 'emotes_pay_success',
+      component: () => import('../views/Success.vue')
     },
     {
       path: '/badges',

@@ -171,8 +171,8 @@ class QuizzBattleSocket {
 
 
 
-    socket.on("send emote", ({user, room, category, emoteSrc}) => {
-      const roomToUpdate = this.findRoomByCategory(category, room);
+    socket.on("send emote", ({user, room, categoryName, emoteSrc}) => {
+      const roomToUpdate = this.findRoomByCategory(categoryName, room);
       if (roomToUpdate) {
         this.io.to(roomToUpdate.id).emit('receive emote', {user, emoteSrc});
       }

@@ -55,7 +55,7 @@ usersRouter.put(
 
     function (req, res, next) {
         //console.log(req.file, req.body);
-        req.body.profilePicturePath = req?.file?.filename
+        req.body.image = req?.file?.filename
         next()
     },
     userController.update

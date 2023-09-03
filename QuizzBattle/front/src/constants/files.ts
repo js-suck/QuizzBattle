@@ -3,3 +3,5 @@ export const FILE_PATHS  = {
     categoryPictures: "/src/assets/images/categories/",
     emotes: '/src/assets/images/emotes/'
 }
+
+export default FILE_PATHS

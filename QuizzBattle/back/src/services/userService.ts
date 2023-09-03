@@ -79,9 +79,7 @@ module.exports = function () {
           }
           return newValues[0];
         } catch (error) {
-          if (error instanceof Sequelize.ValidationErrorInstance) {
-            throw ValidationErrorInstance.createFromSequelizeValidationError(error);
-          }
+          console.error(error);
           throw error;
         }
       }

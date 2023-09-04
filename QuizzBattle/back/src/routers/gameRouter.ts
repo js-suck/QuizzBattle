@@ -10,6 +10,6 @@ const gameRouter = express.Router();
 
 gameRouter.post('/', GameControllerInstance.create);
 gameRouter.get('/win/:categoryId', GameControllerInstance.getUsersWithWinsLast7Days);
-gameRouter.get('/stats/:userId', GameControllerInstance.getStatsByUser)
+gameRouter.post('/stats/:userId', GameControllerInstance.getStatsByUser)
 
 export default gameRouter;

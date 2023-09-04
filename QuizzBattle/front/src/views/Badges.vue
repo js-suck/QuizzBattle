@@ -1,7 +1,7 @@
 <template>
     <Navigation v-if="gameStats.totalGamesStatsAndBadge">
       <div class="flex">
-         <div class="badge" v-for="stats in gameStats.categoriesStats" :key="stats.id"  >
+         <!-- <div class="badge" v-for="stats in gameStats.categoriesStats" :key="stats.id"  >
        
         <img :src='`/src/assets/badges/${stats.categorie.label}.png`'>
         <h2>{{stats.badges.label}}</h2>
@@ -12,21 +12,22 @@
     ></v-progress-linear>
     {{stats.categorie.gamesWon}} / 10 games played
         <p>{{stats.badges.description ?? "Bravo vous avez eu du succès dans cette catégorie !"}}</p>
-      </div>
+      </div> -->
         <div
   class="badge"
   v-for="stats in gameStats.totalGamesStatsAndBadge.badges"
-  :key="stats.id"
+  :key="stats.label"
   :style="{ backgroundColor: stats.userObtain ? 'violet' : 'grey' }"
 >
          <img :src='`/src/assets/badges/${stats.image}`'>
           <h2>{{stats.label}}</h2>
-        <v-progress-linear
+            <v-progress-linear v-if="stats.gamesNeeds"
        :model-value="`${gameStats.totalGamesPlayed / stats.gamesNeeds * 100}`"
      color="indigo"
      height="25"
    ></v-progress-linear>
-   {{gameStats.totalGamesPlayed }} / {{ stats.gamesNeeds }} games played
+   <p v-if="stats.gamesNeeds">   {{gameStats.totalGamesPlayed }} / {{ stats.gamesNeeds }} games played
+</p>
        <p>{{ stats.userObtain && stats.description ?  stats.description :  "Vous n'avez pas encore gagné le succès"}}</p> 
      </div> 
       </div>
@@ -50,7 +51,6 @@ import client from '../helpers/client'
 const { user } = inject(userManagerKey)
   const badges = ref([]) 
   const gameStats = ref([])
-  
   onMounted(async () => {
     try {
       const response = await client.get(`${API_URL}/api/badges/${user.value.id}`)
@@ -61,17 +61,13 @@ const { user } = inject(userManagerKey)
 
 
     try {
-      const response = await client.get(`${API_URL}/api/game/stats/${user.value.id}`)
+      const response = await client.post(`${API_URL}/api/game/stats/${user.value.id}`)
       gameStats.value = response.data
       console.log(response.data.totalGamesStatsAndBadge.badges)
     } catch (error) {
       console.error('Erreur lors de la récupération des stats :', error)
     }
   })
-  
-  const badgeImageUrl = (imageName) => {
-    return `${API_URL}/uploads/${imageName}`
-  }
   
 </script>
 
@@ -102,7 +98,6 @@ h2 {
 
 img {
     width: 50%;
-    height: 100%;
     border-radius: 1rem;
     margin-bottom: 1rem;
 }

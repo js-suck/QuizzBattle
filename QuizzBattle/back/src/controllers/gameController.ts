@@ -45,8 +45,12 @@ function GameController(service, options = {}) {
 
     async function getStatsByUser(req, res) {
         const {userId} = req.params;
+        const {correctAnswersStrike} = req.body
 
-        const stats = await service.getStatsByUser(userId);
+        const stats = await service.getStatsByUser({
+            userId,
+            correctAnswersStrike
+        });
         res.json(stats);
     }
 

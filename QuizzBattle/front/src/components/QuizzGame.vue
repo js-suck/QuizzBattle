@@ -91,7 +91,7 @@
     <v-card>
       <v-card-title class="headline">Congratulations</v-card-title>
       <v-card-text>You earned the badge : {{ showModal }}</v-card-text>
-      <v-img height="200" :src="badgeImage" class="text-white" />
+      <v-img height="200" :src='`/src/assets/badges/${badgeImage}`' class="text-white" />
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text @click="showModal = false">Cool !</v-btn>
@@ -313,7 +313,9 @@ onMounted(async () => {
     console.log(correctAnswersStrike)
 
     const response = client
-      .get(`${API_URL}/api/game/stats/${user.value.id}`)
+      .post(`${API_URL}/api/game/stats/${user.value.id}`, {
+        correctAnswersStrike: correctAnswersStrike.value
+      })
       .then((response) => {
         console.log(response.data.totalGamesStatsAndBadge.badges)
 

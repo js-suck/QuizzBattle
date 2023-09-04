@@ -75,7 +75,7 @@ const router = createRouter({
       component: () => import('../views/ScoreboardView.vue')
     },
     {
-      path: '/userstat',
+      path: '/user/stats/:userId',
       name: 'userstat',
       component: () => import('../views/UserStatView.vue')
     },

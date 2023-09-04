@@ -2129,12 +2129,36 @@ async function createDefaultUsersAndQuestions() {
 
     db.Badge.create({
       label: "Jouer 10 parties",
-      image: "tenGamesPlayed.png" 
+      image: "tenGamesPlayed.png",
+      description: 'Bravo continuez de jouer, vous êtes un expert !'
     })
     
     db.Badge.create({
       label: "Jouer 100 parties",
-      image: 'oneThousandGamesPlayed.png'
+      image: 'oneThousandGamesPlayed.png',
+      description: 'Bravo continuez de jouer, vous êtes un super expert !'
+    })
+
+    categoryCreated.forEach((created) =>
+    {
+      db.Badge.create({
+        label: `Jouer 10 parties de ${created.name}`,
+        image: `${created.name}10GamesPlayed.png` ,
+        description: "Bravo vous avez beaucoup joué dans cette catégorie"
+      })
+    }
+    )
+
+    db.Badge.create({
+      label: "3 bonnes réponses à la suite !",
+      image: 'strikes3.png',
+      description: "Vous avez répondu 3 fois de suite à une bonne réponse !"
+    })
+
+    db.Badge.create({
+      label: "5 bonnes réponses à la suite !",
+      description: "Vous avez répondu 5 fois de suite à une bonne réponse !",
+      image: 'strikes5.png'
     })
     
     db.Emote.create({

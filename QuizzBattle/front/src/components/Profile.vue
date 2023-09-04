@@ -81,16 +81,30 @@
         </div>
       </form>
     </div>
+    <v-snackbar v-model="notifOpen" :timeout="2000" class="testing">
+      {{ notifText }}
+
+      <template v-slot:actions>
+        <v-btn color="green" variant="text" @click="notifOpen = false"> X </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 <script setup>
-import { defineProps, inject, onMounted, ref } from 'vue'
+import {
+  inject,
+  onMounted,
+  ref
+} from 'vue'
 
 import { API_URL } from '@/constants'
 import { userManagerKey } from '@/contexts/userManagerKeys'
 import client from '@/helpers/client'
 
-const { user } = inject(userManagerKey)
+const notifOpen = ref(false)
+const notifText = 'Your profile is successfully updated !'
+
+const { user, refreshUserData } = inject(userManagerKey)
 const formDataUser = ref({
   lastname: '',
   firstname: '',
@@ -98,12 +112,7 @@ const formDataUser = ref({
   createdAt: '',
   image: '' // Make sure you have this property in your formDataUser object
 })
-defineProps({
-  user: {
-    required: true,
-    type: String
-  }
-})
+
 const beforeChange = ref(false)
 const profilePictureSrc = ref('') // To store the profile picture URL
 const fileInputRef = ref(null)
@@ -176,7 +185,12 @@ const submitForm = async () => {
     formDataUser.value = userUpdateResponse.data
 
     console.log('Updated user data:', formDataUser.value)
+    notifOpen.value = true
+    refreshUserData()
   } catch (error) {
+    notifText.value = 'Something went wrong'
+    notifOpen.value = true
+
     console.error('Error while updating user data:', error)
   }
 }

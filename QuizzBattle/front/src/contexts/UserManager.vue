@@ -7,7 +7,6 @@ import {
 } from 'vue'
 
 import jwtDecode from 'jwt-decode'
-import io from 'socket.io-client'
 
 import { API_URL } from '../constants'
 import client from '../helpers/client.js'
@@ -41,6 +40,7 @@ async function loginUser(_user) {
       const token = data.token;
       user.value = jwtDecode(token);
       localStorage.setItem('token', token);
+      refreshUserData(user.value.id)
       return data;
     }
   } catch (error) {
@@ -50,16 +50,14 @@ async function loginUser(_user) {
   }
 }
 
-const refreshUserData = () => {
-
-  // check if we have a token
-  if(token) {
-    client.get(`${API_URL}/api/users/${user.value?.id}`)
+const refreshUserData = (id) => {
+  const userId = id ?? user.value.id
+  console.log("refreshUserData", userId)
+  if(userId) {
+    client.get(`${API_URL}/api/users/${userId}`)
         .then((response) => {
-            user.value = {
-              ...user.value,
-              ...response.data
-            }
+          console.log("refreshUserData", userId)
+            user.value = response.data
         })
         .catch((error) => {
             console.error('Erreur lors de la récupération des quiz', error);
@@ -154,8 +152,10 @@ provide(userManagerKey, {
   deleteUser,
   fetchUsers, 
   loginUser,
-  user
+  user,
+  refreshUserData
 });
+
 
 provide(userManagerUsersKey, users);
 provide(userManagerIsLoadingKey, isLoading);

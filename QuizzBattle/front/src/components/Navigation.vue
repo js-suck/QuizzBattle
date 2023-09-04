@@ -51,6 +51,18 @@
             value="emotes"
           ></v-list-item>
           <v-list-item
+            :to="`/user/stats/${user?.id}`"
+            prepend-icon="mdi-file-chart-outline"
+            title="stats"
+            value="stats"
+          ></v-list-item>
+          <v-list-item
+            :to="`/badges`"
+            prepend-icon="mdi-shield-star-outline"
+            title="badges"
+            value="badges"
+          ></v-list-item>
+          <v-list-item
             prepend-icon="mdi-logout"
             title="Logout"
             value="logout"
@@ -67,27 +79,22 @@
 <script setup>
 import { inject, ref } from 'vue'
 
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import { API_URL } from '../constants'
-import { theme } from '../constants/theme'
 import { userManagerKey } from '../contexts/userManagerKeys'
 
 const { user } = inject(userManagerKey)
 const drawer = ref(true)
 const rail = ref(true)
 
-const router = useRoute()
-
+const router = useRouter()
 const logout = () => {
   // Clear the JWT token from local storage
   localStorage.removeItem('token')
 
   console.log('User logged out')
 
-  // Redirect the user to the login page or home page
-  // For example, using Vue Router: router.push('/login');
-
-  window.location.href = '/login'
+  router.push('/login')
 }
 </script>

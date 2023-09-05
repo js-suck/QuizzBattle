@@ -39,10 +39,10 @@ jobs:
           yarn
           yarn pm2 stop dist/app.js
           yarn build
-          yarn pm2 start dist/app.js
-          yarn pm2 stop dist/migration.js
-          yarn pm2 start dist/migration.js
-          yarn pm2 status
+          pm2 start dist/app.js
+          pm2 stop dist/migration.js
+          pm2 start dist/migration.js
+          pm2 status
         host: ${{ secrets.REMOTE_HOST }}
         user: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.PRIVATE_KEY }}

@@ -43,6 +43,19 @@ function GameController(service, options = {}) {
         res.json(users);
     }
 
+    async function getStatsByUser(req, res) {
+        const {userId} = req.params;
+        const {correctAnswersStrike} = req.body
+
+        const stats = await service.getStatsByUser({
+            userId,
+            correctAnswersStrike
+        });
+        res.json(stats);
+    }
+
+    
+
     async function getAllBy(req, res) {
         const users = await service.findAllBy(req.params.categoryId);
         if (!users) {
@@ -124,6 +137,7 @@ function GameController(service, options = {}) {
         getAllBy,
         getByName,
         getByUser,
+        getStatsByUser,
         getOne,
         replace,
         update,

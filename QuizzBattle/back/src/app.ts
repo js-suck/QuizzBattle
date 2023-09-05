@@ -1,9 +1,9 @@
 import express from 'express';
 import http from 'http';
 import path from 'path';
-import mongoose = require('mongoose');
-import { mongoURI } from './config/db'
-import { initializeSocket } from './config/socket';
+
+import QuizzBattleSocket from './config/socket';
+import { FRONT_URL } from './constants';
 import { initMongo } from './db/mongo/db';
 import {
   getUserDataFromPostgres,
@@ -15,7 +15,8 @@ import {
   comparePasswords,
   generateToken,
 } from './services/authentifiactionService';
-import { FRONT_URL } from './constants';
+
+const stripe = require("stripe")('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');
 
 const { Client } = require('pg');
 
@@ -66,13 +67,14 @@ const mailjetClient = new Mailjet({
 app.use(cors());
 const server = http.createServer(app);
 
+const quizzBattleSocket = new QuizzBattleSocket(server)
 
 const multer = require('multer');
 const upload = multer({ dest: __dirname + '/uploads/' });
 
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
@@ -86,13 +88,13 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
 
 
 
-initializeSocket(server)
 initMongo()
 app.use(express.json())
 
 app.get('/', (req, res) => {
   res.send('Hello Wood!');
 });
+
 
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
@@ -138,7 +140,7 @@ app.post('/signup', (req, res) => {
         nickname: firstname + ' ' + lastname,
         email,
         password,
-        profilePicturePath: "defaultUser.png",
+        image: "defaultUser.png",
         role: 'user',
         isVerified: false,
         tokenemail: tokenemail2,
@@ -282,7 +284,7 @@ db.User.sync().then(() => {
         lastname: 'Doe',
         nickname: 'JohnDoe',
         email: 'test@gmail.com',
-        profilePicturePath: "defaultUser.png",
+        image: "defaultUser.png",
         password: 'Test1234*',
         role: 'admin',
         isVerified: true,

@@ -6,6 +6,8 @@ import scoreboardRouter from "./scoreboardRouter";
 import userRouter from "./userRouter";
 import gameRouter from "./gameRouter";
 import answerRouter from "./answerRouter";
+import badgeRouter from "./badgeRouter";
+import emoteRouter from "./emotesRouter";
 
 const apiRouter = Router();
 
@@ -16,6 +18,8 @@ apiRouter.use("/scoreboard", scoreboardRouter);
 apiRouter.use("/users", userRouter);
 apiRouter.use('/game', gameRouter);
 apiRouter.use("/answers", answerRouter);
+apiRouter.use("/badges", badgeRouter);
+apiRouter.use('/emotes', emoteRouter);
 
 
 export {

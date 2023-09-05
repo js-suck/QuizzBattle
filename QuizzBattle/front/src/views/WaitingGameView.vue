@@ -25,23 +25,19 @@ import {
   onMounted,
   ref
 } from 'vue'
+import socket from "./../config/socket"
 
-import axios from 'axios'
-import jwtDecode from 'jwt-decode'
-import io from 'socket.io-client'
 import { useRoute } from 'vue-router'
 import client from './../helpers/client'
 import Card from '../components/Card.vue'
 import { API_URL } from '../constants/index'
-import { playerManager } from '../contexts/quizzKeys'
 import { FILE_PATHS } from '../constants/files'
+import { userManagerKey } from '@/contexts/userManagerKeys';
 
 const route = useRoute();
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
 const category = ref("")
-const socket = io(API_URL);
 const categoryId = route.params.categoryId;
+const {user} = inject(userManagerKey)
 
 const handleGoBackToDashboard = () => {
   window.location.href = "/"
@@ -50,7 +46,8 @@ const handleGoBackToDashboard = () => {
 onMounted(() => {
     if(!user.value.roomID)
     {
-      socket.emit('search a room', {user:user.value,
+      socket.emit('search a room', {
+        user:user.value,
       category: categoryId
       });
     }

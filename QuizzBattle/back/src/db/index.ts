@@ -54,5 +54,30 @@ database["Category"].hasMany(database["Question"], {
     as: "question",
 });
 
+database["User"].belongsToMany(database["Badge"], {
+      through: "user_badge",
+      foreignKey: "userId",
+      as: "categories",
+});
+
+database["Badge"].belongsToMany(database["User"], {
+      through: "user_badge",
+      foreignKey: "badgeId",
+      as: "users",
+});
+
+database["Emote"].belongsToMany(database["User"], {
+      through: "user_emote",
+      foreignKey: "emoteId",
+      as: "users",
+});
+     
+database["User"].belongsToMany(database["Emote"], {
+      through: "user_emote",
+      foreignKey: "userId",
+      as: "emotes",
+});
+     
+
 
 module.exports = database;

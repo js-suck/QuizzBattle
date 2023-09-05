@@ -9,7 +9,6 @@ const generateToken = (user) => {
         firstname: user.firstname, 
         role: user.role,
         isVerified: user.isVerified,
-        tokenemail: user.tokenemail,
       };
     
       const token = jwt.sign(payload, 'your-secret-key', { expiresIn: '1h' });
@@ -24,28 +23,25 @@ const generateToken = (user) => {
 
   function authenticateToken(req, res, next) {
 
-      console.log(req.path, "REQUETE")
+    console.log(req.path, "requested to the server")
     if (req.path === '/login') {
-      // Si c'est la route de login, passez directement à la route suivante sans exécuter le middleware
       return next();
     }
-
-    console.log(
-      'req.headers.authorization',
-      req.header.authorization
-      );
-    
+ 
     const token = req.headers.authorization?.split(' ')[1];
+
     if (token == null) {
       return res.sendStatus(401);
     }
   
     jwt.verify(token, 'your-secret-key', (err, user) => {
       if (err) {
+        console.log("ERROR TOKEN")
+
         return res.sendStatus(403);
       }
       req.user = user;
-      req.isAdmin = user?.roles?.includes('admin')
+      req.isAdmin = user?.role == 'admin'
       next();
     });
   }
@@ -66,15 +62,14 @@ const generateToken = (user) => {
     return Math.random().toString(36).substr(2, 9);
   }
 
-  function createRoom(user) {
-
-    const room = { id: roomId(), users: [] };
-
+  function createRoom(user, category) {
+    const room = { id: roomId(), users: [], category: category }; 
     room.users.push(user);
     user.roomId = room.id;
-    
+  
     return room;
   }
+  
 
 export {
   adminMiddleware,

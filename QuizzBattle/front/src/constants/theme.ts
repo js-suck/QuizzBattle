@@ -6,7 +6,7 @@ export const theme = {
         orange: "#FF981Fff",
         blue: '#3678FDff',
         red: '#F75555ff',
-        violet: '',
+        violet: '#8B5CF6',
         white: '#FFFFFF',
     }
 }

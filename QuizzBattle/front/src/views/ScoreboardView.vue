@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(player, index) in paginatedPlayers" :key="player.id" class="bg-white border-b hover:bg-gray-50">
+                <tr v-for="(player) in paginatedPlayers" :key="player.id" class="bg-white border-b hover:bg-gray-50">
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.position }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.nickname }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.score }}</td>
@@ -86,15 +86,24 @@
 </Navigation>
 </template>
 
-<script setup lang="ts">
-import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js';
-import { ref, computed, onMounted, watch } from 'vue';
-import {API_URL} from '../constants';
-import Navigation from "@/components/Navigation.vue";
+<script setup>
+import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js'
+
+import {
+  computed,
+  onMounted,
+  ref,
+  watch
+} from 'vue'
+
+import Navigation from '@/components/Navigation.vue'
+import client from '@/helpers/client'
+
+import { API_URL } from '../constants'
+
 const players = ref([]);
 const categories = ref([]);
 const selectedCategory = ref(null);
-import client from "@/helpers/client"
 
 onMounted(() => {
         client
@@ -155,7 +164,6 @@ onMounted(() => {
     const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage + 1);
     const endIndex = computed(() => Math.min(currentPage.value * itemsPerPage, rankedPlayers.value.length));
 
-// Compute visible pages (current page and two pages before and after it)
     const visiblePages = computed(() => {
         const pagesBefore = Math.max(currentPage.value - 2, 1);
         const pagesAfter = Math.min(currentPage.value + 2, pageCount.value);
@@ -166,13 +174,8 @@ onMounted(() => {
         return visiblePageNumbers;
     });
 
-// Function to handle page change event
     function goToPage(pageNumber) {
         currentPage.value = pageNumber;
     }
 
 </script>
-
-<style>
-/* Ajoutez ici vos styles CSS si nécessaire */
-</style>

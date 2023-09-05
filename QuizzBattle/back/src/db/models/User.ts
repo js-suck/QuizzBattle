@@ -1,5 +1,4 @@
-import { request } from "express";
-import { SITE_URL } from "../../helpers/sentEmail";
+import { SITE_URL } from '../../helpers/sentEmail';
 
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
@@ -76,7 +75,7 @@ module.exports = (connection) => {
           // is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
-      profilePicturePath: {
+      image: {
         type: DataTypes.STRING,
         allowNull: true,
       },

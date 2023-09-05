@@ -42,13 +42,13 @@ class ScoreboardService {
             include: [
               {
                 model: User,
-                attributes: ["nickname"],
+                attributes: ["nickname", "image", 'id'],
                 as: 'user'
               },
               {
                 model: Category,
                 attributes: ["name"],
-                as: 'category' // On n'a pas besoin des attributs de la table Category dans ce cas
+                as: 'category' 
               },
             ],
         });
@@ -57,10 +57,52 @@ class ScoreboardService {
             "gamesPlayed": item.gamesPlayed,
             "nickname": item.user.nickname,
             "category": item.category.name,
-            "position": index + 1
+            "position": index + 1,
+            "image": item.user.image,
+            "userId": item.user.id
         }));
         return transformedArray;
     }
+
+    async findAllByUserId(userId) {
+        const users = await UserCategory.findAll({
+            attributes: ["score", "gamesPlayed"],
+            where: {
+                userId: userId
+                //                score: {[Op.gt]:0} // TODO: remove this when we have a better way to handle the scores
+            },
+            order: [
+                ['score', 'DESC']
+            ],
+            include: [
+              {
+                model: User,
+                attributes: ["nickname", "image", 'id'],
+                as: 'user'
+              },
+              {
+                model: Category,
+                attributes: ["name"],
+                as: 'category'
+              },
+            ],
+        });
+
+        const transformedArray = users.map((item, index) => ({
+            "score": item.score,
+            "gamesPlayed": item.gamesPlayed,
+            "nickname": item.user.nickname,
+            "category": item.category.name,
+            "position": index + 1,
+            "image": item.user.image,
+            "userId": item.user.id
+        }));
+        return transformedArray;
+    }
+    
+
+      
+
 
     async createOrIncrement(data) {
         try {

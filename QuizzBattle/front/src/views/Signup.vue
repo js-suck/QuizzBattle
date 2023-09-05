@@ -1,21 +1,9 @@
 <script setup>
 import {
-  computed,
   reactive,
   ref
 } from 'vue'
 import { API_URL } from '@/constants';
-
-import jwtDecode from 'jwt-decode'
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
-
-const token = localStorage.getItem('token');
-const tokenemail = token?.replaceAll('.','');
-
-// console.log(tokenemail);
-
 
 function validateForm() {
   if (!formData.firstname.trim()) {
@@ -62,7 +50,7 @@ async function handleSubmit() {
     errors.value.email ||
     errors.value.password
   ) {
-    return; // If there are errors, do not submit the form
+    return;
   }
 
   try {
@@ -80,8 +68,6 @@ async function handleSubmit() {
   console.log("data", data);
   } catch (error) {
     console.log(error);
-
-
 }
 }
 
@@ -115,13 +101,6 @@ async function handleSubmit() {
     <p class="error text-center" v-if="errors.all">{{ errors.all }}</p>
     <p class="sent text-center" v-if="res.all">{{ res.all }}</p>
   </form>
-
-  <!-- {{ formData }}
-
-
-  {{ user }} -->
-
-
 </template>
 
 <style scoped>

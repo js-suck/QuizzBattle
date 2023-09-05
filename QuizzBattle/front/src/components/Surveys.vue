@@ -26,7 +26,7 @@
         </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import {onMounted, reactive} from 'vue';
 import axios from 'axios';
 import {API_URL} from "@/constants";

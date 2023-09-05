@@ -152,7 +152,19 @@ function GenericController(service, options = {}) {
     res.json(translatedText);
   }
 
+  async function addTenWinningGamesBadgeToUser(req, res){
+    const user = await service.addTenWinningGamesBadgeToUser(req.params.userId);
+    if (!user) {
+      res.sendStatus(404);
+    } else {
+      res.json(user);
+    }
+  }
+
+  
+
   return {
+    addTenWinningGamesBadgeToUser,
     create,
     deleteOne,
     getAll,

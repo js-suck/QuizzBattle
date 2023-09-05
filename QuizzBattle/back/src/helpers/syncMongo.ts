@@ -15,17 +15,14 @@ const getUserDataFromPostgres = async (id) => {
 
   const updateMongoDBGame = async (id, newData) => {
     try {
-      // Search games in MongoDB where userId = id 
       const games = await Game.find({ userId: id });
   
       if (games.length > 0) {
-        // If games are found, update each game with newData
         for (const game of games) {
-          // newData must be an object containing the fields to update
           Object.assign(game, {
             userId: newData.id,
-            username: newData.firstname
-            
+            username: newData.firstname,
+            userProfilePicture: newData.image
           });
           await game.save();
           console.log(`Entité Game avec gameId ${game.id} mise à jour dans MongoDB.`);
@@ -38,4 +35,4 @@ const getUserDataFromPostgres = async (id) => {
     }
   };
 
-export { getUserDataFromPostgres, updateMongoDBGame }; 
+export { getUserDataFromPostgres, updateMongoDBGame };

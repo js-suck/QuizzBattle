@@ -1,318 +1,404 @@
 <template>
-    <Navigation>
-        <div class="stats">
-            <div class="column">
-                <div class="entity-title">
-                    <img src="\src\assets\images\default-profile-picture.jpg" alt="stats" class="stats-img">
-                </div>
-                <div class="entity">
-                    <h4>Player Name</h4>
-                    <p>{{ player.playername }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Nickname</h4>
-                    <p>{{ player.nickname }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Top category</h4>
-                    <p>{{ player.topgame }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Categories Play</h4>
-                    <p>{{ player.gameplay }}</p>
-                </div>
-            </div>
-            <div class="column">
-                <div class="entity-title">
-                    <h4>Total Score</h4>
-                    <p>{{ player.score }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Score Music</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.musicscrore)"></div>
-                        </div>
-                        <p>{{ player.musicscrore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Sport&Leisure</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.sportscore)"></div>
-                        </div>
-                        <p>{{ player.sportscore }}/100</p>
-                    </div>
-                    
-                </div>
-                <div class="entity">
-                    <h4>Score Film&TV</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.filmscore)"></div>
-                        </div>
-                        <p>{{ player.filmscore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Arts&Literature</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.artscore)"></div>
-                        </div>
-                        <p>{{ player.artscore }}/100</p>
-                    </div>
-                </div>
-            </div>
-            <div class="column">
-                <div class="entity-title">
-                    <h4>Games Played</h4>
-                    <p>{{ player.gamesPlayed }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Score History</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.historyscrore)"></div>
-                        </div>
-                        <p>{{ player.historyscrore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Scociety&Culture</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.culturescore)"></div>
-                        </div>
-                        <p>{{ player.culturescore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Science</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.sciencescore)"></div>
-                        </div>
-                        <p>{{ player.sciencescore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">   
-                    <h4>Score Geography</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.geographyscore)"></div>
-                        </div>
-                        <p>{{ player.geographyscore }}/100</p>
-                    </div>
-                </div>
-            </div>
-            <div class="column">
-                <div class="entity-title">
-                    <h4>Average Score</h4>
-                    <p>{{ player.averageScore }}</p>
-                </div>
-                <div class="entity">
-                    <h4>Score General Knowledge</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.generalscore)"></div>
-                        </div>
-                        <p>{{ player.generalscore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Food&Drink</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.foodscore)"></div>
-                        </div>
-                        <p>{{ player.foodscore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Politics</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.politicscore)"></div>
-                        </div>
-                        <p>{{ player.politicscore }}/100</p>
-                    </div>
-                </div>
-                <div class="entity">
-                    <h4>Score Nature</h4>
-                    <div class="row">
-                        <div class="scorebar">
-                            <div class="scorerate" :style="getScore(player.naturescore)"></div>
-                        </div>
-                        <p>{{ player.naturescore }}/100</p>
-                    </div>
-                </div>
-            </div>
+  <Navigation>
+    <div class="stats" v-if="stats.user">
+      <div class="column">
+        <div class="entity-title">
+          <img :src="`${API_URL}/uploads/${stats?.user?.image}`" alt="stats" class="stats-img" />
         </div>
-    </Navigation>
+        <div class="entity">
+          <h4>Player Name</h4>
+          <p>{{ stats?.user?.firstname }} {{ stats?.user?.lastname }}</p>
+        </div>
+        <div class="entity">
+          <h4>Nickname</h4>
+          <p>{{ stats?.user?.nickname }}</p>
+        </div>
+        <div class="entity">
+          <h4>Top category</h4>
+          <p>{{ stats?.bestCategory }}</p>
+        </div>
+        <div class="entity">
+          <h4>Badges</h4>
+          <div class="flex">
+            <div
+              class="badge bg-transparent m-2"
+              v-for="stats in stats.totalGamesStatsAndBadge.badges"
+              v-show="stats.userObtain === true"
+              :key="stats.id"
+              :style="{ display: stats.userObtain ? 'initial' : 'hidden' }"
+            >
+              <img :src="`/src/assets/badges/${stats.image}`" class="w-24" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="entity-title">
+          <h4>Total Score</h4>
+          <p>{{ stats?.user?.score }}</p>
+        </div>
+        <div class="entity">
+          <h4>Score Music</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('music').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('music').categorie.gamesWon }}/
+              {{ getCategoryScore('music').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Sport&Leisure</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('sport_and_leisure').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('sport_and_leisure').categorie.gamesWon }}/
+              {{ getCategoryScore('sport_and_leisure').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Film&TV</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('film_and_tv').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('film_and_tv').categorie.gamesWon }}/
+              {{ getCategoryScore('film_and_tv').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Arts&Literature</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('arts_and_literature').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('arts_and_literature').categorie.gamesWon }}/
+              {{ getCategoryScore('arts_and_literature').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="entity-title">
+          <h4>Games Played</h4>
+          <p>{{ stats.totalGamesPlayed }}</p>
+        </div>
+        <div class="entity">
+          <h4>Score History</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('history').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('history').categorie.gamesWon }}/
+              {{ getCategoryScore('history').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Scociety&Culture</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('society_and_culture').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('society_and_culture').categorie.gamesWon }}/
+              {{ getCategoryScore('society_and_culture').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Science</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('science').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('science').categorie.gamesWon }}/
+              {{ getCategoryScore('science').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Geography</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('geography').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('geography').categorie.gamesWon }}/
+              {{ getCategoryScore('geography').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="entity-title">
+          <h4>Average Score</h4>
+          <p>{{ stats?.user.score / stats.user.gamesPlayed }}</p>
+        </div>
+        <div class="entity">
+          <h4>Score General Knowledge</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('general_knowledge').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('general_knowledge').categorie.gamesWon }}/
+              {{ getCategoryScore('general_knowledge').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+        <div class="entity">
+          <h4>Score Food&Drink</h4>
+          <div class="row">
+            <div class="scorebar">
+              <div
+                class="scorerate"
+                :style="getScore(getCategoryScore('food_and_drink').categorie.successRate)"
+              ></div>
+            </div>
+            <p>
+              {{ getCategoryScore('food_and_drink').categorie.gamesWon }}/
+              {{ getCategoryScore('food_and_drink').categorie.gamesPlayed }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Navigation>
 </template>
 
-
-<style>
-
-
+<style scoped>
 .stats {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    border: 1px solid rgb(226 232 240);
-    border-radius: 10px;
-    padding: 2rem;
-    background-color: rgb(248 250 252);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 5%;
+  background: linear-gradient(0deg, rgb(108 79 109 / 68%) 0%, rgb(74 34 110 / 49%) 100%);
+  margin-bottom: 5%;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0px 2px 13px 0px #cdc2d188;
+  background-color: #182437;
 }
 
 .column {
-    width: 100%;
-    height: 100%;
-    padding: 0 2rem;
-    border-right: .5px solid rgb(226 232 240);
-
+  width: 100%;
+  height: 100%;
+  padding: 0 2rem;
+  border-right: 0.5px solid rgb(41 99 177);
 }
 
 .column:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .entity {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 2rem;
 }
 
 .entity-title {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  height: 120px;
 }
 
 .entity-title h4 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: rgb(107 114 128);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: rgb(107 114 128);
 }
 
 .entity-title p {
-    font-size: 20px;
-    font-weight: 600;
-    color: rgb(55 65 81);
-    margin-bottom: 1rem;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgb(114 146 198);
+  margin-bottom: 1rem;
 }
 
-h4{
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: rgb(107 114 128);
+h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: rgb(107 114 128);
 }
 
 p {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgb(55 65 81);
+  font-size: 16px;
+  font-weight: 600;
+  color: rgb(114 146 198);
 }
 
-.stats .entity-title img{
-    width: 100px;
-    height: 100px;
-    border-radius: 15%;
-    margin-bottom: 1rem;
+.stats .entity-title img {
+  width: 100px;
+  height: 100px;
+  border-radius: 300px;
+  margin-bottom: 1rem;
+  object-fit: cover;
 }
-
 
 .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .scorebar {
-    width: 100px;
-    height: 20px;
-    background-color: rgb(107 114 128);
-    border-radius: 10px;
-    margin-right: 1rem;
+  width: 100px;
+  height: 20px;
+  background-color: rgb(107 114 128);
+  border-radius: 10px;
+  margin-right: 1rem;
 }
 
 .scorerate {
-    height: 100%;
-    background-color: rgb(52 211 153);
-    border-radius: 10px;
+  height: 100%;
+  background-color: rgb(52 211 153);
+  border-radius: 10px;
 }
-
 </style>
 
+<script setup>
+import { onMounted, reactive, ref } from 'vue'
 
-<script setup lang="ts">
+import { useRoute } from 'vue-router'
 
-import {  Component, Vue } from 'vue';
-import {API_URL} from '../constants';
-import Navigation from "@/components/Navigation.vue";
+import Navigation from '@/components/Navigation.vue'
 
-const player = 
-    {
-        playername: "Laila Charaoui",
-        nickname: "Laila",
-        topgame: "Afida Turner",
-        gameplay: "Afida Turner",
-        score: 100,
-        gamesPlayed: 10,
-        averageScore: 10,
-        musicscrore: 80,
-        sportscore: 45,
-        filmscore: 68,
-        artscore: 34,
-        historyscrore: 89,
-        culturescore: 69,
-        sciencescore: 42,
-        geographyscore: 92,
-        generalscore: 14,
-        foodscore: 100,
-        politicscore: 26,
-        naturescore: 48,
-    
+import { API_URL } from '../constants'
+import client from '../helpers/client'
+
+const stats = ref({})
+const route = useRoute()
+
+// Récupérer l'ID de l'utilisateur à partir des paramètres de la route
+const userId = route.params.userId
+
+onMounted(async () => {
+  try {
+    const response = await client.post(`${API_URL}/api/game/stats/${userId}`)
+    console.log(response.data)
+    stats.value = response.data
+  } catch {
+    console.error()
+  }
+})
+const player = {
+  playername: 'Laila Charaoui',
+  nickname: 'Laila',
+  topgame: 'Afida Turner',
+  gameplay: 'Afida Turner',
+  score: 100,
+  gamesPlayed: 10,
+  averageScore: 10,
+  musicscrore: 80,
+  sportscore: 45,
+  filmscore: 68,
+  artscore: 34,
+  historyscrore: 89,
+  culturescore: 69,
+  sciencescore: 42,
+  geographyscore: 92,
+  generalscore: 14,
+  foodscore: 100,
+  politicscore: 26,
+  naturescore: 48
+}
+
+function getCategoryScore(name) {
+  console.log(stats.value?.categoriesStats?.find((c) => c?.categorie.label == name))
+  return (
+    stats.value?.categoriesStats?.find((c) => c?.categorie.label == name) ?? {
+      categorie: {
+        label: name,
+        gamesPlayed: 0,
+        gamesWon: 0,
+        successRate: null
+      }
     }
+  )
+}
 
-    // get player stats for witdh of scorebar for each category
+// get player stats for witdh of scorebar for each category
 
+function getScore($data) {
+  const percentage = $data // Assuming score is out of 100
+  if (percentage == 0) {
+    return {
+      width: `100%`,
+      background: ` rgb(255 107 107) `
+    }
+  }
 
-
-function getScore($data): Record<string, string> {
-  const percentage = $data; // Assuming score is out of 100
+  if (percentage == null) {
+    return {
+      width: `0%`,
+      background: ` rgb(255 107 107) `
+    }
+  }
   if (percentage < 20) {
     return {
       width: `${percentage}%`,
-      background: ` rgb(255 107 107) `,
-    };
+      background: ` rgb(255 107 107) `
+    }
   }
   if (percentage < 50) {
     return {
       width: `${percentage}%`,
-      background: ` rgb(252 211 77) `,
-    };
+      background: ` rgb(252 211 77) `
+    }
   }
-if (percentage < 100) {
+  if (percentage < 100) {
     return {
-    width: `${percentage}%`,
-    background: ` rgb(52 211 153) `,
-    };
+      width: `${percentage}%`,
+      background: ` rgb(52 211 153) `
+    }
+  }
 }
-}
-
-
-
 </script>

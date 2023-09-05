@@ -50,7 +50,7 @@
             <v-slide-group>
               <v-slide-group-item v-for="(category, key) in categories" :key="category">
                 <QuizzCard @click="startGameWithCategory(category.name)" class="ma-2" :title="category.name"
-                  :text="category.description" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`" />
+                  :text="category.description" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`" :categoryId="category.id" />
               </v-slide-group-item>
             </v-slide-group>
           </v-sheet>
@@ -84,12 +84,14 @@ import {
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import io from 'socket.io-client'
+import { useRouter } from 'vue-router'
 
 import Navigation from '../components/Navigation.vue'
 import ProfileBadge from '../components/ProfileBadge.vue'
 import QuizzCard from '../components/QuizzCard.vue'
 import QuizzGame from '../components/QuizzGame.vue'
 import RoundedSquare from '../components/RoundedSquare.vue'
+import socket from '../config/socket'
 import { API_URL } from '../constants'
 import { FILE_PATHS } from '../constants/files'
 import client from '../helpers/client'
@@ -102,10 +104,8 @@ const showResults = ref(false)
 const quizList = ref(null)
 const categories = ref(null)
 const category = ref(null)
-const socket = io(API_URL)
 const userTop = ref(null)
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
+const router = useRouter()
 
 
 const startGame = () => {
@@ -119,16 +119,14 @@ const startGameWithCategory = (cat) => {
   // gameStartedWithCategory.value = true
   // category.value = cat
 
-  window.location.href = `/waiting/${cat}`;
+  socket.emit('startGameWithCategory', cat)
+  router.push(`/waiting/${cat}`)
 }
+
 
 const submitAnswer = (answer) => {
   socket.emit('answer', answer)
 }
-
-socket.on("disconnect", () => {
-  console.log("disconnected")
-})
 
 const getRandomCategory = () => {
   return categories.value[1].name

@@ -16,12 +16,12 @@ questionRouter.get("/trivia/:id", QuestionController.getOneTrivia);
 questionRouter.post("/trivia", QuestionController.getAllTrivia);
 questionRouter.get('/translate/:text', QuestionController.translate);
 questionRouter.get('/:categoryId', QuestionController.getAllBy);
-questionRouter.post('/add', (req, res, next) => {
+questionRouter.post('/', (req, res, next) => {
     if (!req.isAdmin) {
        return res.status(404).send('Unauthorized');
     }
      next()
 }, QuestionController.create);
-questionRouter.put('/edit/:id', QuestionController.update);
+questionRouter.put('/:id', QuestionController.update);
 
 export default questionRouter;

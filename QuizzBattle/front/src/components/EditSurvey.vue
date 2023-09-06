@@ -40,14 +40,13 @@
 
 <script setup lang="ts">
 import {
-  defineProps,
   onMounted,
   ref
 } from 'vue'
 
-import axios from 'axios'
 
 import { API_URL } from '@/constants'
+import client from '../helpers/client';
 
 const categoryData = ref({});
 const questionsData = ref({});
@@ -69,7 +68,7 @@ const props = defineProps({
 onMounted(() => {
     console.log(props.survey)
     // Fetch the user data
-    axios.get(`${API_URL}/api/category/show/${props.survey}`)
+    client.get(`${API_URL}/api/category/${props.survey}`)
         .then((response) => {
             categoryData.value = response.data;
             callQuestion()
@@ -80,7 +79,7 @@ onMounted(() => {
 });
 async function callQuestion() {
     try {
-        const responseQuestion = await axios.get(`${API_URL}/api/questions/${props.survey}`);
+        const responseQuestion = await client.get(`${API_URL}/api/questions/${props.survey}`);
         questions.value = responseQuestion.data;
         console.log(questions);
 
@@ -99,7 +98,7 @@ async function callQuestion() {
 
 async function callAnswer(questionId) {
     try {
-        const responseAnswers = await axios.get(`${API_URL}/api/answers/${questionId}`);
+        const responseAnswers = await client.get(`${API_URL}/api/answers/${questionId}`);
         const answers = responseAnswers.data;
         return answers;
     } catch (error) {
@@ -110,7 +109,7 @@ async function callAnswer(questionId) {
 
 
 const updateCategory = () => {
-    axios.put(`${API_URL}/api/category/edit/${categoryData.value.id}`, {
+    client.put(`${API_URL}/api/category/${categoryData.value.id}`, {
         name: categoryData.value.name,
         description: categoryData.value.description,
     })
@@ -125,7 +124,7 @@ const updateCategory = () => {
 // Function to update the Questions
 const updateQuestions = () => {
     questions.value.forEach((question) => {
-        axios.put(`${API_URL}/api/questions/edit/${question.id}`, {
+        client.put(`${API_URL}/api/questions/${question.id}`, {
             label: question.label,
         })
             .then((response) => {
@@ -141,7 +140,7 @@ const updateQuestions = () => {
 const updateAnswers = () => {
     answers.value.forEach((questionAnswers) => {
         questionAnswers.forEach((answer) => {
-            axios.put(`${API_URL}/api/answers/edit/${answer.id}`, {
+            client.put(`${API_URL}/api/answers/${answer.id}`, {
                 label: answer.label,
             })
                 .then((response) => {

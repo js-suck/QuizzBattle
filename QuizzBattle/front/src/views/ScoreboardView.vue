@@ -31,6 +31,9 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3">
+                           
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Position
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -49,11 +52,15 @@
             </thead>
             <tbody>
                 <tr v-for="(player) in paginatedPlayers" :key="player.id" class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        <img :src="`${API_URL}/uploads/${player.userProfilePicture}`" class="h-8 w-8 rounded-full cursor-pointer" @click="openUserModal(player.id)" alt="User Image">
+                    </td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.position }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.nickname }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.score }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ player.gamesPlayed }}</td>
                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ calculateAverageScore(player) }}</td>
+               
                 </tr>
             </tbody>
         </table>

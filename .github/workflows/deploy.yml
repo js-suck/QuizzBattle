@@ -41,7 +41,7 @@ jobs:
           yarn build
           pm2 start dist/app.js
           pm2 stop dist/migration.js
-          pm2 start dist/migration.js
+          pm2 start dist/migration.js force
           pm2 status
         host: ${{ secrets.REMOTE_HOST }}
         user: ${{ secrets.REMOTE_USER }}

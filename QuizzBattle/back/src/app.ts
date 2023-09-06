@@ -16,7 +16,6 @@ import {
   generateToken,
 } from './services/authentifiactionService';
 
-const stripe = require("stripe")('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');
 
 const { Client } = require('pg');
 

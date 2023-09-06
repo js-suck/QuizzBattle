@@ -2,7 +2,7 @@ import { initMongo } from './db/mongo/db';
 import faker from 'faker'; 
 
 const db = require("./db");
-const mode = process.argv[2] ?? "alter";
+const mode = process.argv[2] ?? "force";
 const SequelizeInstance = require("sequelize");
 const SequelizeConnection = new SequelizeInstance("postgres://root:password@localhost:5432/app", {
   dialect: "postgres",

@@ -96,8 +96,6 @@
 <script>
 import { onMounted, ref } from 'vue'
 
-import axios from 'axios'
-
 import { API_URL } from '@/constants'
 
 import client from '../helpers/client'
@@ -165,7 +163,7 @@ export default {
     },
     submitQuestion(id) {
       this.newSection.questions.forEach((question, index) => {
-        axios
+        client
           .post(`${API_URL}/api/questions/add`, {
             categoryId: id,
             label: question.questionText,
@@ -185,13 +183,13 @@ export default {
     },
     submitAnswer(id, goodAnswer, badAnswers) {
       console.log(id, goodAnswer, badAnswers)
-      axios.post(`${API_URL}/api/answers/add`, {
+      client.post(`${API_URL}/api/answers/add`, {
         questionId: id,
         label: goodAnswer,
         isCorrect: true
       })
       badAnswers.forEach((badAnswer) => {
-        axios.post(`${API_URL}/api/answers/add`, {
+        client.post(`${API_URL}/api/answers/add`, {
           questionId: id,
           label: badAnswer,
           isCorrect: false

@@ -50,7 +50,7 @@
             <v-slide-group>
               <v-slide-group-item v-for="(category, key) in categories" :key="category">
                 <QuizzCard @click="startGameWithCategory(category.name)" class="ma-2" :title="category.name"
-                  :text="category.description" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`" :categoryId="category.id" />
+                  :text="category.description" :image="`${API_URL}/uploads/${category.image_url}`" :categoryId="category.id" />
               </v-slide-group-item>
             </v-slide-group>
           </v-sheet>

@@ -1,6 +1,6 @@
 <template>
     <div class="p-4 sm:ml-64 flex flex-col">
-        <h2 class="text-2xl font-semibold mb-4">User Sheet</h2>
+        <h2 class="text-2xl font-semibold mb-4">Edit Survey</h2>
         <div class="container flex">
             <div class="card flex mr-4">
                 <form class="my-4 w-full" @submit.prevent="submitForm" enctype="multipart/form-data">

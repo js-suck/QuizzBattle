@@ -31,11 +31,11 @@ import {onMounted, reactive} from 'vue';
 import axios from 'axios';
 import {API_URL} from "@/constants";
 const surveys = reactive([]);
-import { RouterLink } from 'vue-router';
 import SurveyModalForm from "@/components/SurveyModalForm.vue";
+import client from '../helpers/client'
 
 onMounted(() => {
-    axios.get(`${API_URL}/api/category/`, {
+    client.get(`${API_URL}/api/category/`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             },

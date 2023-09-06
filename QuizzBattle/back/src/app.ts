@@ -69,11 +69,11 @@ const server = http.createServer(app);
 const quizzBattleSocket = new QuizzBattleSocket(server)
 
 const multer = require('multer');
-const upload = multer({ dest: __dirname + '/uploads/' });
-
+const upload = multer({ dest: path.join(__dirname, 'uploads') });
+console.log(__dirname, 'tototot')
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static(path.join(__dirname, './uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {

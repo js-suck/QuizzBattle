@@ -1,4 +1,5 @@
 import { initMongo } from './db/mongo/db';
+import faker from 'faker'; 
 
 const db = require("./db");
 const mode = process.argv[2] ?? "alter";
@@ -7,7 +8,6 @@ const SequelizeConnection = new SequelizeInstance("postgres://root:password@loca
   dialect: "postgres",
 });
 
-initMongo();
 
 const createRoutineSQL = `
 CREATE OR REPLACE FUNCTION notify_user_update()
@@ -91,10 +91,10 @@ async function createDefaultUsersAndQuestions() {
 
     for (let i = 1; i <= numberOfUsers; i++) {
       const userData = {
-        lastname: `Doe ${i}`,
-        firstname: `John ${i}`,
-        nickname: `John Doe-${i}`,
-        email: `john.doe${i}@example.com`,
+        lastname: faker.name.lastName(),
+        firstname: faker.name.firstName(),
+        nickname: faker.internet.userName(),
+        email: faker.internet.email(),
         password: `password${i}`,
         image: "defaultUser.png",
         score: Math.random() * 100000,
@@ -103,6 +103,7 @@ async function createDefaultUsersAndQuestions() {
       usersData.push(userData);
     }
 
+    
     const users = await db.User.bulkCreate(usersData);
 
     const adminData = {
@@ -872,406 +873,406 @@ async function createDefaultUsersAndQuestions() {
         isCorrect: false,
         questionId: question23.id,
       }),
-      db.Answer.create({
-        label: "Comet",
-        isCorrect: true,
-        questionId: question4.id,
-      }),
-      db.Answer.create({
-        label: "Moon",
-        isCorrect: false,
-        questionId: question4.id,
-      }),
-      db.Answer.create({
-        label: "Meteor",
-        isCorrect: false,
-        questionId: question4.id,
-      }),
-      db.Answer.create({
-        label: "Satellite",
-        isCorrect: false,
-        questionId: question4.id,
-      }),
-      db.Answer.create({
-        label: "Carbon dioxide",
-        isCorrect: true,
-        questionId: question5.id,
-      }),
-      db.Answer.create({
-        label: "Oxygen",
-        isCorrect: false,
-        questionId: question5.id,
-      }),
-      db.Answer.create({
-        label: "Hydrogen",
-        isCorrect: false,
-        questionId: question5.id,
-      }),
-      db.Answer.create({
-        label: "Nitrogen",
-        isCorrect: false,
-        questionId: question5.id,
-      }),
-      db.Answer.create({
-        label: "Organic particles",
-        isCorrect: true,
-        questionId: question6.id,
-      }),
-      db.Answer.create({
-        label: "Existence",
-        isCorrect: false,
-        questionId: question6.id,
-      }),
-      db.Answer.create({
-        label: "Ticks and mites",
-        isCorrect: false,
-        questionId: question6.id,
-      }),
-      db.Answer.create({
-        label: "Sleep",
-        isCorrect: false,
-        questionId: question6.id,
-      }),
-      db.Answer.create({
-        label: "4",
-        isCorrect: true,
-        questionId: question7.id,
-      }),
-      db.Answer.create({
-        label: "3",
-        isCorrect: false,
-        questionId: question7.id,
-      }),
-      db.Answer.create({
-        label: "5",
-        isCorrect: false,
-        questionId: question7.id,
-      }),
-      db.Answer.create({
-        label: "1",
-        isCorrect: false,
-        questionId: question7.id,
-      }),
-      db.Answer.create({
-        label: "Skin diseases",
-        isCorrect: true,
-        questionId: question8.id,
-      }),
-      db.Answer.create({
-        label: "Bones",
-        isCorrect: false,
-        questionId: question8.id,
-      }),
-      db.Answer.create({
-        label: "Eyes",
-        isCorrect: false,
-        questionId: question8.id,
-      }),
-      db.Answer.create({
-        label: "Teeth",
-        isCorrect: false,
-        questionId: question8.id,
-      }),
-      db.Answer.create({
-        label: "medicine relating to women, or of women in general",
-        isCorrect: true,
-        questionId: question9.id,
-      }),
-      db.Answer.create({
-        label: "prehistoric climates",
-        isCorrect: false,
-        questionId: question9.id,
-      }),
-      db.Answer.create({
-        label: "the study of the history of the Earth",
-        isCorrect: false,
-        questionId: question9.id,
-      }),
-      db.Answer.create({
-        label: "fungus + -ology, see mycology",
-        isCorrect: false,
-        questionId: question9.id,
-      }),
-      db.Answer.create({
-        label: "Jellyfish",
-        isCorrect: true,
-        questionId: question10.id,
-      }),
-      db.Answer.create({
-        label: "Fish",
-        isCorrect: false,
-        questionId: question10.id,
-      }),
-      db.Answer.create({
-        label: "Crustaceans",
-        isCorrect: false,
-        questionId: question10.id,
-      }),
-      db.Answer.create({
-        label: "Mammals",
-        isCorrect: false,
-        questionId: question10.id,
-      }),
-      db.Answer.create({
-        label: "a subsection of anatomy that studies the soft parts",
-        isCorrect: true,
-        questionId: question11.id,
-      }),
-      db.Answer.create({
-        label: "the belief system/cult religion founded by L",
-        isCorrect: false,
-        questionId: question11.id,
-      }),
-      db.Answer.create({
-        label: "the study of the history of the Earth",
-        isCorrect: false,
-        questionId: question11.id,
-      }),
-      db.Answer.create({
-        label: "cancer",
-        isCorrect: false,
-        questionId: question11.id,
-      }),
-      db.Answer.create({
-        label: "Sodium",
-        isCorrect: true,
-        questionId: question12.id,
-      }),
-      db.Answer.create({
-        label: "Chlorine",
-        isCorrect: false,
-        questionId: question12.id,
-      }),
-      db.Answer.create({
-        label: "Calcium",
-        isCorrect: false,
-        questionId: question12.id,
-      }),
-      db.Answer.create({
-        label: "Magnesium",
-        isCorrect: false,
-        questionId: question12.id,
-      }),
-      db.Answer.create({
-        label: "Spiders",
-        isCorrect: true,
-        questionId: question13.id,
-      }),
-      db.Answer.create({
-        label: "Birds",
-        isCorrect: false,
-        questionId: question13.id,
-      }),
-      db.Answer.create({
-        label: "Fish",
-        isCorrect: false,
-        questionId: question13.id,
-      }),
-      db.Answer.create({
-        label: "Mammals",
-        isCorrect: false,
-        questionId: question13.id,
-      }),
-      db.Answer.create({
-        label: "Kate Bush",
-        isCorrect: true,
-        questionId: question14.id,
-      }),
-      db.Answer.create({
-        label: "David Bowie",
-        isCorrect: false,
-        questionId: question14.id,
-      }),
-      db.Answer.create({
-        label: "George Michael",
-        isCorrect: false,
-        questionId: question14.id,
-      }),
-      db.Answer.create({
-        label: "Elton John",
-        isCorrect: false,
-        questionId: question14.id,
-      }),
-      db.Answer.create({
-        label: "The Rolling Stones",
-        isCorrect: true,
-        questionId: question15.id,
-      }),
-      db.Answer.create({
-        label: "The Beatles",
-        isCorrect: false,
-        questionId: question15.id,
-      }),
-      db.Answer.create({
-        label: "The Who",
-        isCorrect: false,
-        questionId: question15.id,
-      }),
-      db.Answer.create({
-        label: "The Kinks",
-        isCorrect: false,
-        questionId: question15.id,
-      }),
-      db.Answer.create({
-        label: "The Lime",
-        isCorrect: true,
-        questionId: question16.id,
-      }),
-      db.Answer.create({
-        label: "The Mango",
-        isCorrect: false,
-        questionId: question16.id,
-      }),
-      db.Answer.create({
-        label: "The Pineapple",
-        isCorrect: false,
-        questionId: question16.id,
-      }),
-      db.Answer.create({
-        label: "The Orange",
-        isCorrect: false,
-        questionId: question16.id,
-      }),
-      db.Answer.create({
-        label: "Primus",
-        isCorrect: true,
-        questionId: question17.id,
-      }),
-      db.Answer.create({
-        label: "Metallica",
-        isCorrect: false,
-        questionId: question17.id,
-      }),
-      db.Answer.create({
-        label: "Megadeth",
-        isCorrect: false,
-        questionId: question17.id,
-      }),
-      db.Answer.create({
-        label: "Slayer",
-        isCorrect: false,
-        questionId: question17.id,
-      }),
-      db.Answer.create({
-        label: "Curtis Mayfield",
-        isCorrect: true,
-        questionId: question18.id,
-      }),
-      db.Answer.create({
-        label: "Marvin Gaye",
-        isCorrect: false,
-        questionId: question18.id,
-      }),
-      db.Answer.create({
-        label: "Stevie Wonder",
-        isCorrect: false,
-        questionId: question18.id,
-      }),
-      db.Answer.create({
-        label: "Isaac Hayes",
-        isCorrect: false,
-        questionId: question18.id,
-      }),
-      db.Answer.create({
-        label: "Beyoncé",
-        isCorrect: true,
-        questionId: question19.id,
-      }),
-      db.Answer.create({
-        label: "Rihanna",
-        isCorrect: false,
-        questionId: question19.id,
-      }),
-      db.Answer.create({
-        label: "Alicia Keys",
-        isCorrect: false,
-        questionId: question19.id,
-      }),
-      db.Answer.create({
-        label: "Ariana Grande",
-        isCorrect: false,
-        questionId: question19.id,
-      }),
-      db.Answer.create({
-        label: "Beethoven",
-        isCorrect: true,
-        questionId: question20.id,
-      }),
-      db.Answer.create({
-        label: "Mozart",
-        isCorrect: false,
-        questionId: question20.id,
-      }),
-      db.Answer.create({
-        label: "Bach",
-        isCorrect: false,
-        questionId: question20.id,
-      }),
-      db.Answer.create({
-        label: "Chopin",
-        isCorrect: false,
-        questionId: question20.id,
-      }),
-      db.Answer.create({
-        label: "David Bowie",
-        isCorrect: true,
-        questionId: question21.id,
-      }),
-      db.Answer.create({
-        label: "Elton John",
-        isCorrect: false,
-        questionId: question21.id,
-      }),
-      db.Answer.create({
-        label: "Queen",
-        isCorrect: false,
-        questionId: question21.id,
-      }),
-      db.Answer.create({
-        label: "The Rolling Stones",
-        isCorrect: false,
-        questionId: question21.id,
-      }),
-      db.Answer.create({
-        label: "David Bowie",
-        isCorrect: true,
-        questionId: question22.id,
-      }),
-      db.Answer.create({
-        label: "Elton John",
-        isCorrect: false,
-        questionId: question22.id,
-      }),
-      db.Answer.create({
-        label: "Queen",
-        isCorrect: false,
-        questionId: question22.id,
-      }),
-      db.Answer.create({
-        label: "The Rolling Stones",
-        isCorrect: false,
-        questionId: question22.id,
-      }),
-      db.Answer.create({
-        label: "Radiohead",
-        isCorrect: true,
-        questionId: question23.id,
-      }),
-      db.Answer.create({
-        label: "The Beatles",
-        isCorrect: false,
-        questionId: question23.id,
-      }),
-      db.Answer.create({
-        label: "The Who",
-        isCorrect: false,
-        questionId: question23.id,
-      }),
-      db.Answer.create({
-        label: "The Kinks",
-        isCorrect: false,
-        questionId: question23.id,
-      }),
+      // db.Answer.create({
+      //   label: "Comet",
+      //   isCorrect: true,
+      //   questionId: question4.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Moon",
+      //   isCorrect: false,
+      //   questionId: question4.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Meteor",
+      //   isCorrect: false,
+      //   questionId: question4.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Satellite",
+      //   isCorrect: false,
+      //   questionId: question4.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Carbon dioxide",
+      //   isCorrect: true,
+      //   questionId: question5.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Oxygen",
+      //   isCorrect: false,
+      //   questionId: question5.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Hydrogen",
+      //   isCorrect: false,
+      //   questionId: question5.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Nitrogen",
+      //   isCorrect: false,
+      //   questionId: question5.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Organic particles",
+      //   isCorrect: true,
+      //   questionId: question6.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Existence",
+      //   isCorrect: false,
+      //   questionId: question6.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Ticks and mites",
+      //   isCorrect: false,
+      //   questionId: question6.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Sleep",
+      //   isCorrect: false,
+      //   questionId: question6.id,
+      // }),
+      // db.Answer.create({
+      //   label: "4",
+      //   isCorrect: true,
+      //   questionId: question7.id,
+      // }),
+      // db.Answer.create({
+      //   label: "3",
+      //   isCorrect: false,
+      //   questionId: question7.id,
+      // }),
+      // db.Answer.create({
+      //   label: "5",
+      //   isCorrect: false,
+      //   questionId: question7.id,
+      // }),
+      // db.Answer.create({
+      //   label: "1",
+      //   isCorrect: false,
+      //   questionId: question7.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Skin diseases",
+      //   isCorrect: true,
+      //   questionId: question8.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Bones",
+      //   isCorrect: false,
+      //   questionId: question8.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Eyes",
+      //   isCorrect: false,
+      //   questionId: question8.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Teeth",
+      //   isCorrect: false,
+      //   questionId: question8.id,
+      // }),
+      // db.Answer.create({
+      //   label: "medicine relating to women, or of women in general",
+      //   isCorrect: true,
+      //   questionId: question9.id,
+      // }),
+      // db.Answer.create({
+      //   label: "prehistoric climates",
+      //   isCorrect: false,
+      //   questionId: question9.id,
+      // }),
+      // db.Answer.create({
+      //   label: "the study of the history of the Earth",
+      //   isCorrect: false,
+      //   questionId: question9.id,
+      // }),
+      // db.Answer.create({
+      //   label: "fungus + -ology, see mycology",
+      //   isCorrect: false,
+      //   questionId: question9.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Jellyfish",
+      //   isCorrect: true,
+      //   questionId: question10.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Fish",
+      //   isCorrect: false,
+      //   questionId: question10.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Crustaceans",
+      //   isCorrect: false,
+      //   questionId: question10.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Mammals",
+      //   isCorrect: false,
+      //   questionId: question10.id,
+      // }),
+      // db.Answer.create({
+      //   label: "a subsection of anatomy that studies the soft parts",
+      //   isCorrect: true,
+      //   questionId: question11.id,
+      // }),
+      // db.Answer.create({
+      //   label: "the belief system/cult religion founded by L",
+      //   isCorrect: false,
+      //   questionId: question11.id,
+      // }),
+      // db.Answer.create({
+      //   label: "the study of the history of the Earth",
+      //   isCorrect: false,
+      //   questionId: question11.id,
+      // }),
+      // db.Answer.create({
+      //   label: "cancer",
+      //   isCorrect: false,
+      //   questionId: question11.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Sodium",
+      //   isCorrect: true,
+      //   questionId: question12.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Chlorine",
+      //   isCorrect: false,
+      //   questionId: question12.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Calcium",
+      //   isCorrect: false,
+      //   questionId: question12.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Magnesium",
+      //   isCorrect: false,
+      //   questionId: question12.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Spiders",
+      //   isCorrect: true,
+      //   questionId: question13.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Birds",
+      //   isCorrect: false,
+      //   questionId: question13.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Fish",
+      //   isCorrect: false,
+      //   questionId: question13.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Mammals",
+      //   isCorrect: false,
+      //   questionId: question13.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Kate Bush",
+      //   isCorrect: true,
+      //   questionId: question14.id,
+      // }),
+      // db.Answer.create({
+      //   label: "David Bowie",
+      //   isCorrect: false,
+      //   questionId: question14.id,
+      // }),
+      // db.Answer.create({
+      //   label: "George Michael",
+      //   isCorrect: false,
+      //   questionId: question14.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Elton John",
+      //   isCorrect: false,
+      //   questionId: question14.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Rolling Stones",
+      //   isCorrect: true,
+      //   questionId: question15.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Beatles",
+      //   isCorrect: false,
+      //   questionId: question15.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Who",
+      //   isCorrect: false,
+      //   questionId: question15.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Kinks",
+      //   isCorrect: false,
+      //   questionId: question15.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Lime",
+      //   isCorrect: true,
+      //   questionId: question16.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Mango",
+      //   isCorrect: false,
+      //   questionId: question16.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Pineapple",
+      //   isCorrect: false,
+      //   questionId: question16.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Orange",
+      //   isCorrect: false,
+      //   questionId: question16.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Primus",
+      //   isCorrect: true,
+      //   questionId: question17.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Metallica",
+      //   isCorrect: false,
+      //   questionId: question17.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Megadeth",
+      //   isCorrect: false,
+      //   questionId: question17.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Slayer",
+      //   isCorrect: false,
+      //   questionId: question17.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Curtis Mayfield",
+      //   isCorrect: true,
+      //   questionId: question18.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Marvin Gaye",
+      //   isCorrect: false,
+      //   questionId: question18.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Stevie Wonder",
+      //   isCorrect: false,
+      //   questionId: question18.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Isaac Hayes",
+      //   isCorrect: false,
+      //   questionId: question18.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Beyoncé",
+      //   isCorrect: true,
+      //   questionId: question19.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Rihanna",
+      //   isCorrect: false,
+      //   questionId: question19.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Alicia Keys",
+      //   isCorrect: false,
+      //   questionId: question19.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Ariana Grande",
+      //   isCorrect: false,
+      //   questionId: question19.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Beethoven",
+      //   isCorrect: true,
+      //   questionId: question20.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Mozart",
+      //   isCorrect: false,
+      //   questionId: question20.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Bach",
+      //   isCorrect: false,
+      //   questionId: question20.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Chopin",
+      //   isCorrect: false,
+      //   questionId: question20.id,
+      // }),
+      // db.Answer.create({
+      //   label: "David Bowie",
+      //   isCorrect: true,
+      //   questionId: question21.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Elton John",
+      //   isCorrect: false,
+      //   questionId: question21.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Queen",
+      //   isCorrect: false,
+      //   questionId: question21.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Rolling Stones",
+      //   isCorrect: false,
+      //   questionId: question21.id,
+      // }),
+      // db.Answer.create({
+      //   label: "David Bowie",
+      //   isCorrect: true,
+      //   questionId: question22.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Elton John",
+      //   isCorrect: false,
+      //   questionId: question22.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Queen",
+      //   isCorrect: false,
+      //   questionId: question22.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Rolling Stones",
+      //   isCorrect: false,
+      //   questionId: question22.id,
+      // }),
+      // db.Answer.create({
+      //   label: "Radiohead",
+      //   isCorrect: true,
+      //   questionId: question23.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Beatles",
+      //   isCorrect: false,
+      //   questionId: question23.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Who",
+      //   isCorrect: false,
+      //   questionId: question23.id,
+      // }),
+      // db.Answer.create({
+      //   label: "The Kinks",
+      //   isCorrect: false,
+      //   questionId: question23.id,
+      // }),
 
       db.Answer.create({
         label: "Erinaceous",
@@ -2164,7 +2165,7 @@ async function createDefaultUsersAndQuestions() {
     db.Emote.create({
       name: 'Adrien King',
       src: `AdrienKing.png`,
-      price: 1,
+      price: 50,
       price_id: 'price_1Nm1adLmxrb9sP3WLbH4tWjs'
     })
 
@@ -2210,6 +2211,7 @@ async function createDefaultUsersAndQuestions() {
       price_id: 'price_1NlHhGLmxrb9sP3WPRYwpjmS'
     })
 
+    initMongo(db);
 
     
     await createRoutineWithTrigger();

@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 usersRouter.get('/', adminMiddleware, userController.getAll);
-usersRouter.get('/show/:id', (req, res, next) => {
+usersRouter.get('/:id', (req, res, next) => {
     if (req.params.id != req.user?.id && !req.isAdmin) {
        return res.status(404).send('Unauthorized');
     }
@@ -40,7 +40,7 @@ usersRouter.get('/:id', (req, res, next) => {
 }, userController.getOne);
 
 usersRouter.put(
-    '/edit/:id',
+    '/:id',
     upload.single('profileImage'),
     (req, res, next) => {
         if(req.body.role === 'admin') {

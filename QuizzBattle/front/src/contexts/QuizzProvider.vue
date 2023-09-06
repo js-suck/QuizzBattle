@@ -40,7 +40,7 @@ params.append('quizzId', category.value);
 let config = {
   method: 'get',
   maxBodyLength: Infinity,
-  url: `${API_URL}/api/category/${category.value}`,
+  url: `${API_URL}/api/category/${category.value}/label`,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded'
   },

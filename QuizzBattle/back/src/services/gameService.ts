@@ -112,54 +112,48 @@ class GameService {
       }
     }
   
-  getUsersWithWinsLast7Days = async () => {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    try {
-      const result = await Game.aggregate([
-        {
-          $match: {
-            isWinner: true,
-            date: { $gte: oneWeekAgo }
+    getUsersWithWinsLast7Days = async () => {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+      try {
+        const result = await Game.aggregate([
+          {
+            $match: {
+              isWinner: true,
+              date: { $gte: oneWeekAgo }
+            }
+          },
+          {
+            $group: {
+              _id: '$userId',
+              users: { $first: '$username' },
+              userProfilePictures: { $first: '$userProfilePicture' },
+            }
+          },
+          {
+            $limit: 30 // Limitez le résultat à 30 utilisateurs différents
+          },
+          {
+            $project: {
+              _id: 0,
+              username: '$users',
+              userProfilePicture: '$userProfilePictures',
+              userId: '$_id'
+            }
           }
-        },
-        {
-          $group: {
-            _id: null,
-            users: { $push: '$username' },
-            userProfilePictures: { $push: '$userProfilePicture' } ,
-            userId: { $push: '$userId' } 
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            users: 1,
-            userProfilePictures: 1 ,
-            userId: 1
-          }
+        ]);
+    
+        if (result.length > 0) {
+          return result;
+        } else {
+          return [];
         }
-      ]);
-
-      if (result.length > 0) {
-        
-        console.log(result)
-        // Combine users and userProfilePictures arrays into a single array of objects
-        const usersWithProfilePictures = result[0].users.map((user, index) => ({
-          username: user,
-          userProfilePicture: result[0].userProfilePictures[index],
-          userId: result[0].userId[index]
-        }));
-
-        return usersWithProfilePictures;
-      } else {
-        return [];
+      } catch (error) {
+        throw error;
       }
-    } catch (error) {
-      throw error;
     }
-  }
+    
 
 
 // /**
@@ -208,6 +202,7 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
             label: `Jouer 10 parties de ${categorie.label}`,
           }
         });
+        console.log(badge)
 
         await user.addCategory(badge);
         createdBadges.push(badge);
@@ -277,21 +272,14 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
     },
   ]);
 
-  if (!result[0]) {
-    return {
-      categoriesStats: [],
-      totalGamesStatsAndBadge: [],
-      totalGamesPlayed: 0,
-      bestCategory: null,
-    };
-  }
+
 
   const stats = [];
   const user = await User.findByPk(userIdString);
   let totalGamesStatsAndBadge = {
     label: "totalGames",
     bestScore: 0,
-    gamePlayed: result[0].totalGames,
+    gamePlayed: result[0]?.totalGames,
     badges: [],
   };  
 
@@ -300,7 +288,8 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
 
   console.log(result[0]?.categories, "testing")
 
-
+if(result[0])
+{
   for (const categorie of result[0]?.categories) {
     const categoryBadge = await calculateCategoryBadge(userIdString, categorie);
     if (categoryBadge) {
@@ -322,13 +311,16 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
       highestScore = categorie.totalScore;
     }
   }
+}
 
   // Logique pour déterminer les badges en fonction du nombre de jeux joués
   const gamesNeedBadges = BADGES.filter((badge) => badge.gamesNeeds != undefined);
+  console.log(gamesNeedBadges)
 
   for (const badge of gamesNeedBadges) {
+    console.log(badge)
     console.log("game need", totalGamesStatsAndBadge.gamePlayed)
-    if (result[0].totalGamesPlayed >= badge.gamesNeeds) {
+    if (result[0]?.totalGamesPlayed >= badge.gamesNeeds) {
       const newBadge = await getBadgeByLabel(
         userIdString,
         badge.label,
@@ -338,7 +330,6 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
       );
       totalGamesStatsAndBadge.badges.push(newBadge);
     } else {
-
       const existingBadge = await Badge.findOne({
         where: {
           label: badge.label,
@@ -368,7 +359,7 @@ getStrikesBadges = (userId, correctAnswersStrike) => {
       user,
       categoriesStats: stats,
       totalGamesStatsAndBadge,
-      totalGamesPlayed: result[0].totalGamesPlayed,
+      totalGamesPlayed: result[0]?.totalGamesPlayed,
       bestCategory,
       strikesBadges
     };

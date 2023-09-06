@@ -61,8 +61,8 @@
         <div class="flex flex-wrap justify-center">
           <v-sheet class="mx-auto" max-width="100%" s>
             <v-slide-group>
-              <v-slide-group-item v-for="(user, key) in userTop" :key="user">
-                <ProfileBadge :name="user.username" :width="'6rem'" :height="'6rem'" :textColor="'black'" :style="{margin: '1em'}"
+              <v-slide-group-item v-for="(user) in userTop" :key="user">
+                <ProfileBadge @click="openModal(user.userId)"  :name="user.username" :width="'6rem'" :height="'6rem'" :textColor="'black'" :style="{margin: '1em'}"
                   :image="user.userProfilePicture ? `${API_URL}/uploads/${user.userProfilePicture}` : 'https://www.computerhope.com/jargon/g/guest-user.png'" />
 
               </v-slide-group-item>
@@ -72,20 +72,24 @@
         </div>
       </div>
     </div>
+    <v-dialog v-model="modalOpen" :style="{borderRadius: '10px'}">
+      <v-card>
+          <!-- Composant UserStatsView -->
+          <UserStatsVue :user="selectedUser" />
+       
+      </v-card>
+    </v-dialog>
   </Navigation>
+  
 </template>
 <script setup>
 import {
   onMounted,
-  reactive,
   ref
 } from 'vue'
 
-import axios from 'axios'
-import jwtDecode from 'jwt-decode'
-import io from 'socket.io-client'
 import { useRouter } from 'vue-router'
-
+import UserStatsVue from '@/components/UserStats.vue'
 import Navigation from '../components/Navigation.vue'
 import ProfileBadge from '../components/ProfileBadge.vue'
 import QuizzCard from '../components/QuizzCard.vue'
@@ -107,6 +111,14 @@ const category = ref(null)
 const userTop = ref(null)
 const router = useRouter()
 
+const modalOpen = ref(false)
+
+const selectedUser = ref(null)
+
+const openModal = (user) => {
+  selectedUser.value = user
+  modalOpen.value = true
+}
 
 const startGame = () => {
   socket.emit('startGame')

@@ -7,7 +7,6 @@ const stripe = require("stripe")('sk_live_51NlH1fLmxrb9sP3WNpKtyPFaagzh3pQHCNjDg
 
 const emoteServiceInstance = new EmoteService();
 const emoteController = GenericController(emoteServiceInstance);
-console.log(emoteServiceInstance)
 const emoteRouter = express.Router();
 
 function getByUserId(req, res) {
@@ -56,8 +55,8 @@ async function checkPayment(req, res) {
         },
       ],
       mode: 'payment',
-      success_url: `http://localhost:5173/emotes/pay/success?success=trues&session_id={CHECKOUT_SESSION_ID}&user_id=${user_id}&emote_id=${emote_id}`,
-      cancel_url:`http://localhost:5173/?success=false`,
+      success_url: `https://quizz-battle.ovh/emotes/pay/success?success=trues&session_id={CHECKOUT_SESSION_ID}&user_id=${user_id}&emote_id=${emote_id}`,
+      cancel_url:`https://quizz-battle.ovh/?success=false`,
     });
     
     res.json({url: session.url, session_id: session.id})}

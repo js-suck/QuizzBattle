@@ -120,8 +120,8 @@
 
 <script setup>
 import { defineProps, onMounted, ref } from 'vue'
+
 import { API_URL } from '@/constants'
-import { FILE_PATHS } from '@/constants/files'
 
 import client from '../helpers/client'
 
@@ -144,7 +144,7 @@ const isUserVerified = ref(false)
 onMounted(() => {
   // Fetch the user data
   client
-    .get(`${API_URL}/api/users/show/${props.user}`)
+    .get(`${API_URL}/api/users/${props.user}`)
     .then((response) => {
       responseUser.value = response.data
       isUserVerified.value = response.data.isVerified
@@ -193,7 +193,7 @@ async function submitForm() {
     if (fileInputRef.value.files[0]) {
       formData.append('image', fileInputRef.value.files[0].name)
     }
-    const userUpdateResponse = await client.put(`${API_URL}/api/users/edit/${props.user}`, formData)
+    const userUpdateResponse = await client.put(`${API_URL}/api/users/${props.user}`, formData)
     responseUser.value = userUpdateResponse.data
     console.log('Updated user data:', responseUser.value)
   } catch (error) {

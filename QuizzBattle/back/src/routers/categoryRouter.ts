@@ -16,10 +16,10 @@ const upload = multer({ storage: storage });
 const CategoryController = GenericController(new CategoryService())
 const categoryRouter = express.Router();
 categoryRouter.get('/', CategoryController.getAll);
-categoryRouter.get("/:name", CategoryController.getByName);
-categoryRouter.get('/show/:id', CategoryController.getOne);
+categoryRouter.get("/:name/label", CategoryController.getByName);
+categoryRouter.get('/:id', CategoryController.getOne);
 categoryRouter.post(
-    '/add',
+    '/',
     upload.single('profileImage'),
     function (req, res, next) {
         //console.log(req.file, req.body);
@@ -29,7 +29,7 @@ categoryRouter.post(
     CategoryController.create
 );
 categoryRouter.put(
-    '/edit/:id',
+    '/:id',
     CategoryController.update
 );
 

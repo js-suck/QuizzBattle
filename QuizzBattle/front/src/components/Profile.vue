@@ -1,82 +1,85 @@
 <template>
-  <div class="p-4 sm:ml-64 flex flex-col">
-    <h2 class="text-2xl font-semibold mb-4">User Info</h2>
+  <div class="p-4 flex flex-col">
+    <h2 class="text-2xl font-semibold mb-4">My profile</h2>
     <div class="container flex">
-      <form class="my-4 w-full" @submit.prevent="submitForm" enctype="multipart/form-data">
-        <div class="mb-6">
-          <label for="lastname" class="block mb-2 font-medium text-gray-700">Lastname :</label>
-          <input
-            v-model.lazy="formDataUser.lastname"
-            type="text"
-            id="lastname"
-            name="lastname"
-            class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-          />
-        </div>
-        <div class="mb-6">
-          <label for="firstname" class="block mb-2 font-medium text-gray-700">Firstname :</label>
-          <input
-            v-model.lazy="formDataUser.firstname"
-            type="text"
-            id="firstname"
-            name="firstname"
-            class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-          />
-        </div>
-        <div class="mb-6">
-          <label for="email" class="block mb-2 font-medium text-gray-700">Email :</label>
-          <input
-            v-model.lazy="formDataUser.email"
-            type="email"
-            id="email"
-            name="email"
-            class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-          />
-        </div>
+      <form class="my-4 w-full flex" @submit.prevent="submitForm" enctype="multipart/form-data">
         <!-- Profile picture card -->
-        <div class="mb-6">
-          <label class="block mb-2 font-medium text-gray-700">Profile Picture:</label>
-          <div class="flex items-center">
-            <div class="w-16 h-16 rounded-full overflow-hidden">
-              <img
-                v-if="!beforeChange"
-                :src="`${API_URL}/uploads/${user.image}`"
-                alt="Profile Picture"
-                id="profile-picture-img"
-                class="w-full h-full object-cover"
-                ref="profilePicture"
-              />
-              <img
-                v-else
-                v-bind:src="profilePictureSrc"
-                alt="Profile Picture"
-                id="profile-picture-img"
-                class="w-full h-full object-cover"
-                ref="profilePicture"
-              />
-              <input
-                type="file"
-                id="profilePictures"
-                name="profilePictures"
-                class="ml-4 hidden-input"
-                accept="image/*"
-                multiple
-                @change="changeProfilePicture"
-                ref="fileInputRef"
-              />
-            </div>
-            <!-- Fake button to replace the file input -->
-            <label for="profilePictures" class="ml-4 fake-button">Change Picture</label>
-          </div>
-        </div>
-        <div class="flex flex-row justify-between">
-          <div class="mt-6">
-            <button
-              type="submit"
-              class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+        <div>
+          <div class="relative w-64 h-64">
+            <img
+              v-if="!beforeChange"
+              :src="`${API_URL}/uploads/${user.image}`"
+              alt="Profile Picture"
+              id="profile-picture-img"
+              class="w-full h-full object-cover rounded-full border-xl"
+              ref="profilePicture"
+            />
+            <img
+              v-else
+              v-bind:src="profilePictureSrc"
+              alt="Profile Picture"
+              id="profile-picture-img"
+              class="w-full h-full object-cover rounded-full"
+              ref="profilePicture"
+            />
+            <!-- Icône d'appareil photo en position absolue -->
+            <label
+              for="profilePictures"
+              class="absolute bottom-0 right-5 fake-button cursor-pointer bg-purple-500"
             >
-              Register
-            </button>
+              <i class="material-icons text-white">photo_camera</i>
+            </label>
+          </div>
+          <input
+            type="file"
+            id="profilePictures"
+            name="profilePictures"
+            class="hidden-input"
+            accept="image/*"
+            multiple
+            @change="changeProfilePicture"
+            ref="fileInputRef"
+          />
+        </div>
+        <div class="flex flex-col w-full m-5 ml-10">
+          <div class="mb-6">
+            <label for="lastname" class="block mb-2 font-medium text-gray-700">Lastname :</label>
+            <input
+              v-model.lazy="formDataUser.lastname"
+              type="text"
+              id="lastname"
+              name="lastname"
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+          <div class="mb-6">
+            <label for="firstname" class="block mb-2 font-medium text-gray-700">Firstname :</label>
+            <input
+              v-model.lazy="formDataUser.firstname"
+              type="text"
+              id="firstname"
+              name="firstname"
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+            />
+          </div>
+          <div class="mb-6">
+            <label for="email" class="block mb-2 font-medium text-gray-700">Email :</label>
+            <input
+              v-model.lazy="formDataUser.email"
+              type="email"
+              id="email"
+              name="email"
+              disabled
+              class="mt-1 px-4 py-2 w-full border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500 bg-gray-200"
+            />
+          </div>
+
+          <div class="flex flex-row justify-between">
+            <div class="mt-6">
+              <v-btn type="submit" color="purple" variant="tonal" border="puprle">
+                Register
+              </v-btn>
+            </div>
           </div>
         </div>
       </form>
@@ -91,11 +94,7 @@
   </div>
 </template>
 <script setup>
-import {
-  inject,
-  onMounted,
-  ref
-} from 'vue'
+import { inject, onMounted, ref } from 'vue'
 
 import { API_URL } from '@/constants'
 import { userManagerKey } from '@/contexts/userManagerKeys'
@@ -153,7 +152,7 @@ const getUserDataFromToken = () => {
       formDataUser.value.id = userData.id
     }
     client
-      .get(`${API_URL}/api/users/show/${formDataUser.value.id}`)
+      .get(`${API_URL}/api/users/${formDataUser.value.id}`)
       .then((response) => {
         formDataUser.value = response.data
         console.log(formDataUser.value)
@@ -179,7 +178,7 @@ const submitForm = async () => {
       formData.append('image', fileInputRef.value.files[0].name)
     }
     const userUpdateResponse = await client.put(
-      `${API_URL}/api/users/edit/${formDataUser.value.id}`,
+      `${API_URL}/api/users/${formDataUser.value.id}`,
       formData
     )
     formDataUser.value = userUpdateResponse.data
@@ -203,10 +202,9 @@ const submitForm = async () => {
 
 .fake-button {
   padding: 8px 12px;
-  background-color: #ccc;
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  border-radius: 4px;
+  border-radius: 2000px;
 }
 </style>

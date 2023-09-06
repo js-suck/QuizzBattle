@@ -58,7 +58,7 @@ onMounted(() => {
     window.location.href = url;
     })
 
-    client.get(`${API_URL}/api/category/${categoryId}`)
+    client.get(`${API_URL}/api/category/${categoryId}/label`)
     .then((response) => {
       console.log(response.data)
       category.value = response.data;

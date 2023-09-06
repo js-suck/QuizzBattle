@@ -150,7 +150,7 @@ export default {
       console.log('tous', formData.entries())
 
       client
-        .post(`${API_URL}/api/category/add`, formData)
+        .post(`${API_URL}/api/category`, formData)
         .then((response) => {
           console.log(this.newSection.questions)
           const categoryId = response.data.id
@@ -164,7 +164,7 @@ export default {
     submitQuestion(id) {
       this.newSection.questions.forEach((question, index) => {
         client
-          .post(`${API_URL}/api/questions/add`, {
+          .post(`${API_URL}/api/questions`, {
             categoryId: id,
             label: question.questionText,
             headers: {
@@ -183,13 +183,13 @@ export default {
     },
     submitAnswer(id, goodAnswer, badAnswers) {
       console.log(id, goodAnswer, badAnswers)
-      client.post(`${API_URL}/api/answers/add`, {
+      client.post(`${API_URL}/api/answers`, {
         questionId: id,
         label: goodAnswer,
         isCorrect: true
       })
       badAnswers.forEach((badAnswer) => {
-        client.post(`${API_URL}/api/answers/add`, {
+        client.post(`${API_URL}/api/answers`, {
           questionId: id,
           label: badAnswer,
           isCorrect: false

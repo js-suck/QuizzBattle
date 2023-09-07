@@ -73,7 +73,7 @@ const upload = multer({ dest: '/home/debian/QuizzBattle/QuizzBattle/back/src' + 
 console.log(upload, 'updza', __dirname, 'tototot')
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static(path.join(__dirname, './uploads')));
+app.use('/uploads', express.static(path.join('/home/debian/QuizzBattle/QuizzBattle/back/src', './uploads')));
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
   if (!req['file']) {

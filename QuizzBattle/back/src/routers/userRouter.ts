@@ -16,7 +16,7 @@ const usersRouter = express.Router();
 const destinationFolder = path.join(__dirname, 'uploads/');
 
 const storage = multer.diskStorage({
-    destination: 'src/uploads/',
+    destination: 'dist/uploads/',
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const fileExtension = path.extname(file.originalname);

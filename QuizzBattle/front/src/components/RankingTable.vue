@@ -27,7 +27,7 @@
         <img
           @click="openModal(userData.userId)"
           class="rounded-full h-full object-cover w-full"
-          :src="`${API_URL}/uploads/${userData.image}`"
+          :src="`${API_URL}/uploads/${userData.userProfilePicture}`"
           alt=""
         />
       </div>
@@ -85,6 +85,7 @@ const openModal = (user) => {
 onMounted(async () => {
   const response = await client.get(url)
   items.value = response.data
+  console.log(items)
 })
 </script>
 

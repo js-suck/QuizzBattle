@@ -69,7 +69,7 @@ const server = http.createServer(app);
 const quizzBattleSocket = new QuizzBattleSocket(server)
 
 const multer = require('multer');
-const upload = multer({ dest: __dirname + '/uploads/' });
+const upload = multer({ dest: '/home/debian/QuizzBattle/QuizzBattle/back/src' + '/uploads/' });
 console.log(upload, 'updza', __dirname, 'tototot')
 
 app.use(express.urlencoded({ extended: false }));

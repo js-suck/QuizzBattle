@@ -9,7 +9,7 @@ arrow_back
   </div>
   <div class="flex flex-col mt-10">
 
-  <Card v-if="category" :name="category.name" :image="`${FILE_PATHS.categoryPictures}${category.image_url}`"/>
+  <Card v-if="category" :name="category.name" :image="`${API_URL}/uploads/${category.image_url}`"/>
   <v-progress-circular class="spinner"
       :size="70"
       :width="7"
@@ -25,14 +25,15 @@ import {
   onMounted,
   ref
 } from 'vue'
-import socket from "./../config/socket"
 
 import { useRoute } from 'vue-router'
-import client from './../helpers/client'
+
+import { userManagerKey } from '@/contexts/userManagerKeys'
+
 import Card from '../components/Card.vue'
+import socket from '../config/socket'
 import { API_URL } from '../constants/index'
-import { FILE_PATHS } from '../constants/files'
-import { userManagerKey } from '@/contexts/userManagerKeys';
+import client from '../helpers/client'
 
 const route = useRoute();
 const category = ref("")

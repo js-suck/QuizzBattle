@@ -96,8 +96,6 @@
 <script>
 import { onMounted, ref } from 'vue'
 
-import axios from 'axios'
-
 import { API_URL } from '@/constants'
 
 import client from '../helpers/client'

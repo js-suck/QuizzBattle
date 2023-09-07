@@ -86,15 +86,6 @@ const router = createRouter({
     },
     //BackOffice / Admin
     {
-      path: '/admin/dashboard',
-      name: 'admin_dashboard',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/admin/HomeView.vue')
-      //      beforeEnter: roleCheckMiddleware // Appliquer le middleware seulement pour la route admin
-    },
-    {
       path: '/admin/users',
       name: 'admin_users',
       // route level code-splitting

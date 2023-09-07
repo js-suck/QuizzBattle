@@ -9,7 +9,7 @@ import Stats from "@/components/Stats.vue";
 <template>
   <main>
       <Sidebar />
-      <Stats />
+      <DataTable />
   </main>
 </template>
 

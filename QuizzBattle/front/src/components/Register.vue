@@ -89,7 +89,7 @@
                 type="submit"
                 class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
               >
-                Register
+                Enregistré
               </button>
             </div>
             <div class="mt-6">
@@ -114,9 +114,6 @@
           </div>
         </form>
       </div>
-      <div class="card flex mr-4">
-        <span>Match History In Coming</span>
-      </div>
     </div>
   </div>
 </template>
@@ -124,11 +121,11 @@
 <script setup>
 import { defineProps, onMounted, ref } from 'vue'
 
-
 import { API_URL } from '@/constants'
 
 import client from '../helpers/client'
 
+const stats = ref({})
 const responseUser = ref({})
 const fileInputRef = ref(null)
 const profilePicture = ref(null)

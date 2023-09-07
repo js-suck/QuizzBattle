@@ -69,11 +69,11 @@ const server = http.createServer(app);
 const quizzBattleSocket = new QuizzBattleSocket(server)
 
 const multer = require('multer');
-const upload = multer({ dest: '/home/debian/QuizzBattle/QuizzBattle/back/src' + '/uploads/' });
+const upload = multer({ dest: '/home/debian/QuizzBattle/QuizzBattle/back/src/uploads/' });
 console.log(upload, 'updza', __dirname, 'tototot')
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static(path.join('/home/debian/QuizzBattle/QuizzBattle/back/src', './uploads')));
+app.use('/uploads', express.static('/home/debian/QuizzBattle/QuizzBattle/back/src/uploads'));
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
   if (!req['file']) {

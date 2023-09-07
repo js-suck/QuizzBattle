@@ -26,7 +26,7 @@
             :key="stats.id"
             :style="{ display: stats.userObtain ? 'initial' : 'hidden' }"
           >
-            <img :src="`/src/assets/badges/${stats.image}`" class="w-24" />
+            <img :src="`/assets/badges/${stats.image}`" class="w-24" />
           </div>
         </div>
       </div>

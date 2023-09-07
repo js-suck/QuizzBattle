@@ -19,7 +19,7 @@
   :key="stats.label"
   :style="{ backgroundColor: stats.userObtain ? 'violet' : '#71717154' }"
 >
-         <img :src='`/src/assets/badges/${stats.image}`'>
+         <img :src='`/assets/badges/${stats.image}`'>
           <h2>{{stats.label}}</h2>
             <v-progress-linear v-if="stats.gamesNeeds"
        :model-value="`${gameStats.totalGamesPlayed / stats.gamesNeeds * 100}`"

@@ -73,7 +73,7 @@ const upload = multer({ dest: '/home/debian/QuizzBattle/QuizzBattle/back/src/upl
 console.log(upload, 'updza', __dirname, 'tototot')
 
 app.use(express.urlencoded({ extended: false }));
-app.use('/uploads', express.static('/home/debian/QuizzBattle/QuizzBattle/back/src/uploads'));
+app.use('/uploads', express.static('/home/debian/QuizzBattle/QuizzBattle/back/src/uploads/'));
 
 app.post('/upload', upload.single('profileImage'), (req, res) => {
   if (!req['file']) {
@@ -85,6 +85,15 @@ app.post('/upload', upload.single('profileImage'), (req, res) => {
 });
 
 
+app.get('/uploaads/:nomDuFichier', (req, res) => {
+  console.log('ici')
+  const nomDuFichier = req.params.nomDuFichier;
+  // Lire le fichier image depuis le système de fichiers
+  const cheminFichier = '/home/debian/QuizzBattle/QuizzBattle/back/src/uploads/' + nomDuFichier;
+
+  // Envoyer le fichier en réponse
+  res.sendFile(cheminFichier);
+});
 
 initMongo()
 app.use(express.json())
